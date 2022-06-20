@@ -35,9 +35,9 @@ export const FormatCreatingCard = ({fetchEntries}) => {
                     }}
                     validate={values => {
                         const errors = {};
-                        if (!values.formatName) {
-                            errors.formatName = 'error'
-                        }
+                        // if (!values.formatName) {
+                        //     errors.formatName = 'error'
+                        // }
                         if (!values.height) {
                             errors.height = 'error'
                         }

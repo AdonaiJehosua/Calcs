@@ -17,7 +17,7 @@ export const DeleteEntryButton = ({fetchEntries, endpoint, entryId, entryName}) 
     return (
         <Popup trigger={<button className={'btn-small'}>Удалить</button>} modal nested>
             {close => (
-                <div className={'yellow darken-1'}>
+                <div className={'blue darken-1'}>
                     <div className={'header'}>Опасность!!!</div>
                     <div className={'modal-content'}>
                         Вы уверены, что хотите удалить {entryName}?
