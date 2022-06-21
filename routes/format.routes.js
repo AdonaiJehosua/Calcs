@@ -1,4 +1,5 @@
 const {Router} = require('express')
+const validator = require('validator')
 const Format = require('../models/Format')
 const {check, validationResult} = require('express-validator')
 const auth = require('../middleware/auth.middleware')
@@ -56,34 +57,70 @@ router.delete('/:id', auth, async (req, res) => {
 
 router.put('/:id/changeentryvalue', auth,
 
-    [
-        check('updatingValue', 'Введите название.').exists({checkFalsy: true}),
-    ],
     async (req, res) => {
     try {
 
-        if (req.body.entryKey === 'formatName') {check('updatingValue', 'Введите название.').exists({checkFalsy: true})}
-        if (req.body.entryKey === 'height' || 'width') {check('updatingValue', 'Должно быть указано число').isNumeric()}
-
-        const errors = validationResult(req)
-
-        if (!errors.isEmpty()) {
-            return res.status(400).json({
-                errors: errors.array(),
-                message: 'Некорректные данные.'
-            })
-        }
-
         const {updatingValue} = req.body
 
-        const examinationName = await Format.findOne({formatName: updatingValue})
+        switch (updatingValue.entryKey) {
+            case 'formatName':
+               if (validator.isEmpty(updatingValue)) {
+                return (res.status(400).json({message: `Введите название формата`}))
+            }
 
-        if (examinationName) {
-            return res.status(400).json({message: `Формат с таким названием существует - ${req.body.updatingValue}`})
+                const examinationName = await Format.findOne({formatName: updatingValue})
+                if (examinationName) {
+                    return res.status(400).json({message: `Формат с таким названием существует - ${updatingValue}`})
+                }
+
+                await Format.updateOne({_id: req.params.id}, {$set: {formatName : updatingValue}})
+                res.status(201).json({message: 'Название формата изменено.', updatedValue: updatingValue})
+
+                break
+
+            case 'height':
+                if (validator.isEmpty(String(updatingValue))) {
+                    return res.status(400).json({message: `Введите высоту`})
+                }
+                if (!validator.isNumeric(String(updatingValue))) {
+                    return res.status(400).json({message: `Высота должна быть числом`})
+                }
+
+                const oldFormatHeight = await Format.findOne({_id: req.params.id})
+                const newHeightDimensions = {height: Number(updatingValue), width: oldFormatHeight.dimensions.width}
+                const examinationNewHeightDim = await Format.findOne({dimensions: newHeightDimensions})
+
+                if (examinationNewHeightDim) {
+                    return res.status(400).json({message: `Формат с такими значениями существует`})
+                }
+                await Format.updateOne({_id: req.params.id}, {$set: {dimensions : newHeightDimensions}})
+                res.status(201).json({message: 'Высота изменена.', updatedValue: updatingValue})
+
+                break
+
+            case 'width':
+                if (validator.isEmpty(String(updatingValue))) {
+                    return res.status(400).json({message: `Введите ширину`})
+                }
+                if (!validator.isNumeric(String(updatingValue))) {
+                    return res.status(400).json({message: `Ширина должна быть числом`})
+                }
+
+                const oldFormatWidth = await Format.findOne({_id: req.params.id})
+                const newWidthDimensions = {height: oldFormatWidth.dimensions.height, width: Number(updatingValue)}
+                const examinationNewWidthDim = await Format.findOne({dimensions: newWidthDimensions})
+
+                if (examinationNewWidthDim) {
+                    return res.status(400).json({message: `Формат с такими значениями существует`})
+                }
+                await Format.updateOne({_id: req.params.id}, {$set: {dimensions : newWidthDimensions}})
+                res.status(201).json({message: 'Ширина изменена.', updatedValue: updatingValue})
+
+                break
+
         }
 
-        await Format.updateOne({_id: req.params.id}, {$set: {formatName : req.body.updatingValue}})
-        res.status(201).json({message: 'Название формата изменено.', updatedValue: req.body.updatingValue})
+
     } catch (e) {
         res.status(500).json({message: `Что-то пошло не так, попробуйте снова`})
     }
