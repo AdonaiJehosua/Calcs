@@ -19,78 +19,79 @@ export const CatalogsTableRow = ({value, inputType, endpoint, entryId, entryKey}
 
     const updateHandler = useCallback(async (values) => {
         try {
-            await updateEntry({entryKey:  entryKey, updatingValue: values.updatingValue}, endpoint, entryId)
+            await updateEntry({entryKey: entryKey, updatingValue: values.updatingValue}, endpoint, entryId)
             dectivateEditMode()
         } catch (e) {
         }
     }, [])
 
 
-
     return (
-        <Formik
-            onSubmit={updateHandler}
-            initialValues={{
-                updatingValue: entryValue
-            }}
-            validate={values => {
-                const errors = {};
-                if (!values.updatingValue) {
-                    errors.updatingValue = 'error'
-                }
-                return errors
-            }}
-        >
-            {({
-                  values,
-                  errors,
-                  touched,
-                  handleChange,
-                  handleBlur,
-                  isSubmitting,
-                  handleSubmit
-              }) => (
-                <Form>
-                    {!editMode && <span onDoubleClick={activateEditMode}>{entryValue}</span>}
-                    {editMode &&
-                    <div>
-                        <input
-                            id="updatingValue"
-                            type={inputType}
-                            className={`yellow-input ${errors.updatingValue && touched.updatingValue && errors.updatingValue}`}
-                            name="updatingValue"
-                            value={values.updatingValue}
-                            autoFocus={true}
-                            onBlur={handleBlur}
-                            onChange={handleChange}/>
+        <td className={'center-align'}>
+            <Formik
+                onSubmit={updateHandler}
+                initialValues={{
+                    updatingValue: entryValue
+                }}
+                validate={values => {
+                    const errors = {};
+                    if (!values.updatingValue) {
+                        errors.updatingValue = 'error'
+                    }
+                    return errors
+                }}
+            >
+                {({
+                      values,
+                      errors,
+                      touched,
+                      handleChange,
+                      handleBlur,
+                      isSubmitting,
+                      handleSubmit
+                  }) => (
+                    <Form>
+                        {!editMode && <span onDoubleClick={activateEditMode}>{entryValue}</span>}
+                        {editMode &&
+                        <div>
+                            <input
+                                id="updatingValue"
+                                type={inputType}
+                                className={`yellow-input ${errors.updatingValue && touched.updatingValue && errors.updatingValue}`}
+                                name="updatingValue"
+                                value={values.updatingValue}
 
-                        <Popup trigger={<button type={'button'} className={'btn-small'}>Изменить</button>} modal nested>
-                            {close => (
-                                <div className={'blue darken-1'}>
-                                    <div className={'header'}>Опасность!!!</div>
-                                    <div className={'modal-content'}>
-                                        Вы уверены, что хотите изменить?
+                                autoFocus={true}
+                                onBlur={handleBlur}
+                                onChange={handleChange}/>
+
+                            <Popup trigger={<button type={'button'} className={'btn-small'}>Изменить</button>} modal
+                                   nested>
+                                {close => (
+                                    <div className={'blue darken-1'}>
+                                        <div className={'header'}>Опасность!!!</div>
+                                        <div className={'modal-content'}>
+                                            Вы уверены, что хотите изменить?
+                                        </div>
+                                        <button
+                                            type={'button'}
+                                            className={'teal lighten-1 btn-small'}
+                                            onClick={handleSubmit}
+                                            disabled={isSubmitting}
+                                        >
+                                            Уверен
+                                        </button>
+                                        <button className={'btn-small'} onClick={() => {
+                                            close()
+                                        }}>Отмена
+                                        </button>
                                     </div>
-                                    <button
-                                        type={'button'}
-                                        className={'teal lighten-1 btn-small'}
-                                        onClick={handleSubmit}
-                                        disabled={isSubmitting}
-                                    >
-                                        Уверен
-                                    </button>
-                                    <button className={'btn-small'} onClick={() => {
-                                        close()
-                                    }}>Отмена
-                                    </button>
-                                </div>
-                            )}
-                        </Popup>
-
-
-                    </div>}
-                </Form>
-            )}
-        </Formik>
+                                )}
+                            </Popup>
+                        </div>}
+                    </Form>
+                )}
+            </Formik>
+        </td>
     )
 }

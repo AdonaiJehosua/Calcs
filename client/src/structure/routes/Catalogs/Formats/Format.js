@@ -41,16 +41,24 @@ export const Formats = () => {
                 {entries.map((format) => {
                     return (
                         <tr key={format._id}>
-                            <td className={'center-align'}>
-                               <CatalogsTableRow value={format.formatName}
-                                                 inputType={'text'}
-                                                 endpoint={'format'}
-                                                 entryId={format._id}
-                                                 entryKey={'formatName'}
-                               />
-                            </td>
-                            <td className={'center-align'}>{format.dimensions.height}</td>
-                            <td className={'center-align'}>{format.dimensions.width}</td>
+                            <CatalogsTableRow value={format.formatName}
+                                              inputType={'text'}
+                                              endpoint={'format'}
+                                              entryId={format._id}
+                                              entryKey={'formatName'}
+                            />
+                            <CatalogsTableRow value={format.dimensions.height}
+                                              inputType={'number'}
+                                              endpoint={'format'}
+                                              entryId={format._id}
+                                              entryKey={'height'}
+                            />
+                            <CatalogsTableRow value={format.dimensions.width}
+                                              inputType={'number'}
+                                              endpoint={'format'}
+                                              entryId={format._id}
+                                              entryKey={'width'}
+                            />
                             <td className={'center-align'}>
                                 <DeleteEntryButton fetchEntries={fetchFormats}
                                                    endpoint={'format'}
@@ -60,7 +68,6 @@ export const Formats = () => {
                         </tr>
                     )
                 })}
-
                 </tbody>
             </table>
         </div>
