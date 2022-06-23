@@ -62,7 +62,7 @@ router.put('/:id/changeentryvalue', auth,
 
         const {updatingValue} = req.body
 
-        switch (updatingValue.entryKey) {
+        switch (req.body.entryKey) {
             case 'formatName':
                if (validator.isEmpty(updatingValue)) {
                 return (res.status(400).json({message: `Введите название формата`}))
