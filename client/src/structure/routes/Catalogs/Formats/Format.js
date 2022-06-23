@@ -3,7 +3,7 @@ import {FormatCreatingCard} from "./FormatCreatingCard";
 import {DeleteEntryButton} from "../../../../components/DeleteEntryButton";
 import {useFetchEntries} from "../../../../hooks/fetchEntries.hook";
 import {useCallback, useEffect} from "react";
-import {CatalogsTableRow} from "../../../../components/CatalogsTableRow";
+import {CatalogsTableCol} from "../../../../components/CatalogsTableCol";
 
 
 export const Formats = () => {
@@ -20,13 +20,17 @@ export const Formats = () => {
 
 
     if (!entries.length) {
-        return <p className={'center'}>Форматов пока нет <FormatCreatingCard fetchEntries={fetchFormats}/>
+        return <p className={'center'}>Форматов пока нет
+            <FormatCreatingCard fetchEntries={fetchFormats}/>
         </p>
     }
 
     return (
         <div className={'container'}>
-            <FormatCreatingCard fetchEntries={fetchFormats}/>
+            <div className={'container'}>
+                    <h3>Форматы</h3>
+                    <FormatCreatingCard fetchEntries={fetchFormats}/>
+            </div>
             <table className={'striped'}>
                 <thead>
                 <tr>
@@ -41,19 +45,19 @@ export const Formats = () => {
                 {entries.map((format) => {
                     return (
                         <tr key={format._id}>
-                            <CatalogsTableRow value={format.formatName}
+                            <CatalogsTableCol value={format.formatName}
                                               inputType={'text'}
                                               endpoint={'format'}
                                               entryId={format._id}
                                               entryKey={'formatName'}
                             />
-                            <CatalogsTableRow value={format.dimensions.height}
+                            <CatalogsTableCol value={format.dimensions.height}
                                               inputType={'number'}
                                               endpoint={'format'}
                                               entryId={format._id}
                                               entryKey={'height'}
                             />
-                            <CatalogsTableRow value={format.dimensions.width}
+                            <CatalogsTableCol value={format.dimensions.width}
                                               inputType={'number'}
                                               endpoint={'format'}
                                               entryId={format._id}
