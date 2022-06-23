@@ -7,7 +7,6 @@ export const UnitCreatingCard = ({fetchEntries}) => {
 
     const {createEntry} = useCreateEntry()
 
-
     useEffect(() => {
         window.M.updateTextFields()
     }, [])
@@ -54,7 +53,7 @@ export const UnitCreatingCard = ({fetchEntries}) => {
                         <Form>
                             <div>
                                 <div>
-                                    <div className="card yellow darken-1">
+                                    <div className="card blue darken-1">
                                         <div className="row right-align">
                                         </div>
                                         <div className="card-content white-text">
@@ -74,7 +73,7 @@ export const UnitCreatingCard = ({fetchEntries}) => {
 
                                                     <label
                                                         htmlFor="fullName"
-                                                        className={`active ${errors.fullName && touched.fullName && errors.fullName}`}>Полное название</label>
+                                                        className={`white-text active ${errors.fullName && touched.fullName && errors.fullName}`}>Полное название</label>
                                                 </div>
                                                 <div className="input-field ">
                                                     <input
@@ -88,14 +87,14 @@ export const UnitCreatingCard = ({fetchEntries}) => {
                                                     />
                                                     <label
                                                         htmlFor="abbreviatedName"
-                                                        className={`active ${errors.abbreviatedName && touched.abbreviatedName && errors.abbreviatedName}`}>Укажите
+                                                        className={`white-text active ${errors.abbreviatedName && touched.abbreviatedName && errors.abbreviatedName}`}>Укажите
                                                         высоту, мм</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="card-action">
                                             <button
-                                                className={'btn yellow darken-4'}
+                                                className={'btn'}
                                                 type={'submit'}
                                                 style={{marginRight: 10}}
                                                 disabled={isSubmitting}
