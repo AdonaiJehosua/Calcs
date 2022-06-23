@@ -7,7 +7,6 @@ export const FormatCreatingCard = ({fetchEntries}) => {
 
     const {createEntry} = useCreateEntry()
 
-
     useEffect(() => {
         window.M.updateTextFields()
     }, [])
@@ -35,9 +34,9 @@ export const FormatCreatingCard = ({fetchEntries}) => {
                     }}
                     validate={values => {
                         const errors = {};
-                        // if (!values.formatName) {
-                        //     errors.formatName = 'error'
-                        // }
+                        if (!values.formatName) {
+                            errors.formatName = 'error'
+                        }
                         if (!values.height) {
                             errors.height = 'error'
                         }
@@ -58,7 +57,7 @@ export const FormatCreatingCard = ({fetchEntries}) => {
                         <Form>
                             <div>
                                 <div>
-                                    <div className="card yellow darken-1">
+                                    <div className="card blue darken-1">
                                         <div className="row right-align">
                                         </div>
                                         <div className="card-content white-text">
@@ -78,7 +77,7 @@ export const FormatCreatingCard = ({fetchEntries}) => {
 
                                                     <label
                                                         htmlFor="formatName"
-                                                        className={`active ${errors.formatName && touched.formatName && errors.formatName}`}>Название</label>
+                                                        className={`white-text active ${errors.formatName && touched.formatName && errors.formatName}`}>Название</label>
                                                 </div>
                                                 <div className="input-field ">
                                                     <input
@@ -92,7 +91,7 @@ export const FormatCreatingCard = ({fetchEntries}) => {
                                                     />
                                                     <label
                                                         htmlFor="height"
-                                                        className={`active ${errors.height && touched.height && errors.height}`}>Укажите
+                                                        className={`white-text active ${errors.height && touched.height && errors.height}`}>Укажите
                                                         высоту, мм</label>
                                                 </div>
                                                 <div className="input-field ">
@@ -107,14 +106,14 @@ export const FormatCreatingCard = ({fetchEntries}) => {
                                                     />
                                                     <label
                                                         htmlFor="width"
-                                                        className={`active ${errors.width && touched.width && errors.width}`}>Укажите
+                                                        className={`white-text active ${errors.width && touched.width && errors.width}`}>Укажите
                                                         ширину, мм</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="card-action">
                                             <button
-                                                className={'btn yellow darken-4'}
+                                                className={'btn'}
                                                 type={'submit'}
                                                 style={{marginRight: 10}}
                                                 disabled={isSubmitting}
