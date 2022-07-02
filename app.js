@@ -9,6 +9,7 @@ app.use(express.json({extended: true}))
 app.use('/api/auth', require('./routes/auth.routes'))
 app.use('/api/format', require('./routes/format.routes'))
 app.use('/api/unit', require('./routes/unit.routes'))
+app.use('/api/chromaticity', require('./routes/chromaticity.routes'))
 
 const PORT = config.get('port') || 5000
 

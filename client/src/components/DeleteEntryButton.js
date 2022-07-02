@@ -22,7 +22,7 @@ export const DeleteEntryButton = ({fetchEntries, endpoint, entryId, entryName}) 
                     <div className={'modal-content white-text'}>
                         Вы уверены, что хотите удалить {entryName}?
                     </div>
-                    <button className={'btn-small'} onClick={() => {
+                    <button autoFocus={'true'} className={'btn-small'} onClick={() => {
                         deleteFunction()
                     }}>Да</button>
                     <button className={'btn-small'} onClick={() => {close()}}>Отмена</button>

@@ -4,21 +4,25 @@ import {DeleteEntryButton} from "../../../../components/DeleteEntryButton";
 import {useFetchEntries} from "../../../../hooks/fetchEntries.hook";
 import {useCallback, useEffect} from "react";
 import {CatalogsTableCol} from "../../../../components/CatalogsTableCol";
+import {Loader} from "../../../../components/Loader";
 
 
 export const Formats = () => {
 
-    const {entries, fetchEntries} = useFetchEntries()
+    const {entries, fetchEntries, loading} = useFetchEntries()
+
 
     const fetchFormats = useCallback(async () => {
-        fetchEntries('format')
+       await fetchEntries('format')
     }, [])
 
     useEffect(() => {
         fetchFormats()
     }, [fetchFormats])
 
-
+    if (loading) {
+        return <Loader/>
+    }
     if (!entries.length) {
         return <p className={'center'}>Форматов пока нет
             <FormatCreatingCard fetchEntries={fetchFormats}/>

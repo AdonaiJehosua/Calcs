@@ -2,9 +2,12 @@ import {useCallback, useState} from "react";
 import {useUpdateEntry} from "../hooks/updateEntry.hook";
 import {Formik, Form} from "formik";
 import Popup from "reactjs-popup";
-
+import {useMessage} from "../hooks/message.hook";
+import validator from "validator";
 
 export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}) => {
+
+    const message = useMessage()
 
     const [editMode, setEditMode] = useState(false)
     const activateEditMode = () => {
@@ -44,9 +47,15 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
                 }}
                 validate={values => {
                     const errors = {};
-                    if (!values.updatingValue) {
+                    if (validator.isEmpty(String(values.updatingValue))) {
                         errors.updatingValue = 'error'
+                        message('Введите данные')
                     }
+
+                    // if (!values.updatingValue) {
+                    //     errors.updatingValue = 'error'
+                    //     message('Введите данные')
+                    // }
                     return errors
                 }}
             >

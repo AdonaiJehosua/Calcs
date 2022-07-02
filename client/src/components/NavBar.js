@@ -3,6 +3,7 @@ import {useContext, useEffect} from "react";
 import {AuthContext} from "../context/AuthContext";
 import M from "materialize-css";
 import {SideBar} from "./SideBar";
+import {Button, ButtonGroup} from "@mui/material";
 
 
 const setActive = ({isActive}) => isActive ? "blue darken-3" : ""
@@ -25,6 +26,12 @@ export const Navbar = () => {
 
     return (
         <div>
+            <ButtonGroup variant="contained" aria-label="outlined primary button group">
+                <Button><NavLink className={setActive} to={'/calcs'}>Калькуляторы</NavLink></Button>
+                <Button><NavLink className={setActive} to={'/catalogs'}>Справочники</NavLink></Button>
+                <Button><NavLink className={setActive} to={'/test'}>Тест</NavLink></Button>
+            </ButtonGroup>
+
             <nav>
                 <div className="nav-wrapper blue darken-1" style={{padding: '0 2rem'}}>
                     <span className="brand-logo">Calc</span>

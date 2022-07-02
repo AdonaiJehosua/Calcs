@@ -7,6 +7,7 @@ import {SideBar} from "../components/SideBar";
 import {Formats} from "./routes/Catalogs/Formats/Format";
 import {Units} from "./routes/Catalogs/Units/Units";
 import {AmountOfPaper} from "./routes/Calcs/AmountOfPapper/AmountOfPaper";
+import {Chromaticities} from "./routes/Catalogs/Chromaticities/Chromaticity";
 
 
 export const useRoutes = isAuthenticated => {
@@ -22,6 +23,7 @@ export const useRoutes = isAuthenticated => {
                         <Route path={'/catalogs'} element={<Catalogs/>}>
                             <Route path={'formats'} element={<Formats/>}/>
                             <Route path={'units'} element={<Units/>}/>
+                            <Route path={'chromaticity'} element={<Chromaticities/>}/>
                         </Route>
                         <Route path={'/test'} element={<Test/>}/>
                         {/*<Route path={'*'} element={<Navigate to={'/'}/>}/>*/}

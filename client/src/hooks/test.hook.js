@@ -3,25 +3,26 @@ import {useHttp} from "./http.hook";
 import {AuthContext} from "../context/AuthContext";
 
 
-export const useFetchEntries = () => {
-    const [entries, setEntries] = useState([])
+export const useTest = () => {
     const {request, loading} = useHttp()
     const {token} = useContext(AuthContext)
 
-    const fetchEntries = useCallback(async (endpoint) => {
-        try {
+    const fetchTest = useCallback(async (endpoint) => {
+
             const fetched = await request(
                 `/api/${endpoint}`,
                 'GET',
                 null,
                 {Authorization: `Bearer ${token}`}
             )
-            setEntries(fetched)
-        } catch (e) {}
+
+        console.log(fetched)
+
+
+        return fetched
     }, [token, request])
 
-
-    return {entries, fetchEntries, loading}
+    return {fetchTest, loading}
 
 
 }

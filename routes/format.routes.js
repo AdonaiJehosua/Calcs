@@ -86,14 +86,14 @@ router.put('/:id/changeentryvalue', auth,
                     return res.status(400).json({message: `Высота должна быть числом`})
                 }
 
-                const oldFormatHeight = await Format.findOne({_id: req.params.id})
-                const newHeightDimensions = {height: Number(updatingValue), width: oldFormatHeight.dimensions.width}
-                const examinationNewHeightDim = await Format.findOne({dimensions: newHeightDimensions})
+                const oldValues = await Format.findOne({_id: req.params.id})
+                const newValues = {height: Number(updatingValue), width: oldValues.dimensions.width}
+                const examinationNewHeightDim = await Format.findOne({dimensions: newValues})
 
                 if (examinationNewHeightDim) {
                     return res.status(400).json({message: `Формат с такими значениями существует`})
                 }
-                await Format.updateOne({_id: req.params.id}, {$set: {dimensions : newHeightDimensions}})
+                await Format.updateOne({_id: req.params.id}, {$set: {dimensions : newValues}})
                 res.status(201).json({message: 'Высота изменена.', updatedValue: updatingValue})
 
                 break

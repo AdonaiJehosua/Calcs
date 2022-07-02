@@ -11,6 +11,11 @@ const sideBar = {
             rootName: 'catalogs',
             pathName: 'units',
             visibleName: 'Единицы измерения'
+        },
+        {
+            rootName: 'catalogs',
+            pathName: 'chromaticity',
+            visibleName: 'Цветность'
         }
     ],
     calcs: [
