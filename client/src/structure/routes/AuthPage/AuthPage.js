@@ -1,4 +1,4 @@
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect} from "react";
 import {useHttp} from "../../../hooks/http.hook";
 import {useMessage} from "../../../hooks/message.hook";
 import {AuthContext} from "../../../context/AuthContext";
@@ -14,6 +14,8 @@ export const AuthPage = () => {
         message(error)
         clearError()
     }, [error, message, clearError])
+
+    let submitAction = undefined
 
 
     const registerHandler = async (values) => {
@@ -38,7 +40,14 @@ export const AuthPage = () => {
 
     return (
         <Formik
-            onSubmit={handleS}
+            onSubmit={(values) => {
+                if (submitAction === 'login') {
+                    loginHandler(values)
+                }
+                if (submitAction === 'register') {
+                    registerHandler(values)
+                }
+            }}
             initialValues={{
                 email: '', password: ''
             }}
@@ -57,6 +66,7 @@ export const AuthPage = () => {
                   values,
                   errors,
                   touched,
+                  handleSubmit,
                   handleChange,
                   handleBlur,
                   isSubmitting
@@ -86,13 +96,22 @@ export const AuthPage = () => {
                         <CardActions>
                             <Button
                                 variant={'contained'}
-                                type={'submit'}
+                                type={'button'}
+                                onClick={() => {
+                                    submitAction = 'login'
+                                    handleSubmit()
+                                }}
                                 onSubmit={loginHandler}
                                 disabled={loading}
                             >
                                 Войти
                             </Button>
                             <Button
+                                type={'button'}
+                                onClick={() => {
+                                    submitAction = 'register'
+                                    handleSubmit()
+                                }}
                                 variant={'contained'}
                                 onSubmit={registerHandler}
                                 disabled={loading}
