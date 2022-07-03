@@ -4,6 +4,8 @@ import {Formik, Form} from "formik";
 import Popup from "reactjs-popup";
 import {useMessage} from "../hooks/message.hook";
 import validator from "validator";
+import {Button, Card, CardActions, CardContent, Popover, TableCell, TextField} from "@mui/material";
+import Typography from "@mui/material/Typography";
 
 export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}) => {
 
@@ -12,20 +14,26 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
     const [editMode, setEditMode] = useState(false)
     const activateEditMode = () => {
         setEditMode(true)
-
     }
     const deactivateEditMode = () => {
         setEditMode(false)
     }
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
 
     const handleDoubleClick = async () => {
         await activateEditMode()
         let selectedText = document.getElementById('updatingValue')
         selectedText.select()
     }
-
-
-
 
     const {entryValue, updateEntry} = useUpdateEntry(value)
 
@@ -39,7 +47,7 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
 
 
     return (
-        <td className={'center-align'}>
+        <TableCell align={'center'}>
             <Formik
                 onSubmit={updateHandler}
                 initialValues={{
@@ -51,11 +59,6 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
                         errors.updatingValue = 'error'
                         message('Введите данные')
                     }
-
-                    // if (!values.updatingValue) {
-                    //     errors.updatingValue = 'error'
-                    //     message('Введите данные')
-                    // }
                     return errors
                 }}
             >
@@ -72,44 +75,53 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
                         {!editMode && <span onDoubleClick={handleDoubleClick}>{entryValue}</span>}
                         {editMode &&
                         <div>
-                            <input
+                            <TextField
                                 id="updatingValue"
                                 type={inputType}
-                                className={`yellow-input ${errors.updatingValue && touched.updatingValue && errors.updatingValue}`}
                                 name="updatingValue"
                                 value={values.updatingValue}
                                 autoFocus={true}
                                 onBlur={handleBlur}
                                 onChange={handleChange}/>
 
-                            <Popup trigger={<button type={'button'} className={'btn-small'}>Изменить</button>}
-                                   nested>
-                                {close => (
-                                    <div className={'blue darken-1'}>
-                                        <div className={'header white-text'}>Опасность!!!</div>
-                                        <div className={'modal-content white-text'}>
+                            <Button aria-describedby={id} variant={'contained'} onClick={handleClick}>
+                                Изменить
+                            </Button>
+
+                            <Popover
+                            id={id}
+                            open={open}
+                            anchorEl={anchorEl}
+                            onClose={handleClose}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}>
+                                    <Card>
+                                        <CardContent>
+                                        <Typography sx={{fontSize: 14}}>Опасность!!!</Typography>
+                                        <Typography>
                                             Вы уверены, что хотите изменить?
-                                        </div>
-                                        <button
-                                            type={'button'}
-                                            className={'teal lighten-1 btn-small'}
+                                        </Typography>
+                                        </CardContent>
+                                        <CardActions>
+                                        <Button
+                                            variant={'contained'}
                                             onClick={handleSubmit}
                                             disabled={isSubmitting}
                                         >
                                             Уверен
-                                        </button>
-                                        <button className={'btn-flat'} onClick={() => {
-                                            close()
-                                        }}>Отмена
-                                        </button>
-                                    </div>
-                                )}
-                            </Popup>
-                            <button onClick={deactivateEditMode} className={'btn-flat'}>Отмена</button>
+                                        </Button>
+                                        <Button variant={'outlined'} onClick={handleClose}>Отмена
+                                        </Button>
+                                        </CardActions>
+                                    </Card>
+                            </Popover>
+                            <Button variant={'outlined'} onClick={deactivateEditMode}>Отмена</Button>
                         </div>}
                     </Form>
                 )}
             </Formik>
-        </td>
+        </TableCell>
     )
 }

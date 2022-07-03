@@ -1,15 +1,22 @@
-import {useCallback, useEffect} from "react";
+import {useCallback, useState} from "react";
 import {Formik, Form} from "formik";
-import Popup from "reactjs-popup";
 import {useCreateEntry} from "../../../../hooks/createEntry.hook";
+import {Box, Button, Card, CardActions, CardContent, Container, Modal, TextField, Typography} from "@mui/material";
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 1,
+};
 
 export const FormatCreatingCard = ({fetchEntries}) => {
 
     const {createEntry} = useCreateEntry()
-
-    useEffect(() => {
-        window.M.updateTextFields()
-    }, [])
 
     const createHandler = useCallback(async (values) => {
         try {
@@ -23,123 +30,110 @@ export const FormatCreatingCard = ({fetchEntries}) => {
         }
     }, [])
 
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => {
+        setOpen(true);
+    };
+    const handleClose = () => {
+        setOpen(false);
+    };
+
 
     return (
-        <Popup trigger={<button className={'btn-small'}>Добавить</button>} modal nested>
-            {close => (
-                <Formik
-                    onSubmit={createHandler}
-                    initialValues={{
-                        formatName: '', height: '', width: ''
-                    }}
-                    validate={values => {
-                        const errors = {};
-                        if (!values.formatName) {
-                            errors.formatName = 'error'
-                        }
-                        if (!values.height) {
-                            errors.height = 'error'
-                        }
-                        if (!values.width) {
-                            errors.width = 'error'
-                        }
-                        return errors
-                    }}
-                >
-                    {({
-                          values,
-                          errors,
-                          touched,
-                          handleChange,
-                          handleBlur,
-                          isSubmitting
-                      }) => (
-                        <Form>
-                            <div>
-                                <div>
-                                    <div className="card blue darken-1">
-                                        <div className="row right-align">
-                                        </div>
-                                        <div className="card-content white-text">
-
-                                            <span className="card-title">Добавить формат</span>
-                                            <div>
-                                                <div className="input-field ">
-                                                    <input
-                                                        id="formatName"
-                                                        type="text"
-                                                        className={`yellow-input ${errors.formatName && touched.formatName && errors.formatName}`}
-                                                        name="formatName"
-                                                        value={values.formatName}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                    />
-
-                                                    <label
-                                                        htmlFor="formatName"
-                                                        className={`white-text active ${errors.formatName && touched.formatName && errors.formatName}`}>Название</label>
-                                                </div>
-                                                <div className="input-field ">
-                                                    <input
-                                                        id="height"
-                                                        type="number"
-                                                        className={`yellow-input ${errors.height && touched.height && errors.height}`}
-                                                        name="height"
-                                                        value={values.height}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                    />
-                                                    <label
-                                                        htmlFor="height"
-                                                        className={`white-text active ${errors.height && touched.height && errors.height}`}>Укажите
-                                                        высоту, мм</label>
-                                                </div>
-                                                <div className="input-field ">
-                                                    <input
-                                                        id="width"
-                                                        type="number"
-                                                        className={`yellow-input ${errors.width && touched.width && errors.width}`}
-                                                        name="width"
-                                                        value={values.width}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                    />
-                                                    <label
-                                                        htmlFor="width"
-                                                        className={`white-text active ${errors.width && touched.width && errors.width}`}>Укажите
-                                                        ширину, мм</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="card-action">
-                                            <button
-                                                className={'btn'}
-                                                type={'submit'}
-                                                style={{marginRight: 10}}
-                                                disabled={isSubmitting}
-                                            >
-                                                Создать
-                                            </button>
-                                            <button
-                                                className={'btn-flat'}
-                                                type={'button'}
-                                                disabled={isSubmitting}
-                                                onClick={() => {
-                                                    close()
-                                                }}
-                                            >
-                                                Закрыть
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </Form>
-                    )}
-                </Formik>
-            )}
-        </Popup>
-
+        <>
+            <Button variant={'contained'} onClick={handleOpen}>Добавить</Button>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <Formik
+                        onSubmit={createHandler}
+                        initialValues={{
+                            formatName: '', height: '', width: ''
+                        }}
+                        validate={values => {
+                            const errors = {};
+                            if (!values.formatName) {
+                                errors.formatName = 'error'
+                            }
+                            if (!values.height) {
+                                errors.height = 'error'
+                            }
+                            if (!values.width) {
+                                errors.width = 'error'
+                            }
+                            return errors
+                        }}
+                    >
+                        {({
+                              values,
+                              errors,
+                              touched,
+                              handleChange,
+                              handleBlur,
+                              isSubmitting
+                          }) => (
+                            <Form>
+                                <Card>
+                                    <CardContent>
+                                        <Typography variant={'h4'}>Добавить формат</Typography>
+                                        <Container>
+                                                <TextField
+                                                    label={'Название'}
+                                                    id="formatName"
+                                                    type="text"
+                                                    name="formatName"
+                                                    value={values.formatName}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                />
+                                                <TextField
+                                                    label={'Укажите высоту, мм'}
+                                                    id="height"
+                                                    type="number"
+                                                    name="height"
+                                                    value={values.height}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                />
+                                                <TextField
+                                                    label={'Укажите ширину, мм'}
+                                                    id="width"
+                                                    type="number"
+                                                    name="width"
+                                                    value={values.width}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                />
+                                        </Container>
+                                    </CardContent>
+                                    <CardActions>
+                                        <Button
+                                            variant={'contained'}
+                                            type={'submit'}
+                                            style={{marginRight: 10}}
+                                            disabled={isSubmitting}
+                                        >
+                                            Создать
+                                        </Button>
+                                        <Button
+                                            variant={'outlined'}
+                                            type={'button'}
+                                            disabled={isSubmitting}
+                                            onClick={handleClose}
+                                        >
+                                            Закрыть
+                                        </Button>
+                                    </CardActions>
+                                </Card>
+                            </Form>
+                        )}
+                    </Formik>
+                </Box>
+            </Modal>
+        </>
     )
 }

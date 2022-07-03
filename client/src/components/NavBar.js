@@ -15,11 +15,6 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 
-
-
-const setActive = ({isActive}) => isActive ? "blue darken-3" : ""
-
-
 export const Navbar = () => {
 
     let navigate = useNavigate()
@@ -30,10 +25,6 @@ export const Navbar = () => {
         auth.logout()
         navigate('/')
     }
-
-    // useEffect(() => {
-    //     M.AutoInit()
-    // }, [])
 
     //MUI
 
@@ -49,11 +40,9 @@ export const Navbar = () => {
 
 
     return (
-        <div>
-            <AppBar position="static">
-                <Container maxWidth="xl">
+            <AppBar position='static'>
                     <Toolbar disableGutters>
-                        <AdbIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>
+                        <AdbIcon sx={{display: {xs: 'none', md: 'flex'}, margin: 1}}/>
                         <Typography
                             variant="h6"
                             noWrap
@@ -102,13 +91,13 @@ export const Navbar = () => {
                                 }}
                             >
                                 <MenuItem onClick={handleCloseNavMenu}>
-                                    <Button component={NavLink} to={'/calcs'} textAlign="center">Калькуляторы</Button>
+                                    <Button component={NavLink} to={'/calcs'}>Калькуляторы</Button>
                                 </MenuItem>
                                 <MenuItem onClick={handleCloseNavMenu}>
-                                    <Button component={NavLink} to={'/catalogs'} textAlign="center">Справочники</Button>
+                                    <Button component={NavLink} to={'/catalogs'}>Справочники</Button>
                                 </MenuItem>
                                 <MenuItem onClick={handleCloseNavMenu}>
-                                    <Button component={NavLink} to={'/test'} textAlign="center">Тест</Button>
+                                    <Button component={NavLink} to={'/test'}>Тест</Button>
                                 </MenuItem>
                             </Menu>
 
@@ -168,8 +157,6 @@ export const Navbar = () => {
                             </Tooltip>
                         </Box>
                     </Toolbar>
-                </Container>
             </AppBar>
-        </div>
     )
 }

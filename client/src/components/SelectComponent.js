@@ -1,8 +1,7 @@
 import {useFetchEntries} from "../hooks/fetchEntries.hook";
 import {useCallback, useEffect, useState} from "react";
 import {createTheme, FormControl, InputLabel, MenuItem, Select} from "@mui/material";
-import {ThemeProvider} from "@emotion/react";
-import {mainColorsTheme} from "../muiThemes/muiThemes";
+
 
 export const SelectComponent = ({label, nameKey, endpoint}) => {
 
@@ -28,7 +27,6 @@ export const SelectComponent = ({label, nameKey, endpoint}) => {
     }, [fetchFormats])
 
     if (loading) return (
-        <ThemeProvider theme={mainColorsTheme}>
             <FormControl fullWidth>
                 <InputLabel id="selectInputLabel">{label}</InputLabel>
                 <Select
@@ -45,6 +43,5 @@ export const SelectComponent = ({label, nameKey, endpoint}) => {
                     })}
                 </Select>
             </FormControl>
-        </ThemeProvider>
     )
 }

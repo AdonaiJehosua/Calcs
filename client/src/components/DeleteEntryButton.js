@@ -1,6 +1,7 @@
 import Popup from "reactjs-popup";
-import {useCallback} from "react";
+import {useCallback, useState} from "react";
 import {useDeleteEntry} from "../hooks/deleteEntry.hook";
+import {Button, Card, CardActions, CardContent, Popover, Typography} from "@mui/material";
 
 //Кнопка для удаления записи из базы данных. Принимает функцию, которая будет подтягивать с сервера обновленные данные,
 // эндпоинт, на который идет запрос на удаление и обновление данных, id записи и имя записи из бызы
@@ -14,20 +15,46 @@ export const DeleteEntryButton = ({fetchEntries, endpoint, entryId, entryName}) 
         fetchEntries()
     })
 
+    const [anchorEl, setAnchorEl] = useState(null);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
+
     return (
-        <Popup trigger={<button className={'btn-small'}>Удалить</button>} nested>
-            {close => (
-                <div className={'blue darken-1'}>
-                    <div className={'header white-text'}>Опасность!!!</div>
-                    <div className={'modal-content white-text'}>
+        <>
+        <Button aria-describedby={id} variant={'contained'} onClick={handleClick}>
+            Удалить
+        </Button>
+
+            <Popover id={id}
+                     open={open}
+                     anchorEl={anchorEl}
+                     onClose={handleClose}
+                     anchorOrigin={{
+                         vertical: 'bottom',
+                         horizontal: 'left',
+                     }}>
+
+                <Card>
+                    <CardContent>
+                    <Typography sx={{fontSize: 14}}>Опасность!!!</Typography>
+                    <Typography>
                         Вы уверены, что хотите удалить {entryName}?
-                    </div>
-                    <button autoFocus={'true'} className={'btn-small'} onClick={() => {
+                    </Typography>
+                    </CardContent>
+                    <CardActions>
+                    <Button autoFocus={'true'} variant={'contained'} onClick={() => {
                         deleteFunction()
-                    }}>Да</button>
-                    <button className={'btn-small'} onClick={() => {close()}}>Отмена</button>
-                </div>
-            )}
-        </Popup>
+                    }}>Да</Button>
+                    <Button variant={'outlined'} onClick={handleClose}>Отмена</Button>
+                    </CardActions>
+                </Card>
+            </Popover>
+        </>
     )
 }

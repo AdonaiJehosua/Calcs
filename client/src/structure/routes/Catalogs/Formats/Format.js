@@ -5,6 +5,8 @@ import {useFetchEntries} from "../../../../hooks/fetchEntries.hook";
 import {useCallback, useEffect} from "react";
 import {CatalogsTableCol} from "../../../../components/CatalogsTableCol";
 import {Loader} from "../../../../components/Loader";
+import {Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
+import {TableBar} from "@mui/icons-material";
 
 
 export const Formats = () => {
@@ -30,25 +32,26 @@ export const Formats = () => {
     }
 
     return (
-        <div className={'container'}>
-            <div className={'container'}>
-                    <h3>Форматы</h3>
+        <Container>
+            <Container className={'container'}>
+                    <Typography variant={'h3'}>Форматы</Typography>
                     <FormatCreatingCard fetchEntries={fetchFormats}/>
-            </div>
-            <table className={'striped'}>
-                <thead>
-                <tr>
-                    <th className={'center-align'}>Название</th>
-                    <th className={'center-align'}>Высота</th>
-                    <th className={'center-align'}>Ширина</th>
-                    <th className={'center-align'}>Редактировать</th>
-                </tr>
-                </thead>
+            </Container>
+            <TableContainer className={'striped'}>
+                <Table>
+                <TableHead>
+                <TableRow>
+                    <TableCell align={'center'}>Название</TableCell>
+                    <TableCell align={'center'}>Высота</TableCell>
+                    <TableCell align={'center'}>Ширина</TableCell>
+                    <TableCell align={'center'}>Редактировать</TableCell>
+                </TableRow>
+                </TableHead>
 
-                <tbody>
+                <TableBody>
                 {entries.map((format) => {
                     return (
-                        <tr key={format._id}>
+                        <TableRow key={format._id}>
                             <CatalogsTableCol value={format.formatName}
                                               inputType={'text'}
                                               endpoint={'format'}
@@ -67,17 +70,18 @@ export const Formats = () => {
                                               entryId={format._id}
                                               entryKey={'width'}
                             />
-                            <td className={'center-align'}>
+                            <TableCell align={'center'}>
                                 <DeleteEntryButton fetchEntries={fetchFormats}
                                                    endpoint={'format'}
                                                    entryId={format._id}
                                                    entryName={format.formatName}/>
-                            </td>
-                        </tr>
+                            </TableCell>
+                        </TableRow>
                     )
                 })}
-                </tbody>
-            </table>
-        </div>
+                </TableBody>
+                </Table>
+            </TableContainer>
+        </Container>
     )
 }

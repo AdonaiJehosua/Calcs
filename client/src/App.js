@@ -6,6 +6,10 @@ import {Loader} from "./components/Loader";
 import {useRoutes} from "./structure/routes";
 import {useAuth} from "./hooks/auth.hook";
 import {AuthContext} from "./context/AuthContext"
+import {Container} from "@mui/material";
+import {ThemeProvider} from "@emotion/react";
+import {mainColorsTheme} from "./muiThemes/muiThemes";
+import Box from "@mui/material/Box";
 
 
 function App() {
@@ -21,10 +25,12 @@ function App() {
     return (
         <AuthContext.Provider value={{token, userId, logout, login, isAuthenticated}}>
             <Router>
-                {isAuthenticated && <Navbar/>}
-                <div>
-                    {routes}
-                </div>
+                <ThemeProvider theme={mainColorsTheme}>
+                        {isAuthenticated && <Navbar/>}
+                        <Box>
+                            {routes}
+                        </Box>
+                </ThemeProvider>
             </Router>
         </AuthContext.Provider>
     )

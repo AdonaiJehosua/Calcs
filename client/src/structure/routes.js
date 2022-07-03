@@ -8,14 +8,16 @@ import {Formats} from "./routes/Catalogs/Formats/Format";
 import {Units} from "./routes/Catalogs/Units/Units";
 import {AmountOfPaper} from "./routes/Calcs/AmountOfPapper/AmountOfPaper";
 import {Chromaticities} from "./routes/Catalogs/Chromaticities/Chromaticity";
+import Container from "@mui/material/Container";
+import {Grid} from "@mui/material";
 
 
 export const useRoutes = isAuthenticated => {
     if (isAuthenticated) {
         return (
-            <div className={'row'}>
+            <Grid container>
                 <SideBar/>
-                <div className={'container col s10'}>
+                <Grid item xs={9} sx={{justifyItems: 'center'}}>
                     <Routes>
                         <Route path={'/calcs'} element={<Calcs/>}>
                             <Route path={'amountofpapper'} element={<AmountOfPaper/>}/>
@@ -28,8 +30,8 @@ export const useRoutes = isAuthenticated => {
                         <Route path={'/test'} element={<Test/>}/>
                         {/*<Route path={'*'} element={<Navigate to={'/'}/>}/>*/}
                     </Routes>
-                </div>
-            </div>
+                </Grid>
+            </Grid>
         )
 
     }

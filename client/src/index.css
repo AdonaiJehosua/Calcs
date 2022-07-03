@@ -1,19 +1,4 @@
-/*@import "~materialize-css/dist/css/materialize.min.css";*/
 
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+body {
+    margin: 0;
 }
-label.error {
-    color: #ff0000!important;
-}
-
-input.yellow-input.error {
-    border-bottom: 1px solid #ff0000!important;
-    box-shadow: 0 1px 0 0 #ff0000!important;
-}
-
-input.yellow-input.error::placeholder {
-    color: #ff0000
-}
-
