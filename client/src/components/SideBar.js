@@ -1,4 +1,14 @@
 import {NavLink, useLocation} from "react-router-dom";
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
+import InboxIcon from '@mui/icons-material/Inbox';
+import DraftsIcon from '@mui/icons-material/Drafts';
+
 
 const sideBar = {
     catalogs: [
@@ -33,25 +43,33 @@ const sideBar = {
 }
 
 
-export const SideBar = ({hidden = true}) => {
+export const SideBar = () => {
 
-    const hiddens = hidden && 'hide-on-med-and-down'
     let location = useLocation()
     let menu = []
 
-    if (location.pathname.includes('/catalogs')) {menu = sideBar.catalogs}
-    if (location.pathname.includes('/calcs')) {menu = sideBar.calcs}
+    if (location.pathname.includes('/catalogs')) {
+        menu = sideBar.catalogs
+    }
+    if (location.pathname.includes('/calcs')) {
+        menu = sideBar.calcs
+    }
 
     return (
-        <div className={`blue darken-1 col s2 white-text center-align ${hiddens}`}>
-            <ul>
-                {menu.map((link) => {
-                    return (
-                        <li key={link.pathName}><NavLink className={'white-text'}
-                                                         to={`${link.rootName}/${link.pathName}`}>{link.visibleName}</NavLink></li>
-                    )
-                })}
-            </ul>
-        </div>
+        <Box sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper', display: {xs: 'none', md: 'flex'}}}>
+            <nav aria-label="main mailbox folders">
+                <List>
+                    {menu.map((link) => {
+                        return (
+                            <ListItem disablePadding>
+                                <ListItemButton component={NavLink} to={`${link.rootName}/${link.pathName}`}>
+                                    <ListItemText primary={link.visibleName}/>
+                                </ListItemButton>
+                            </ListItem>
+                        )
+                    })}
+                </List>
+            </nav>
+        </Box>
     )
 }

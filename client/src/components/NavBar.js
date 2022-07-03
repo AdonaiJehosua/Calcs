@@ -1,12 +1,24 @@
 import {NavLink, useNavigate} from "react-router-dom";
-import {useContext, useEffect} from "react";
+import {useContext, useState} from "react";
 import {AuthContext} from "../context/AuthContext";
-import M from "materialize-css";
 import {SideBar} from "./SideBar";
-import {Button, ButtonGroup} from "@mui/material";
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import Menu from '@mui/material/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
+import Container from '@mui/material/Container';
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
+import AdbIcon from '@mui/icons-material/Adb';
+
 
 
 const setActive = ({isActive}) => isActive ? "blue darken-3" : ""
+
 
 export const Navbar = () => {
 
@@ -19,53 +31,145 @@ export const Navbar = () => {
         navigate('/')
     }
 
-    useEffect(() => {
-        M.AutoInit()
-    }, [])
+    // useEffect(() => {
+    //     M.AutoInit()
+    // }, [])
+
+    //MUI
+
+    const [anchorElNav, setAnchorElNav] = useState(null);
+
+    const handleOpenNavMenu = (event) => {
+        setAnchorElNav(event.currentTarget);
+    };
+
+    const handleCloseNavMenu = () => {
+        setAnchorElNav(null);
+    };
 
 
     return (
         <div>
-            <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                <Button><NavLink className={setActive} to={'/calcs'}>Калькуляторы</NavLink></Button>
-                <Button><NavLink className={setActive} to={'/catalogs'}>Справочники</NavLink></Button>
-                <Button><NavLink className={setActive} to={'/test'}>Тест</NavLink></Button>
-            </ButtonGroup>
+            <AppBar position="static">
+                <Container maxWidth="xl">
+                    <Toolbar disableGutters>
+                        <AdbIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="a"
+                            href="/"
+                            sx={{
+                                mr: 2,
+                                display: {xs: 'none', md: 'flex'},
+                                fontFamily: 'monospace',
+                                fontWeight: 700,
+                                letterSpacing: '.3rem',
+                                color: 'inherit',
+                                textDecoration: 'none',
+                            }}
+                        >
+                            iCALC
+                        </Typography>
 
-            <nav>
-                <div className="nav-wrapper blue darken-1" style={{padding: '0 2rem'}}>
-                    <span className="brand-logo">Calc</span>
-                    <a href="#" data-target="mobile-demo1" className="sidenav-trigger"><i
-                        className="material-icons">menu</i></a>
-                    <ul className="right hide-on-med-and-down">
-                        <li><NavLink className={setActive} to={'/calcs'}>Калькуляторы</NavLink></li>
-                        <li><NavLink className={setActive} to={'/catalogs'}>Справочники</NavLink></li>
-                        <li><NavLink className={setActive} to={'/test'}>Тест</NavLink></li>
-                        <li><a href={'/'} onClick={logoutHandler}>Выйти</a></li>
-                    </ul>
-                </div>
-            </nav>
-            <ul className="sidenav collapsible" id="mobile-demo1">
-                <li>
-                    <div className={'row collapsible-header'}><NavLink className={`${setActive} col s6`} to={'/calcs'}>Калькуляторы
-                    </NavLink><button className={'btn-small blue darken-1 material-icons col s2'}>
-                        <i className="material-icons left">arrow_drop_down_circle</i></button>
-                    </div>
-                    <div className={'collapsible-body'}><div><SideBar hidden={false}/></div></div>
-                    <div className={'divider'}></div>
-                </li>
-                <li>
-                    <div className={'row collapsible-header'}><NavLink className={`${setActive} col s6`} to={'/catalogs'}>Справочники
-                    </NavLink><button className={'btn-small blue darken-1 material-icons col s2'}>
-                        <i className="material-icons left">arrow_drop_down_circle</i></button></div>
-                    <div className={'collapsible-body'}><div><SideBar hidden={false}/></div></div>
-                    <div className={'divider'}></div>
-                </li>
-                <li><NavLink className={setActive} to={'/test'}>Тест</NavLink></li>
-                <div className={'divider'}></div>
-                <li><a href={'/'} onClick={logoutHandler}>Выйти</a></li>
-                <div className={'divider'}></div>
-            </ul>
+                        <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
+                            <IconButton
+                                size="large"
+                                aria-label="account of current user"
+                                aria-controls="menu-appbar"
+                                aria-haspopup="true"
+                                onClick={handleOpenNavMenu}
+                                color="inherit"
+                            >
+                                <MenuIcon/>
+                            </IconButton>
+                            <Menu
+                                id="menu-appbar"
+                                anchorEl={anchorElNav}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'left',
+                                }}
+                                open={Boolean(anchorElNav)}
+                                onClose={handleCloseNavMenu}
+                                sx={{
+                                    display: {xs: 'block', md: 'none'},
+                                }}
+                            >
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Button component={NavLink} to={'/calcs'} textAlign="center">Калькуляторы</Button>
+                                </MenuItem>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Button component={NavLink} to={'/catalogs'} textAlign="center">Справочники</Button>
+                                </MenuItem>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Button component={NavLink} to={'/test'} textAlign="center">Тест</Button>
+                                </MenuItem>
+                            </Menu>
+
+                        </Box>
+                        <AdbIcon sx={{display: {xs: 'flex', md: 'none'}, mr: 1}}/>
+
+                        <Typography
+                            variant="h5"
+                            noWrap
+                            component="a"
+                            href=""
+                            sx={{
+                                mr: 2,
+                                display: {xs: 'flex', md: 'none'},
+                                flexGrow: 1,
+                                fontFamily: 'monospace',
+                                fontWeight: 700,
+                                letterSpacing: '.3rem',
+                                color: 'inherit',
+                                textDecoration: 'none',
+                            }}
+                        >
+                            iCALC
+                        </Typography>
+                        <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
+                            <Button
+                                component={NavLink}
+                                to={'/calcs'}
+                                onClick={handleCloseNavMenu}
+                                sx={{my: 2, color: 'white', display: 'block'}}
+                            >
+                                Калькуляторы
+                            </Button>
+                            <Button
+                                component={NavLink}
+                                to={'/catalogs'}
+                                onClick={handleCloseNavMenu}
+                                sx={{my: 2, color: 'white', display: 'block'}}
+                            >
+                                Справочники
+                            </Button>
+                            <Button
+                                component={NavLink}
+                                to={'/test'}
+                                onClick={handleCloseNavMenu}
+                                sx={{my: 2, color: 'white', display: 'block'}}
+                            >
+                                Тест
+                            </Button>
+                        </Box>
+                        <Box sx={{flexGrow: 0}}>
+                            <Tooltip title="Выйти">
+                                <Button onClick={logoutHandler} sx={{p: 0}}
+                                        sx={{my: 2, color: 'white', display: 'block'}}>
+                                    Выйти
+                                </Button>
+                            </Tooltip>
+                        </Box>
+                    </Toolbar>
+                </Container>
+            </AppBar>
         </div>
     )
 }
