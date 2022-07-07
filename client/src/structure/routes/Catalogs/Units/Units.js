@@ -4,6 +4,7 @@ import {DeleteEntryButton} from "../../../../components/DeleteEntryButton";
 import {useFetchEntries} from "../../../../hooks/fetchEntries.hook";
 import {useCallback, useEffect} from "react";
 import {CatalogsTableCol} from "../../../../components/CatalogsTableCol";
+import {Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
 
 
 export const Units = () => {
@@ -26,23 +27,25 @@ export const Units = () => {
     }
 
     return (
-        <div className={'container'}>
-            <div className={'container'}>
-                <h3>Единицы измерения</h3>
+        <Container>
+            <Container>
+                <Typography variant={'h3'}>Единицы измерения</Typography>
                 <UnitCreatingCard fetchEntries={fetchUnits}/>
-            </div>
-            <table className={'striped'}>
-                <thead>
-                <tr>
-                    <th className={'center-align'}>Полное название</th>
-                    <th className={'center-align'}>Сокращенное название</th>
-                </tr>
-                </thead>
+            </Container>
+            <TableContainer>
+                <Table>
+                    <TableHead>
+                <TableRow>
+                    <TableCell align={'center'}>Полное название</TableCell>
+                    <TableCell align={'center'}>Сокращенное название</TableCell>
+                    <TableCell align={'center'}>Редактировать</TableCell>
+                </TableRow>
+                    </TableHead>
 
-                <tbody>
+                <TableBody>
                 {entries.map((unit) => {
                     return (
-                        <tr key={unit._id}>
+                        <TableRow key={unit._id}>
                             <CatalogsTableCol value={unit.fullName}
                                               inputType={'text'}
                                               endpoint={'unit'}
@@ -55,17 +58,18 @@ export const Units = () => {
                                               entryId={unit._id}
                                               entryKey={'abbreviatedName'}
                             />
-                            <td>
+                            <TableCell align={'center'}>
                                 <DeleteEntryButton fetchEntries={fetchUnits}
                                                    endpoint={'unit'}
                                                    entryId={unit._id}
                                                    entryName={unit.fullName}/>
-                            </td>
-                        </tr>
+                            </TableCell>
+                        </TableRow>
                     )
                 })}
-                </tbody>
-            </table>
-        </div>
+                </TableBody>
+                </Table>
+            </TableContainer>
+        </Container>
     )
 }

@@ -31,13 +31,13 @@ export const SideBar = () => {
                   display: {
                       xs: 'none',
                       md: 'flex'},
-                  px: 1,
-                  justifyContent: 'center'
+
+                  justifyContent: 'left',
               }}
               position={'static'}>
             <nav aria-label="main mailbox folders">
                 <List
-                sx={{py: 0}}
+                sx={{py: 0, bgcolor: "#fdd835"}}
                 >
                     {menu.map((link) => {
                         return (

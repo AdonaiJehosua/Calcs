@@ -17,7 +17,7 @@ export const useRoutes = isAuthenticated => {
         return (
             <Grid container>
                 <SideBar/>
-                <Grid item xs={9} sx={{justifyItems: 'center'}}>
+                <Grid item xs={10} sx={{justifyContent: 'center'}}>
                     <Routes>
                         <Route path={'/calcs'} element={<Calcs/>}>
                             <Route path={'amountofpapper'} element={<AmountOfPaper/>}/>

@@ -12,7 +12,7 @@ export const DeleteEntryButton = ({fetchEntries, endpoint, entryId, entryName}) 
 
     const deleteFunction = useCallback(async () => {
         await deleteEntry(endpoint, entryId)
-        fetchEntries()
+        await fetchEntries()
     })
 
     const [anchorEl, setAnchorEl] = useState(null);

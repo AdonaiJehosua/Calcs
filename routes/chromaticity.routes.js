@@ -22,6 +22,7 @@ router.post(
                 })
             }
             const {front, back} = req.body
+            const name = `${front} + ${back}`
 
             const examinationChromaticity = await Chromaticity.findOne({front, back})
 
@@ -29,7 +30,7 @@ router.post(
                 return res.status(400).json({message: 'Такая цветность существует.'})
             }
 
-            const chromaticity = new Chromaticity({front, back})
+            const chromaticity = new Chromaticity({front, back, name})
 
             await chromaticity.save()
 

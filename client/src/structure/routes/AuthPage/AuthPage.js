@@ -2,8 +2,19 @@ import {useContext, useEffect} from "react";
 import {useHttp} from "../../../hooks/http.hook";
 import {useMessage} from "../../../hooks/message.hook";
 import {AuthContext} from "../../../context/AuthContext";
-import {Button, Card, CardActions, CardContent, TextField, Typography} from "@mui/material";
+import {Button, Card, CardActions, CardContent, Container, TextField, Typography} from "@mui/material";
 import {Formik, Form} from "formik";
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 1,
+};
 
 export const AuthPage = () => {
     const auth = useContext(AuthContext)
@@ -72,11 +83,13 @@ export const AuthPage = () => {
                   isSubmitting
               }) => (
                 <Form>
-                    <Card>
+                    <Card sx={style}>
                         <CardContent>
                             <Typography variant={'h3'}>iCALC</Typography>
                             <Typography variant={'h4'}>Авторизация</Typography>
                             <TextField
+                                error={touched.email && Boolean(errors.email)}
+                                helperText={touched.email && errors.email}
                                 label={'Логин'}
                                 id="email"
                                 type="text"
@@ -85,6 +98,8 @@ export const AuthPage = () => {
                                 onChange={handleChange}
                             />
                             <TextField
+                                error={touched.password && Boolean(errors.password)}
+                                helperText={touched.password && errors.password}
                                 label={'Пароль'}
                                 id="password"
                                 type="password"

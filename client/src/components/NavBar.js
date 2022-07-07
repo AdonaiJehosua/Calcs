@@ -40,9 +40,9 @@ export const Navbar = () => {
 
 
     return (
-            <AppBar position='static'>
+            <AppBar position='static' sx={{px: 2}}>
                     <Toolbar disableGutters>
-                        <AdbIcon sx={{display: {xs: 'none', md: 'flex'}, margin: 1}}/>
+                        <AdbIcon sx={{display: {xs: 'none', md: 'flex'}}}/>
                         <Typography
                             variant="h6"
                             noWrap

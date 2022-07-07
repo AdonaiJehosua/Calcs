@@ -22,13 +22,13 @@ export const FormatCreatingCard = ({fetchEntries}) => {
         try {
             const reqBody = {formatName: values.formatName, dimensions: {height: values.height, width: values.width}}
             await createEntry(reqBody, 'format', 'createformat')
-            fetchEntries()
+            await fetchEntries()
             values.formatName = ''
             values.height = ''
             values.width = ''
         } catch (e) {
         }
-    }, [])
+    }, [fetchEntries])
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => {
@@ -37,7 +37,6 @@ export const FormatCreatingCard = ({fetchEntries}) => {
     const handleClose = () => {
         setOpen(false);
     };
-
 
     return (
         <>
@@ -57,13 +56,13 @@ export const FormatCreatingCard = ({fetchEntries}) => {
                         validate={values => {
                             const errors = {};
                             if (!values.formatName) {
-                                errors.formatName = 'error'
+                                errors.formatName = 'Введите название'
                             }
                             if (!values.height) {
-                                errors.height = 'error'
+                                errors.height = 'Введите высоту'
                             }
                             if (!values.width) {
-                                errors.width = 'error'
+                                errors.width = 'Введите ширину'
                             }
                             return errors
                         }}
@@ -82,6 +81,8 @@ export const FormatCreatingCard = ({fetchEntries}) => {
                                         <Typography variant={'h4'}>Добавить формат</Typography>
                                         <Container>
                                                 <TextField
+                                                    error={touched.formatName && Boolean(errors.formatName)}
+                                                    helperText={touched.formatName && errors.formatName}
                                                     label={'Название'}
                                                     id="formatName"
                                                     type="text"
@@ -91,7 +92,9 @@ export const FormatCreatingCard = ({fetchEntries}) => {
                                                     onBlur={handleBlur}
                                                 />
                                                 <TextField
-                                                    label={'Укажите высоту, мм'}
+                                                    error={touched.height && Boolean(errors.height)}
+                                                    helperText={touched.height && errors.height}
+                                                    label={'Высота'}
                                                     id="height"
                                                     type="number"
                                                     name="height"
@@ -100,7 +103,9 @@ export const FormatCreatingCard = ({fetchEntries}) => {
                                                     onBlur={handleBlur}
                                                 />
                                                 <TextField
-                                                    label={'Укажите ширину, мм'}
+                                                    error={touched.width && Boolean(errors.width)}
+                                                    helperText={touched.width && errors.width}
+                                                    label={'Ширина'}
                                                     id="width"
                                                     type="number"
                                                     name="width"

@@ -10,7 +10,7 @@ export const mainColorsTheme = createTheme({
         },
         secondary: {
             light: '#ff7961',
-            main: '#f44336',
+            main: '#f44356',
             dark: '#ba000d',
             contrastText: '#000',
         },
