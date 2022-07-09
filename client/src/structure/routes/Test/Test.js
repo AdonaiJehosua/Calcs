@@ -1,12 +1,10 @@
-import {SelectComponent} from "../../../components/SelectComponent";
+import {SwitchComponent} from "../../../components/SwitchComponent";
 
 export const Test = () => {
 
     return (
         <>
-
-             <SelectComponent label={'Формат'} nameKey={'formatName'} endpoint={'format'}/>
-             <SelectComponent label={'Цветность'} nameKey={'front'} endpoint={'chromaticity'}/>
+<SwitchComponent/>
         </>
     )
 }
