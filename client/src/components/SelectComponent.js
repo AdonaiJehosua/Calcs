@@ -1,47 +1,38 @@
 import {useFetchEntries} from "../hooks/fetchEntries.hook";
 import {useCallback, useEffect, useState} from "react";
-import {createTheme, FormControl, InputLabel, MenuItem, Select} from "@mui/material";
+import {MenuItem, TextField} from "@mui/material";
 
 
-export const SelectComponent = ({label, nameKey, endpoint}) => {
-
-
-
+export const SelectComponent = ({addItem, label, nameKey, endpoint, initialKey, touched, values, errors, handleChange, handleBlur}) => {
 
     const {entries, fetchEntries} = useFetchEntries()
     const [loading, setLoading] = useState(false)
-    const [select, setSelect] = useState('')
 
-    const handleChange = (event) => {
-        setSelect(event.target.value);
-    };
-
-
-    const fetchFormats = useCallback(async () => {
+    const fetchValues = useCallback(async () => {
         await fetchEntries(endpoint)
         setLoading(true)
     }, [])
 
     useEffect(() => {
-        fetchFormats()
-    }, [fetchFormats])
+        fetchValues()
+    }, [fetchValues])
 
     if (loading) return (
-            <FormControl fullWidth>
-                <InputLabel id="selectInputLabel">{label}</InputLabel>
-                <Select
-                    labelId="selectInputLabel"
-                    id="demo-simple-select"
-                    value={select}
-                    label="selectInput"
-                    onChange={handleChange}
-                >
+            <TextField select fullWidth
+                       error={touched[initialKey] && Boolean(errors[initialKey])}
+                       helperText={touched[initialKey] && errors[initialKey]}
+                       id={initialKey}
+                       name={initialKey}
+                       value={values[initialKey]}
+                       label={label}
+                       onChange={handleChange}
+                       onBlur={handleBlur}>
+                {addItem && <MenuItem value={addItem}>{addItem}</MenuItem>}
                     {entries.map((el) => {
                         return (
                             <MenuItem key={el._id} value={el._id}>{el[nameKey]}</MenuItem>
                         )
                     })}
-                </Select>
-            </FormControl>
+            </TextField>
     )
 }
