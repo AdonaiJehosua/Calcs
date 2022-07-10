@@ -7,9 +7,10 @@ const app = express()
 app.use(express.json({extended: true}))
 
 app.use('/api/auth', require('./routes/auth.routes'))
-app.use('/api/format', require('./routes/format.routes'))
-app.use('/api/unit', require('./routes/unit.routes'))
-app.use('/api/chromaticity', require('./routes/chromaticity.routes'))
+app.use('/api/format', require('./routes/catalogs/format.routes'))
+app.use('/api/unit', require('./routes/catalogs/unit.routes'))
+app.use('/api/chromaticity', require('./routes/catalogs/chromaticity.routes'))
+app.use('/api/calcs', require('./routes/calcs/amountOfPaper.routes'))
 
 const PORT = config.get('port') || 5000
 
