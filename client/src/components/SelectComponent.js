@@ -3,7 +3,7 @@ import {useCallback, useEffect, useState} from "react";
 import {MenuItem, TextField} from "@mui/material";
 
 
-export const SelectComponent = ({addItem, label, nameKey, endpoint, initialKey, touched, values, errors, handleChange, handleBlur}) => {
+export const SelectComponent = ({addItemName, addItemValue, label, nameKey, endpoint, initialKey, touched, values, errors, handleChange, handleBlur}) => {
 
     const {entries, fetchEntries} = useFetchEntries()
     const [loading, setLoading] = useState(false)
@@ -27,7 +27,7 @@ export const SelectComponent = ({addItem, label, nameKey, endpoint, initialKey, 
                        label={label}
                        onChange={handleChange}
                        onBlur={handleBlur}>
-                {addItem && <MenuItem value={addItem}>{addItem}</MenuItem>}
+                {addItemName && <MenuItem value={addItemValue}>{addItemName}</MenuItem>}
                     {entries.map((el) => {
                         return (
                             <MenuItem key={el._id} value={el._id}>{el[nameKey]}</MenuItem>
