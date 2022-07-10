@@ -1,8 +1,8 @@
 const {Router} = require('express')
 const validator = require('validator')
-const Format = require('../models/Format')
+const Format = require('../../models/Format')
 const {check, validationResult} = require('express-validator')
-const auth = require('../middleware/auth.middleware')
+const auth = require('../../middleware/auth.middleware')
 const router = Router()
 
 router.post(

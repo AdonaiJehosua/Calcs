@@ -1,7 +1,7 @@
 const {Router} = require('express')
-const Chromaticity = require('../models/Chromaticity')
+const Chromaticity = require('../../models/Chromaticity')
 const {check, validationResult} = require('express-validator')
-const auth = require('../middleware/auth.middleware')
+const auth = require('../../middleware/auth.middleware')
 const validator = require("validator");
 const router = Router()
 
