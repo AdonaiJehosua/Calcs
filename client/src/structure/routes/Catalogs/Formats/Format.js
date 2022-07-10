@@ -6,8 +6,6 @@ import {useCallback, useEffect} from "react";
 import {CatalogsTableCol} from "../../../../components/CatalogsTableCol";
 import {Loader} from "../../../../components/Loader";
 import {Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
-import {TableBar} from "@mui/icons-material";
-import {СhromaticityCreatingCard} from "../Chromaticities/ChromaticityCreatingCard";
 
 
 export const Formats = () => {
@@ -30,7 +28,7 @@ export const Formats = () => {
         return (
             <>
                 <Typography variant={'h4'}>Форматов пока нет</Typography>
-                <СhromaticityCreatingCard fetchEntries={fetchFormats}/>
+                <FormatCreatingCard fetchEntries={fetchFormats}/>
             </>)
     }
 
