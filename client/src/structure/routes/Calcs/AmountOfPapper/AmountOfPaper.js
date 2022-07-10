@@ -4,22 +4,25 @@ import {Button, Card, CardActions, CardContent, Container, TextField, Typography
 import {SelectComponent} from "../../../../components/SelectComponent";
 import {SwitchComponent} from "../../../../components/SwitchComponent";
 import Box from "@mui/material/Box";
+import {useHttp} from "../../../../hooks/http.hook";
 
 
 export const AmountOfPaper = () => {
+
+    const {request} = useHttp()
 
     const initialValues = {
         numberOfPages: '',
         numberOfCopies: '',
         grainDirection: false,
         pageFormat: '',
-        portraitPageFormat: false,
+        isPortraitPageFormat: false,
         newPageFormatHeight: '',
         newPageFormatWidth: '',
         paperFormat: '',
         newPaperFormatHeight: '',
         newPaperFormatWidth: '',
-        portraitPaperFormat: false,
+        isPortraitPaperFormat: false,
         chromaticity: '',
     }
 
@@ -35,14 +38,14 @@ export const AmountOfPaper = () => {
         newPageFormatHeight: Yup.number()
             .when('pageFormat',
                 {
-                    is: 'Ввести вручную', then: Yup.number()
+                    is: 'manually', then: Yup.number()
                         .moreThan(0, 'Не может быть меньше ноля')
                         .required('Введите высоту страницы')
                 }),
         newPageFormatWidth: Yup.number()
             .when('pageFormat',
                 {
-                    is: 'Ввести вручную', then: Yup.number()
+                    is: 'manually', then: Yup.number()
                         .moreThan(0, 'Не может быть меньше ноля')
                         .required('Введите ширину страницы')
                 }),
@@ -51,14 +54,14 @@ export const AmountOfPaper = () => {
         newPaperFormatHeight: Yup.number()
             .when('paperFormat',
                 {
-                    is: 'Ввести вручную', then: Yup.number()
+                    is: 'manually', then: Yup.number()
                         .moreThan(0, 'Не может быть меньше ноля')
                         .required('Введите высоту бумаги')
                 }),
         newPaperFormatWidth: Yup.number()
             .when('paperFormat',
                 {
-                    is: 'Ввести вручную', then: Yup.number()
+                    is: 'manually', then: Yup.number()
                         .moreThan(0, 'Не может быть меньше ноля')
                         .required('Введите ширину бумаги')
                 }),
@@ -67,11 +70,18 @@ export const AmountOfPaper = () => {
     })
 
 
-    const calcHandler = (values, actions) => {
-        setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
-            actions.setSubmitting(false);
-        }, 1000);
+    const calcHandler = async (values) => {
+        const isPageFormatManually = Boolean(values.pageFormat === 'manually')
+        const isPaperFormatManually = Boolean(values.paperFormat === 'manually')
+
+        try {
+            const data = await request(
+                '/api/calcs/amountofpaper',
+                'PUT',
+                {...values, isPageFormatManually, isPaperFormatManually}
+            )
+        } catch (e) {
+        }
     }
 
 
@@ -117,16 +127,17 @@ export const AmountOfPaper = () => {
                                         onBlur={handleBlur}
                                     />
                                     <SwitchComponent values={values}
-                                                  label={'Долевая важна'}
-                                                  handleChange={handleChange}
-                                                  errors={errors}
-                                                  name={'grainDirection'}
-                                                  handleBlur={handleBlur}
-                                                  touched={touched}
-                                                  checked={values.grainDirection}/>
+                                                     label={'Долевая важна'}
+                                                     handleChange={handleChange}
+                                                     errors={errors}
+                                                     name={'grainDirection'}
+                                                     handleBlur={handleBlur}
+                                                     touched={touched}
+                                                     checked={values.grainDirection}/>
 
                                     <SelectComponent
-                                        addItem={'Ввести вручную'}
+                                        addItemName={'Ввести вручную'}
+                                        addItemValue={'manually'}
                                         values={values}
                                         label={'Формат страниц'}
                                         handleChange={handleChange}
@@ -137,7 +148,7 @@ export const AmountOfPaper = () => {
                                         touched={touched}
                                         endpoint={'format'}/>
 
-                                    {(values.pageFormat === 'Ввести вручную') && (
+                                    {(values.pageFormat === 'manually') && (
                                         <Box>
                                             <TextField
                                                 error={touched.newPageFormatHeight && Boolean(errors.newPageFormatHeight)}
@@ -163,16 +174,17 @@ export const AmountOfPaper = () => {
                                     }
 
                                     {values.grainDirection && <SwitchComponent label={'Ориентация издания'}
-                                                                            handleChange={handleChange}
-                                                                            errors={errors}
-                                                                            name={'portraitPageFormat'}
-                                                                            handleBlur={handleBlur}
-                                                                            touched={touched}
-                                                                            checked={values.portraitPageFormat}/>
+                                                                               handleChange={handleChange}
+                                                                               errors={errors}
+                                                                               name={'portraitPageFormat'}
+                                                                               handleBlur={handleBlur}
+                                                                               touched={touched}
+                                                                               checked={values.isPortraitPageFormat}/>
                                     }
 
                                     <SelectComponent values={values}
-                                                     addItem={'Ввести вручную'}
+                                                     addItemName={'Ввести вручную'}
+                                                     addItemValue={'manually'}
                                                      label={'Формат бумаги'}
                                                      handleChange={handleChange}
                                                      errors={errors}
@@ -181,7 +193,7 @@ export const AmountOfPaper = () => {
                                                      nameKey={'formatName'}
                                                      touched={touched}
                                                      endpoint={'format'}/>
-                                    {(values.paperFormat === 'Ввести вручную') && (
+                                    {(values.paperFormat === 'manually') && (
                                         <Box>
                                             <TextField
                                                 error={touched.newPaperFormatHeight && Boolean(errors.newPaperFormatHeight)}
@@ -206,12 +218,12 @@ export const AmountOfPaper = () => {
                                         </Box>)
                                     }
                                     {values.grainDirection && <SwitchComponent label={'Ориентация бумаги'}
-                                                                            handleChange={handleChange}
-                                                                            errors={errors}
-                                                                            name={'portraitPaperFormat'}
-                                                                            handleBlur={handleBlur}
-                                                                            touched={touched}
-                                                                            checked={values.portraitPaperFormat}/>
+                                                                               handleChange={handleChange}
+                                                                               errors={errors}
+                                                                               name={'portraitPaperFormat'}
+                                                                               handleBlur={handleBlur}
+                                                                               touched={touched}
+                                                                               checked={values.isPortraitPaperFormat}/>
                                     }
                                     <SelectComponent values={values}
                                                      label={'Цветность'}
@@ -228,7 +240,8 @@ export const AmountOfPaper = () => {
                             </CardContent>
                             <CardActions>
                                 <Button variant={'contained'} type={'submit'} disabled={isSubmitting}>Посчитать</Button>
-                                <Button variant={'outlined'} type={'button'} onClick={handleReset} disabled={isSubmitting}>Очистить</Button>
+                                <Button variant={'outlined'} type={'button'} onClick={handleReset}
+                                        disabled={isSubmitting}>Очистить</Button>
                             </CardActions>
                         </Card>
                     </Form>
