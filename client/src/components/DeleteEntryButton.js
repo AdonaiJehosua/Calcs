@@ -48,7 +48,7 @@ export const DeleteEntryButton = ({fetchEntries, endpoint, entryId, entryName}) 
                     </Typography>
                     </CardContent>
                     <CardActions>
-                    <Button autoFocus={'true'} variant={'contained'} onClick={() => {
+                    <Button autoFocus={true} variant={'contained'} onClick={() => {
                         deleteFunction()
                     }}>Да</Button>
                     <Button variant={'outlined'} onClick={handleClose}>Отмена</Button>
