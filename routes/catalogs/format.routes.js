@@ -34,7 +34,9 @@ router.post(
                 return res.status(400).json({message: `Формат с такими значениями существует - "${examinationDim.formatName}"`})
             }
 
-            const format = new Format({formatName, dimensions})
+            const area = dimensions.height * dimensions.width
+
+            const format = new Format({formatName, dimensions, area})
 
             await format.save()
 
@@ -93,7 +95,10 @@ router.put('/:id/changeentryvalue', auth,
                 if (examinationNewHeightDim) {
                     return res.status(400).json({message: `Формат с такими значениями существует`})
                 }
-                await Format.updateOne({_id: req.params.id}, {$set: {dimensions : newValues}})
+
+                const newArea = newValues.height * newValues.width
+
+                await Format.updateOne({_id: req.params.id}, {$set: {dimensions : newValues, area: newArea}})
                 res.status(201).json({message: 'Высота изменена.', updatedValue: updatingValue})
 
                 break
@@ -113,7 +118,10 @@ router.put('/:id/changeentryvalue', auth,
                 if (examinationNewWidthDim) {
                     return res.status(400).json({message: `Формат с такими значениями существует`})
                 }
-                await Format.updateOne({_id: req.params.id}, {$set: {dimensions : newWidthDimensions}})
+
+                const newWidthArea = newWidthDimensions.height * newWidthDimensions.width
+
+                await Format.updateOne({_id: req.params.id}, {$set: {dimensions : newWidthDimensions, area : newWidthArea}})
                 res.status(201).json({message: 'Ширина изменена.', updatedValue: updatingValue})
 
                 break
