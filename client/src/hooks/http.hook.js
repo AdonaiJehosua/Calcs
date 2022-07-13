@@ -1,4 +1,5 @@
 import {useCallback, useState} from "react";
+import {toast} from "react-toastify";
 
 
 export const useHttp = () => {
@@ -15,12 +16,14 @@ export const useHttp = () => {
             }
             const response = await fetch(url, {method, body, headers})
             const data = await response.json()
+            if (response.ok) {toast(data.message)}
             if (!response.ok) {throw new Error(data.message || 'Что-то не так')}
             setLoading(false)
             return data
         } catch (e) {
             setLoading(false)
             setError(e.message)
+            await toast.error(e.message)
             throw e
         }
 
