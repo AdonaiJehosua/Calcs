@@ -1,5 +1,4 @@
 import {NavLink, useLocation} from "react-router-dom";
-import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -28,14 +27,15 @@ export const SideBar = () => {
               sx={{
                   width: '100%',
                   maxWidth: 360,
+                  bgcolor: "#fdd835",
                   display: {
                       xs: 'none',
                       md: 'flex'},
 
                   justifyContent: 'left',
               }}
+              fullHeight
               position={'static'}>
-            <nav aria-label="main mailbox folders">
                 <List
                 sx={{py: 0, bgcolor: "#fdd835"}}
                 >
@@ -49,7 +49,6 @@ export const SideBar = () => {
                         )
                     })}
                 </List>
-            </nav>
         </Grid>
     )
 }
