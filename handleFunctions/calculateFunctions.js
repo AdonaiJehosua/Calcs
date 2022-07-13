@@ -9,6 +9,7 @@ module.exports.actualSize = async function (format, manually, newFormatHeight, n
     return {height: Number(actualFormat.dimensions.height), width: Number(actualFormat.dimensions.width)}               /*  то этот формат будет найден по id, и функция вернет значения его размеров.                                   */
 }                                                                                                                       /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-module.exports.examFormatsAreas = function (lesserFormat, largerFormat) {
-    return Boolean((lesserFormat.height * lesserFormat.width) < (largerFormat.height * largerFormat.width))
-}
+module.exports.examFormatsAreas = function (lesserFormat, largerFormat) {                                               /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    return Boolean((lesserFormat.height * lesserFormat.width) < (largerFormat.height * largerFormat.width))       /*   Функция возвращает true, если формат, который должен быть меньше, действительно меньше формата, который должен быть больше.   */
+}                                                                                                                       /*   lesserFormat - формат, который должен быть меньше. largerFormat - формат, который должен быть больше.                         */
+                                                                                                                        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
