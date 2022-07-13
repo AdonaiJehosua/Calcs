@@ -8,14 +8,13 @@ import {Formats} from "./routes/Catalogs/Formats/Format";
 import {Units} from "./routes/Catalogs/Units/Units";
 import {AmountOfPaper} from "./routes/Calcs/AmountOfPapper/AmountOfPaper";
 import {Chromaticities} from "./routes/Catalogs/Chromaticities/Chromaticity";
-import Container from "@mui/material/Container";
 import {Grid} from "@mui/material";
 
 
 export const useRoutes = isAuthenticated => {
     if (isAuthenticated) {
         return (
-            <Grid container>
+            <Grid container sx={{height: '100%'}}>
                 <SideBar/>
                 <Grid item xs={10} sx={{justifyContent: 'center'}}>
                     <Routes>
