@@ -29,7 +29,12 @@ router.put('/amountofpaper', async (req, res) => {
         const paperSize = await actualSize(paperFormat, isPaperFormatManually, newPaperFormatHeight, newPaperFormatWidth)
         const examSizes = examFormatsAreas(pageSize, paperSize)
 
-        res.status(201).json({message: 'вот так вот', pageSize, paperSize, examSizes})
+        if (!examSizes) {
+            return res.status(400).json({message: 'Формат страницы должен быть меньше формата бумаги.', pageSize, paperSize, examSizes})
+        }
+        return res.status(200).json({message: 'Fine', pageSize, paperSize, examSizes})
+
+
 
 
 
