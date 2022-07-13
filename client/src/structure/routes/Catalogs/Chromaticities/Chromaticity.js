@@ -18,7 +18,6 @@ export const Chromaticities = () => {
         fetchUnits()
     }, [fetchUnits])
 
-
     if (!entries.length) {
         return (
             <>
@@ -41,7 +40,6 @@ export const Chromaticities = () => {
                             <TableCell align={'center'}>Редактировать</TableCell>
                         </TableRow>
                     </TableHead>
-
                     <TableBody>
                         {entries.map((chromaticity) => {
                             return (

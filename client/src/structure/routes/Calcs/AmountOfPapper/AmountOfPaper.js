@@ -5,15 +5,12 @@ import {SelectComponent} from "../../../../components/SelectComponent";
 import {SwitchComponent} from "../../../../components/SwitchComponent";
 import Box from "@mui/material/Box";
 import {useHttp} from "../../../../hooks/http.hook";
-import {toast} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import {useEffect} from "react";
-
 
 
 export const AmountOfPaper = () => {
 
-    const {request, error, clearError} = useHttp()
+    const {request} = useHttp()
 
     const initialValues = {
         numberOfPages: '',
@@ -72,10 +69,6 @@ export const AmountOfPaper = () => {
         chromaticity: Yup.string()
             .required('Выберите цветность'),
     })
-    useEffect(() => {
-        toast.error(error)
-        clearError()
-    }, [error, toast, clearError])
 
 
     const calcHandler = async (values) => {
@@ -83,16 +76,14 @@ export const AmountOfPaper = () => {
         const isPaperFormatManually = Boolean(values.paperFormat === 'manually')
 
         try {
-            const data = await request(
+            await request(
                 '/api/calcs/amountofpaper',
                 'PUT',
                 {...values, isPageFormatManually, isPaperFormatManually}
             )
-            await toast(data.message)
         } catch (e) {
         }
     }
-
 
     return (
         <>
@@ -143,7 +134,6 @@ export const AmountOfPaper = () => {
                                                      handleBlur={handleBlur}
                                                      touched={touched}
                                                      checked={values.grainDirection}/>
-
                                     <SelectComponent
                                         addItemName={'Ввести вручную'}
                                         addItemValue={'manually'}
@@ -156,7 +146,6 @@ export const AmountOfPaper = () => {
                                         nameKey={'formatName'}
                                         touched={touched}
                                         endpoint={'format'}/>
-
                                     {(values.pageFormat === 'manually') && (
                                         <Box>
                                             <TextField
@@ -181,7 +170,6 @@ export const AmountOfPaper = () => {
                                             />
                                         </Box>)
                                     }
-
                                     {values.grainDirection && <SwitchComponent label={'Ориентация издания'}
                                                                                handleChange={handleChange}
                                                                                errors={errors}
@@ -190,7 +178,6 @@ export const AmountOfPaper = () => {
                                                                                touched={touched}
                                                                                checked={values.isPortraitPageFormat}/>
                                     }
-
                                     <SelectComponent values={values}
                                                      addItemName={'Ввести вручную'}
                                                      addItemValue={'manually'}
@@ -243,8 +230,6 @@ export const AmountOfPaper = () => {
                                                      nameKey={'name'}
                                                      touched={touched}
                                                      endpoint={'chromaticity'}/>
-
-
                                 </Container>
                             </CardContent>
                             <CardActions>

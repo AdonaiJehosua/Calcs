@@ -1,8 +1,7 @@
-import {useContext, useEffect} from "react";
+import {useContext} from "react";
 import {useHttp} from "../../../hooks/http.hook";
-import {useMessage} from "../../../hooks/message.hook";
 import {AuthContext} from "../../../context/AuthContext";
-import {Button, Card, CardActions, CardContent, Container, TextField, Typography} from "@mui/material";
+import {Button, Card, CardActions, CardContent, TextField, Typography} from "@mui/material";
 import {Formik, Form} from "formik";
 
 const style = {
@@ -18,23 +17,15 @@ const style = {
 
 export const AuthPage = () => {
     const auth = useContext(AuthContext)
-    const message = useMessage()
-    const {loading, request, error, clearError} = useHttp()
-
-    useEffect(() => {
-        message(error)
-        clearError()
-    }, [error, message, clearError])
+    const {loading, request} = useHttp()
 
     let submitAction = undefined
-
 
     const registerHandler = async (values) => {
         try {
             const body = {email: values.email, password: values.password}
-            const data = await request('/api/auth/register', 'POST',
+            await request('/api/auth/register', 'POST',
                 body)
-            message(data.message)
         } catch (e) {
         }
     }
@@ -78,9 +69,7 @@ export const AuthPage = () => {
                   errors,
                   touched,
                   handleSubmit,
-                  handleChange,
-                  handleBlur,
-                  isSubmitting
+                  handleChange
               }) => (
                 <Form>
                     <Card sx={style}>
@@ -138,7 +127,5 @@ export const AuthPage = () => {
                 </Form>
             )}
         </Formik>
-
-
     )
 }

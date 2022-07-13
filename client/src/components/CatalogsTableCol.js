@@ -1,15 +1,10 @@
 import {useCallback, useState} from "react";
 import {useUpdateEntry} from "../hooks/updateEntry.hook";
 import {Formik, Form} from "formik";
-import Popup from "reactjs-popup";
-import {useMessage} from "../hooks/message.hook";
 import validator from "validator";
-import {Button, Card, CardActions, CardContent, Popover, TableCell, TextField} from "@mui/material";
-import Typography from "@mui/material/Typography";
+import {Button, Card, CardActions, CardContent, Popover, TableCell, TextField, Typography} from "@mui/material";
 
 export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}) => {
-
-    const message = useMessage()
 
     const [editMode, setEditMode] = useState(false)
     const activateEditMode = () => {
@@ -45,7 +40,6 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
         }
     }, [])
 
-
     return (
         <TableCell align={'center'}>
             <Formik
@@ -56,18 +50,17 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
                 validate={values => {
                     const errors = {};
                     if (validator.isEmpty(String(values.updatingValue))) {
-                        errors.updatingValue = 'error'
-                        message('Введите данные')
+                        errors.updatingValue = 'Введите данные'
                     }
                     return errors
                 }}
             >
                 {({
                       values,
-                      errors,
-                      touched,
                       handleChange,
                       handleBlur,
+                      errors,
+                      touched,
                       isSubmitting,
                       handleSubmit
                   }) => (
@@ -76,6 +69,8 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
                         {editMode &&
                         <div>
                             <TextField
+                                error={touched.updatingValue && Boolean(errors.updatingValue)}
+                                helperText={touched.updatingValue && errors.updatingValue}
                                 id="updatingValue"
                                 type={inputType}
                                 name="updatingValue"
@@ -89,22 +84,22 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
                             </Button>
 
                             <Popover
-                            id={id}
-                            open={open}
-                            anchorEl={anchorEl}
-                            onClose={handleClose}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}>
-                                    <Card>
-                                        <CardContent>
+                                id={id}
+                                open={open}
+                                anchorEl={anchorEl}
+                                onClose={handleClose}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}>
+                                <Card>
+                                    <CardContent>
                                         <Typography sx={{fontSize: 14}}>Опасность!!!</Typography>
                                         <Typography>
                                             Вы уверены, что хотите изменить?
                                         </Typography>
-                                        </CardContent>
-                                        <CardActions>
+                                    </CardContent>
+                                    <CardActions>
                                         <Button
                                             variant={'contained'}
                                             onClick={handleSubmit}
@@ -114,8 +109,8 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
                                         </Button>
                                         <Button variant={'outlined'} onClick={handleClose}>Отмена
                                         </Button>
-                                        </CardActions>
-                                    </Card>
+                                    </CardActions>
+                                </Card>
                             </Popover>
                             <Button variant={'outlined'} onClick={deactivateEditMode}>Отмена</Button>
                         </div>}

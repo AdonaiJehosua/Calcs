@@ -6,7 +6,6 @@ import {useCallback, useEffect} from "react";
 import {CatalogsTableCol} from "../../../../components/CatalogsTableCol";
 import {Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
 
-
 export const Units = () => {
 
     const {entries, fetchEntries} = useFetchEntries()
@@ -18,7 +17,6 @@ export const Units = () => {
     useEffect(() => {
         fetchUnits()
     }, [fetchUnits])
-
 
     if (!entries.length) {
         return <p className={'center'}>Единиц измерения пока нет

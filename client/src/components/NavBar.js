@@ -1,19 +1,9 @@
 import {NavLink, useNavigate} from "react-router-dom";
 import {useContext, useState} from "react";
 import {AuthContext} from "../context/AuthContext";
-import {SideBar} from "./SideBar";
 import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import {Box, Toolbar, IconButton, Typography, Menu, Button, Tooltip, MenuItem} from '@mui/material';
+import {MenuIcon, AdbIcon} from '@mui/icons-material';
 
 export const Navbar = () => {
 
@@ -26,8 +16,6 @@ export const Navbar = () => {
         navigate('/')
     }
 
-    //MUI
-
     const [anchorElNav, setAnchorElNav] = useState(null);
 
     const handleOpenNavMenu = (event) => {
@@ -37,7 +25,6 @@ export const Navbar = () => {
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
     };
-
 
     return (
             <AppBar position='static' sx={{px: 2}}>
@@ -150,8 +137,8 @@ export const Navbar = () => {
                         </Box>
                         <Box sx={{flexGrow: 0}}>
                             <Tooltip title="Выйти">
-                                <Button onClick={logoutHandler} sx={{p: 0}}
-                                        sx={{my: 2, color: 'white', display: 'block'}}>
+                                <Button onClick={logoutHandler}
+                                        sx={{p: 0, my: 2, color: 'white', display: 'block'}}>
                                     Выйти
                                 </Button>
                             </Tooltip>

@@ -1,4 +1,3 @@
-import Popup from "reactjs-popup";
 import {useCallback, useState} from "react";
 import {useDeleteEntry} from "../hooks/deleteEntry.hook";
 import {Button, Card, CardActions, CardContent, Popover, Typography} from "@mui/material";
@@ -39,7 +38,6 @@ export const DeleteEntryButton = ({fetchEntries, endpoint, entryId, entryName}) 
                          vertical: 'bottom',
                          horizontal: 'left',
                      }}>
-
                 <Card>
                     <CardContent>
                     <Typography sx={{fontSize: 14}}>Опасность!!!</Typography>
