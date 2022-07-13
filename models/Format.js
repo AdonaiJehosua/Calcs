@@ -5,7 +5,9 @@ const schema = new Schema( {
     dimensions: {
         height: {type: Number, required: true},
         width: {type: Number, required: true}
-    }
+    },
+    area: {type: Number, required: true},
+
 })
 
 module.exports = model('Format', schema)
