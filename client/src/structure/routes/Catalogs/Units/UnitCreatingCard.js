@@ -1,6 +1,5 @@
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useState} from "react";
 import {Formik, Form} from "formik";
-import Popup from "reactjs-popup";
 import {useCreateEntry} from "../../../../hooks/createEntry.hook";
 import {Button, Card, CardActions, CardContent, Container, Modal, TextField} from "@mui/material";
 import Typography from "@mui/material/Typography";
@@ -20,10 +19,6 @@ const style = {
 export const UnitCreatingCard = ({fetchEntries}) => {
 
     const {createEntry} = useCreateEntry()
-
-    useEffect(() => {
-        window.M.updateTextFields()
-    }, [])
 
     const createHandler = useCallback(async (values) => {
         try {
