@@ -28,7 +28,7 @@ export const FormatCreatingCard = ({fetchEntries}) => {
             values.width = ''
         } catch (e) {
         }
-    }, [fetchEntries])
+    }, [])
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => {
