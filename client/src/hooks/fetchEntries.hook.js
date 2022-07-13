@@ -5,7 +5,7 @@ import {AuthContext} from "../context/AuthContext";
 
 export const useFetchEntries = () => {
     const [entries, setEntries] = useState([])
-    const {request, loading} = useHttp()
+    const {request} = useHttp()
     const {token} = useContext(AuthContext)
 
     const fetchEntries = useCallback(async (endpoint) => {
@@ -18,11 +18,12 @@ export const useFetchEntries = () => {
             )
             setEntries(fetched)
             return fetched
-        } catch (e) {}
+        } catch (e) {
+        }
     }, [token, request])
 
 
-    return {entries, fetchEntries, loading}
+    return {entries, fetchEntries}
 
 
 }
