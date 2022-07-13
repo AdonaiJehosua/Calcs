@@ -1,16 +1,14 @@
 import 'reactjs-popup/dist/index.css';
 import {FormatCreatingCard} from "./FormatCreatingCard";
 import {DeleteEntryButton} from "../../../../components/DeleteEntryButton";
-import {useFetchEntries} from "../../../../hooks/fetchEntries.hook";
 import {useCallback, useEffect} from "react";
 import {CatalogsTableCol} from "../../../../components/CatalogsTableCol";
-import {Loader} from "../../../../components/Loader";
 import {Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
 
 
 export const Formats = () => {
 
-    const {entries, fetchEntries, loading} = useFetchEntries()
+    const {entries, fetchEntries} = useFetchEntries()
 
 
     const fetchFormats = useCallback(async () => {
@@ -21,9 +19,6 @@ export const Formats = () => {
         fetchFormats()
     }, [fetchFormats])
 
-    if (loading) {
-        return <Loader/>
-    }
     if (!entries.length) {
         return (
             <>
@@ -45,6 +40,7 @@ export const Formats = () => {
                             <TableCell align={'center'}>Название</TableCell>
                             <TableCell align={'center'}>Высота</TableCell>
                             <TableCell align={'center'}>Ширина</TableCell>
+                            <TableCell align={'center'}>Площадь</TableCell>
                             <TableCell align={'center'}>Редактировать</TableCell>
                         </TableRow>
                     </TableHead>
@@ -70,6 +66,12 @@ export const Formats = () => {
                                                       endpoint={'format'}
                                                       entryId={format._id}
                                                       entryKey={'width'}
+                                    />
+                                    <CatalogsTableCol value={format.area}
+                                                      inputType={'number'}
+                                                      endpoint={'format'}
+                                                      entryId={format._id}
+                                                      entryKey={'area'}
                                     />
                                     <TableCell align={'center'}>
                                         <DeleteEntryButton fetchEntries={fetchFormats}
