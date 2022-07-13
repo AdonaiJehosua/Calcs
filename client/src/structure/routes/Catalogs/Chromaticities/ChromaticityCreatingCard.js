@@ -1,9 +1,7 @@
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useState} from "react";
 import {Formik, Form} from "formik";
-import Popup from "reactjs-popup";
 import {useCreateEntry} from "../../../../hooks/createEntry.hook";
 import validator from "validator";
-import {useMessage} from "../../../../hooks/message.hook";
 import {Button, Card, CardActions, CardContent, Container, Modal, TextField, Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 
@@ -21,10 +19,6 @@ const style = {
 export const СhromaticityCreatingCard = ({fetchEntries}) => {
 
     const {createEntry} = useCreateEntry()
-
-    useEffect(() => {
-        window.M.updateTextFields()
-    }, [])
 
     const createHandler = useCallback(async (values) => {
         try {
@@ -118,8 +112,7 @@ export const СhromaticityCreatingCard = ({fetchEntries}) => {
                                                     Создать
                                                 </Button>
                                                 <Button
-                                                    variant={'contained'}
-                                                    className={'btn-flat'}
+                                                    variant={'outlined'}
                                                     type={'button'}
                                                     disabled={isSubmitting}
                                                     onClick={handleClose}
