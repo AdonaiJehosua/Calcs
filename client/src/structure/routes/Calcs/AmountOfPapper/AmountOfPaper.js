@@ -5,11 +5,15 @@ import {SelectComponent} from "../../../../components/SelectComponent";
 import {SwitchComponent} from "../../../../components/SwitchComponent";
 import Box from "@mui/material/Box";
 import {useHttp} from "../../../../hooks/http.hook";
+import {toast, ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import {useEffect} from "react";
+
 
 
 export const AmountOfPaper = () => {
 
-    const {request} = useHttp()
+    const {request, error, clearError} = useHttp()
 
     const initialValues = {
         numberOfPages: '',
@@ -68,6 +72,10 @@ export const AmountOfPaper = () => {
         chromaticity: Yup.string()
             .required('Выберите цветность'),
     })
+    useEffect(() => {
+        toast(error)
+        clearError()
+    }, [error, toast, clearError])
 
 
     const calcHandler = async (values) => {
@@ -80,6 +88,7 @@ export const AmountOfPaper = () => {
                 'PUT',
                 {...values, isPageFormatManually, isPaperFormatManually}
             )
+            await toast(data.message)
         } catch (e) {
         }
     }
