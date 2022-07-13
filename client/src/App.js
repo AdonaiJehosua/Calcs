@@ -24,16 +24,7 @@ function App() {
 
     return (
         <>
-            <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover/>
+            <ToastContainer/>
         <AuthContext.Provider value={{token, userId, logout, login, isAuthenticated}}>
             <Router>
                 <ThemeProvider theme={mainColorsTheme}>
