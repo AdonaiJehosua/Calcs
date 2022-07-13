@@ -17,6 +17,7 @@ export const useFetchEntries = () => {
                 {Authorization: `Bearer ${token}`}
             )
             setEntries(fetched)
+            return fetched
         } catch (e) {}
     }, [token, request])
 
