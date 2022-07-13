@@ -6,10 +6,10 @@ import {Loader} from "./components/Loader";
 import {useRoutes} from "./structure/routes";
 import {useAuth} from "./hooks/auth.hook";
 import {AuthContext} from "./context/AuthContext"
-import {Container} from "@mui/material";
 import {ThemeProvider} from "@emotion/react";
 import {mainColorsTheme} from "./muiThemes/muiThemes";
 import Box from "@mui/material/Box";
+import {ToastContainer} from "react-toastify";
 
 
 function App() {
@@ -23,6 +23,17 @@ function App() {
     }
 
     return (
+        <>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover/>
         <AuthContext.Provider value={{token, userId, logout, login, isAuthenticated}}>
             <Router>
                 <ThemeProvider theme={mainColorsTheme}>
@@ -33,6 +44,7 @@ function App() {
                 </ThemeProvider>
             </Router>
         </AuthContext.Provider>
+        </>
     )
 }
 
