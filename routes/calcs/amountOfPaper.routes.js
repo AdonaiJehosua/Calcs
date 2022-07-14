@@ -4,7 +4,7 @@ const Format = require('../../models/Format')
 const Chromaticity = require('../../models/Chromaticity')
 const {check, validationResult} = require('express-validator')
 const router = Router()
-const {actualSize, examFormatsAreas} = require('../../handleFunctions/calculateFunctions')
+const {actualSize, examFormatsAreas, sheetParts} = require('../../handleFunctions/calculateFunctions')
 
 router.put('/amountofpaper', async (req, res) => {
     try {
@@ -15,13 +15,13 @@ router.put('/amountofpaper', async (req, res) => {
             isPaperFormatManually,
             grainDirection,
             pageFormat,
-            isPortraitPageFormat,
+            pageLongSideGrainDirection,
             newPageFormatHeight,
             newPageFormatWidth,
             paperFormat,
             newPaperFormatHeight,
             newPaperFormatWidth,
-            isPortraitPaperFormat,
+            paperLongSideGrainDirection,
             chromaticity
         } = req.body
 
@@ -32,15 +32,18 @@ router.put('/amountofpaper', async (req, res) => {
         if (!examSizes) {
             return res.status(400).json({message: 'Формат страницы должен быть меньше формата бумаги.', pageSize, paperSize, examSizes})
         }
-        return res.status(200).json({message: 'Fine', pageSize, paperSize, examSizes})
+
+        const partsOfSheet = sheetParts(pageSize, paperSize, grainDirection, pageLongSideGrainDirection, paperLongSideGrainDirection)
+
+        return res.status(200).json({message: 'Fine', pageSize, paperSize, examSizes, partsOfSheet})
 
 
 
 
 
-        if (!grainDirection) {                                                                                              /*Если направление волокон не важно, то...*/
-
-        }
+        // if (!grainDirection) {                                                                                              /*Если направление волокон не важно, то...*/
+        //
+        // }
 
         /*Если направление волокон важно, то...*/
 
