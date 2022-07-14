@@ -1,4 +1,3 @@
-import 'reactjs-popup/dist/index.css';
 import {FormatCreatingCard} from "./FormatCreatingCard";
 import {DeleteEntryButton} from "../../../../components/DeleteEntryButton";
 import {useFetchEntries} from "../../../../hooks/fetchEntries.hook";

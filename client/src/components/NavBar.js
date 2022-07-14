@@ -3,7 +3,9 @@ import {useContext, useState} from "react";
 import {AuthContext} from "../context/AuthContext";
 import AppBar from '@mui/material/AppBar';
 import {Box, Toolbar, IconButton, Typography, Menu, Button, Tooltip, MenuItem} from '@mui/material';
-import {MenuIcon, AdbIcon} from '@mui/icons-material';
+import AdbIcon from '@mui/icons-material/Adb';
+import MenuIcon from '@mui/icons-material/Menu';
+
 
 export const Navbar = () => {
 
