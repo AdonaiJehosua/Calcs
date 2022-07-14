@@ -17,13 +17,13 @@ export const AmountOfPaper = () => {
         numberOfCopies: '',
         grainDirection: false,
         pageFormat: '',
-        isPortraitPageFormat: false,
+        pageLongSideGrainDirection: true,
         newPageFormatHeight: '',
         newPageFormatWidth: '',
         paperFormat: '',
         newPaperFormatHeight: '',
         newPaperFormatWidth: '',
-        isPortraitPaperFormat: false,
+        paperLongSideGrainDirection: true,
         chromaticity: '',
     }
 
@@ -170,13 +170,14 @@ export const AmountOfPaper = () => {
                                             />
                                         </Box>)
                                     }
+
                                     {values.grainDirection && <SwitchComponent label={'Ориентация издания'}
                                                                                handleChange={handleChange}
                                                                                errors={errors}
-                                                                               name={'portraitPageFormat'}
+                                                                               name={'pageLongSideGrainDirection'}
                                                                                handleBlur={handleBlur}
                                                                                touched={touched}
-                                                                               checked={values.isPortraitPageFormat}/>
+                                                                               checked={values.pageLongSideGrainDirection}/>
                                     }
                                     <SelectComponent values={values}
                                                      addItemName={'Ввести вручную'}
@@ -216,10 +217,10 @@ export const AmountOfPaper = () => {
                                     {values.grainDirection && <SwitchComponent label={'Ориентация бумаги'}
                                                                                handleChange={handleChange}
                                                                                errors={errors}
-                                                                               name={'portraitPaperFormat'}
+                                                                               name={'paperLongSideGrainDirection'}
                                                                                handleBlur={handleBlur}
                                                                                touched={touched}
-                                                                               checked={values.isPortraitPaperFormat}/>
+                                                                               checked={values.paperLongSideGrainDirection}/>
                                     }
                                     <SelectComponent values={values}
                                                      label={'Цветность'}
