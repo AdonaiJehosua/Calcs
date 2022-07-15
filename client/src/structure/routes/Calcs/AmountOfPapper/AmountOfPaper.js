@@ -18,11 +18,11 @@ export const AmountOfPaper = () => {
         grainDirection: false,
         pageFormat: '',
         pageLongSideGrainDirection: true,
-        newPageFormatHeight: '',
-        newPageFormatWidth: '',
+        newPageLongSide: '',
+        newPageShortSide: '',
         paperFormat: '',
-        newPaperFormatHeight: '',
-        newPaperFormatWidth: '',
+        newPaperLongSide: '',
+        newPaperShortSide: '',
         paperLongSideGrainDirection: true,
         chromaticity: '',
     }
@@ -36,35 +36,35 @@ export const AmountOfPaper = () => {
             .required('Введите тираж'),
         pageFormat: Yup.string()
             .required('Выберите формат издания'),
-        newPageFormatHeight: Yup.number()
+        newPageLongSide: Yup.number()
             .when('pageFormat',
                 {
                     is: 'manually', then: Yup.number()
                         .moreThan(0, 'Не может быть меньше ноля')
-                        .required('Введите высоту страницы')
+                        .required('Введите значение длинной стороны страницы')
                 }),
-        newPageFormatWidth: Yup.number()
+        newPageShortSide: Yup.number()
             .when('pageFormat',
                 {
                     is: 'manually', then: Yup.number()
                         .moreThan(0, 'Не может быть меньше ноля')
-                        .required('Введите ширину страницы')
+                        .required('Введите значение короткой стороны страницы')
                 }),
         paperFormat: Yup.string()
             .required('Выберите формат бумаги'),
-        newPaperFormatHeight: Yup.number()
+        newPaperLongSide: Yup.number()
             .when('paperFormat',
                 {
                     is: 'manually', then: Yup.number()
                         .moreThan(0, 'Не может быть меньше ноля')
-                        .required('Введите высоту бумаги')
+                        .required('Введите значение длинной стороны бумаги')
                 }),
-        newPaperFormatWidth: Yup.number()
+        newPaperShortSide: Yup.number()
             .when('paperFormat',
                 {
                     is: 'manually', then: Yup.number()
                         .moreThan(0, 'Не может быть меньше ноля')
-                        .required('Введите ширину бумаги')
+                        .required('Введите значение короткой стороны бумаги')
                 }),
         chromaticity: Yup.string()
             .required('Выберите цветность'),
@@ -149,22 +149,22 @@ export const AmountOfPaper = () => {
                                     {(values.pageFormat === 'manually') && (
                                         <Box>
                                             <TextField
-                                                error={touched.newPageFormatHeight && Boolean(errors.newPageFormatHeight)}
-                                                helperText={touched.newPageFormatHeight && errors.newPageFormatHeight}
-                                                label={'Высота страницы'}
+                                                error={touched.newPageLongSide && Boolean(errors.newPageLongSide)}
+                                                helperText={touched.newPageLongSide && errors.newPageLongSide}
+                                                label={'Длинная сторона страницы'}
                                                 type="number"
-                                                name="newPageFormatHeight"
-                                                value={values.newPageFormatHeight}
+                                                name="newPageLongSide"
+                                                value={values.newPageLongSide}
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
                                             />
                                             <TextField
-                                                error={touched.newPageFormatWidth && Boolean(errors.newPageFormatWidth)}
-                                                helperText={touched.newPageFormatWidth && errors.newPageFormatWidth}
-                                                label={'Ширина страницы'}
+                                                error={touched.newPageShortSide && Boolean(errors.newPageShortSide)}
+                                                helperText={touched.newPageShortSide && errors.newPageShortSide}
+                                                label={'Короткая сторона страницы'}
                                                 type="number"
-                                                name="newPageFormatWidth"
-                                                value={values.newPageFormatWidth}
+                                                name="newPageShortSide"
+                                                value={values.newPageShortSide}
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
                                             />
@@ -193,9 +193,9 @@ export const AmountOfPaper = () => {
                                     {(values.paperFormat === 'manually') && (
                                         <Box>
                                             <TextField
-                                                error={touched.newPaperFormatHeight && Boolean(errors.newPaperFormatHeight)}
-                                                helperText={touched.newPaperFormatHeight && errors.newPaperFormatHeight}
-                                                label={'Высота листа бумаги'}
+                                                error={touched.newPaperLongSide && Boolean(errors.newPaperLongSide)}
+                                                helperText={touched.newPaperLongSide && errors.newPaperLongSide}
+                                                label={'Длинная сторона листа бумаги'}
                                                 type="number"
                                                 name="newPaperFormatHeight"
                                                 value={values.newPaperFormatHeight}
@@ -203,12 +203,12 @@ export const AmountOfPaper = () => {
                                                 onBlur={handleBlur}
                                             />
                                             <TextField
-                                                error={touched.newPaperFormatWidth && Boolean(errors.newPaperFormatWidth)}
-                                                helperText={touched.newPaperFormatWidth && errors.newPaperFormatWidth}
-                                                label={'Ширина листа бумаги'}
+                                                error={touched.newPaperShortSide && Boolean(errors.newPaperShortSide)}
+                                                helperText={touched.newPaperShortSide && errors.newPaperShortSide}
+                                                label={'Короткая сторона листа бумаги'}
                                                 type="number"
-                                                name="newPaperFormatWidth"
-                                                value={values.newPaperFormatWidth}
+                                                name="newPaperShortSide"
+                                                value={values.newPaperShortSide}
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
                                             />

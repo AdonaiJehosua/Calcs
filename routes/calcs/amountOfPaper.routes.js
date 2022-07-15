@@ -16,17 +16,17 @@ router.put('/amountofpaper', async (req, res) => {
             grainDirection,
             pageFormat,
             pageLongSideGrainDirection,
-            newPageFormatHeight,
-            newPageFormatWidth,
+            newPageLongSide,
+            newPageShortSide,
             paperFormat,
-            newPaperFormatHeight,
-            newPaperFormatWidth,
+            newPaperLongSide,
+            newPaperShortSide,
             paperLongSideGrainDirection,
             chromaticity
         } = req.body
 
-        const pageSize = await actualSize(pageFormat, isPageFormatManually, newPageFormatHeight, newPageFormatWidth)
-        const paperSize = await actualSize(paperFormat, isPaperFormatManually, newPaperFormatHeight, newPaperFormatWidth)
+        const pageSize = await actualSize(pageFormat, isPageFormatManually, newPageLongSide, newPageShortSide)
+        const paperSize = await actualSize(paperFormat, isPaperFormatManually, newPaperLongSide, newPaperShortSide)
         const examSizes = examFormatsAreas(pageSize, paperSize)
 
         if (!examSizes) {

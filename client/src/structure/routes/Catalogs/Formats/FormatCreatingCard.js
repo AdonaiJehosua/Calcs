@@ -20,12 +20,12 @@ export const FormatCreatingCard = ({fetchEntries}) => {
 
     const createHandler = useCallback(async (values) => {
         try {
-            const reqBody = {formatName: values.formatName, dimensions: {height: values.height, width: values.width}}
+            const reqBody = {formatName: values.formatName, dimensions: {longSide: values.longSide, shortSide: values.shortSide}}
             await createEntry(reqBody, 'format', 'createformat')
             await fetchEntries()
             values.formatName = ''
-            values.height = ''
-            values.width = ''
+            values.longSide = ''
+            values.shortSide = ''
         } catch (e) {
         }
     }, [])
@@ -51,18 +51,18 @@ export const FormatCreatingCard = ({fetchEntries}) => {
                     <Formik
                         onSubmit={createHandler}
                         initialValues={{
-                            formatName: '', height: '', width: ''
+                            formatName: '', longSide: '', shortSide: ''
                         }}
                         validate={values => {
                             const errors = {};
                             if (!values.formatName) {
                                 errors.formatName = 'Введите название'
                             }
-                            if (!values.height) {
-                                errors.height = 'Введите высоту'
+                            if (!values.longSide) {
+                                errors.longSide = 'Введите значение длинной стороны'
                             }
-                            if (!values.width) {
-                                errors.width = 'Введите ширину'
+                            if (!values.shortSide) {
+                                errors.shortSide = 'Введите значение короткой стороны'
                             }
                             return errors
                         }}
@@ -92,24 +92,24 @@ export const FormatCreatingCard = ({fetchEntries}) => {
                                                     onBlur={handleBlur}
                                                 />
                                                 <TextField
-                                                    error={touched.height && Boolean(errors.height)}
-                                                    helperText={touched.height && errors.height}
-                                                    label={'Высота'}
-                                                    id="height"
+                                                    error={touched.longSide && Boolean(errors.longSide)}
+                                                    helperText={touched.longSide && errors.longSide}
+                                                    label={'Длинная сторона'}
+                                                    id="longSide"
                                                     type="number"
-                                                    name="height"
-                                                    value={values.height}
+                                                    name="longSide"
+                                                    value={values.longSide}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
                                                 />
                                                 <TextField
-                                                    error={touched.width && Boolean(errors.width)}
-                                                    helperText={touched.width && errors.width}
+                                                    error={touched.shortSide && Boolean(errors.shortSide)}
+                                                    helperText={touched.shortSide && errors.shortSide}
                                                     label={'Ширина'}
-                                                    id="width"
+                                                    id="shortSide"
                                                     type="number"
-                                                    name="width"
-                                                    value={values.width}
+                                                    name="shortSide"
+                                                    value={values.shortSide}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
                                                 />

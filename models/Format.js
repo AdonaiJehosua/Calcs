@@ -3,8 +3,8 @@ const {Schema, model} = require('mongoose')
 const schema = new Schema( {
     formatName: {type: String, required: true, unique: true},
     dimensions: {
-        height: {type: Number, required: true},
-        width: {type: Number, required: true}
+        longSide: {type: Number, required: true},
+        shortSide: {type: Number, required: true}
     },
     area: {type: Number, required: true},
 

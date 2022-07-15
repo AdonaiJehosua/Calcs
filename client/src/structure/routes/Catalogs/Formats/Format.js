@@ -36,8 +36,8 @@ export const Formats = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell align={'center'}>Название</TableCell>
-                            <TableCell align={'center'}>Высота</TableCell>
-                            <TableCell align={'center'}>Ширина</TableCell>
+                            <TableCell align={'center'}>Длинная сторона</TableCell>
+                            <TableCell align={'center'}>Короткая сторона</TableCell>
                             <TableCell align={'center'}>Редактировать</TableCell>
                         </TableRow>
                     </TableHead>
@@ -52,17 +52,17 @@ export const Formats = () => {
                                                       entryId={format._id}
                                                       entryKey={'formatName'}
                                     />
-                                    <CatalogsTableCol value={format.dimensions.height}
+                                    <CatalogsTableCol value={format.dimensions.longSide}
                                                       inputType={'number'}
                                                       endpoint={'format'}
                                                       entryId={format._id}
-                                                      entryKey={'height'}
+                                                      entryKey={'longSide'}
                                     />
-                                    <CatalogsTableCol value={format.dimensions.width}
+                                    <CatalogsTableCol value={format.dimensions.shortSide}
                                                       inputType={'number'}
                                                       endpoint={'format'}
                                                       entryId={format._id}
-                                                      entryKey={'width'}
+                                                      entryKey={'shortSide'}
                                     />
                                     <TableCell align={'center'}>
                                         <DeleteEntryButton fetchEntries={fetchFormats}

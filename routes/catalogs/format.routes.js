@@ -9,8 +9,8 @@ router.post(
     '/createformat', auth,
     [
         check('formatName', 'Введите название.').exists({checkFalsy: true}),
-        check('dimensions.height', 'Высота должна быть числом.').isNumeric(),
-        check('dimensions.width', 'Ширина должна быть числом.').isNumeric(),
+        check('dimensions.longSide', 'Значение должно быть числом.').isNumeric(),
+        check('dimensions.shortSide', 'Значение должно быть числом.').isNumeric(),
     ],
     async (req, res) => {
         try {
@@ -34,7 +34,7 @@ router.post(
                 return res.status(400).json({message: `Формат с такими значениями существует - "${examinationDim.formatName}"`})
             }
 
-            const area = dimensions.height * dimensions.width
+            const area = dimensions.longSide * dimensions.shortSide
 
             const format = new Format({formatName, dimensions, area})
 
@@ -67,7 +67,7 @@ router.put('/:id/changeentryvalue', auth,
         switch (req.body.entryKey) {
             case 'formatName':
                if (validator.isEmpty(updatingValue)) {
-                return (res.status(400).json({message: `Введите название формата`}))
+                return (res.status(400).json({message: `Введите название формата.`}))
             }
 
                 const examinationName = await Format.findOne({formatName: updatingValue})
@@ -80,49 +80,49 @@ router.put('/:id/changeentryvalue', auth,
 
                 break
 
-            case 'height':
+            case 'longSide':
                 if (validator.isEmpty(String(updatingValue))) {
-                    return res.status(400).json({message: `Введите высоту`})
+                    return res.status(400).json({message: `Введите значение длинной стороны.`})
                 }
                 if (!validator.isNumeric(String(updatingValue))) {
-                    return res.status(400).json({message: `Высота должна быть числом`})
+                    return res.status(400).json({message: `Значение должно быть числом.`})
                 }
 
-                const oldValues = await Format.findOne({_id: req.params.id})
-                const newValues = {height: Number(updatingValue), width: oldValues.dimensions.width}
-                const examinationNewHeightDim = await Format.findOne({dimensions: newValues})
+                const oldFormatLongSide = await Format.findOne({_id: req.params.id})
+                const newLongSideDimensions = {longSide: Number(updatingValue), shortSide: oldFormatLongSide.dimensions.shortSide}
+                const examinationNewLongSideDim = await Format.findOne({dimensions: newLongSideDimensions})
 
-                if (examinationNewHeightDim) {
-                    return res.status(400).json({message: `Формат с такими значениями существует`})
+                if (examinationNewLongSideDim) {
+                    return res.status(400).json({message: `Формат с такими значениями существует.`})
                 }
 
-                const newArea = newValues.height * newValues.width
+                const newLongSideArea = newLongSideDimensions.longSide * newLongSideDimensions.shortSide
 
-                await Format.updateOne({_id: req.params.id}, {$set: {dimensions : newValues, area: newArea}})
-                res.status(201).json({message: 'Высота изменена.', updatedValue: updatingValue})
+                await Format.updateOne({_id: req.params.id}, {$set: {dimensions : newLongSideDimensions, area: newLongSideArea}})
+                res.status(201).json({message: 'Значение изменено.', updatedValue: updatingValue})
 
                 break
 
-            case 'width':
+            case 'shortSide':
                 if (validator.isEmpty(String(updatingValue))) {
-                    return res.status(400).json({message: `Введите ширину`})
+                    return res.status(400).json({message: `Введите значение короткой стороны.`})
                 }
                 if (!validator.isNumeric(String(updatingValue))) {
-                    return res.status(400).json({message: `Ширина должна быть числом`})
+                    return res.status(400).json({message: `Значение должно быть числом.`})
                 }
 
-                const oldFormatWidth = await Format.findOne({_id: req.params.id})
-                const newWidthDimensions = {height: oldFormatWidth.dimensions.height, width: Number(updatingValue)}
-                const examinationNewWidthDim = await Format.findOne({dimensions: newWidthDimensions})
+                const oldFormatShortSide = await Format.findOne({_id: req.params.id})
+                const newShortSideDimensions = {height: oldFormatShortSide.dimensions.longSide, shortSide: Number(updatingValue)}
+                const examinationNewShortSideDim = await Format.findOne({dimensions: newShortSideDimensions})
 
-                if (examinationNewWidthDim) {
-                    return res.status(400).json({message: `Формат с такими значениями существует`})
+                if (examinationNewShortSideDim) {
+                    return res.status(400).json({message: `Формат с такими значениями существует.`})
                 }
 
-                const newWidthArea = newWidthDimensions.height * newWidthDimensions.width
+                const newShortSideArea = newShortSideDimensions.longSide * newShortSideDimensions.shortSide
 
-                await Format.updateOne({_id: req.params.id}, {$set: {dimensions : newWidthDimensions, area : newWidthArea}})
-                res.status(201).json({message: 'Ширина изменена.', updatedValue: updatingValue})
+                await Format.updateOne({_id: req.params.id}, {$set: {dimensions : newShortSideDimensions, area : newShortSideArea}})
+                res.status(201).json({message: 'Значение изменено.', updatedValue: updatingValue})
 
                 break
 
@@ -130,7 +130,7 @@ router.put('/:id/changeentryvalue', auth,
 
 
     } catch (e) {
-        res.status(500).json({message: `Что-то пошло не так, попробуйте снова`})
+        res.status(500).json({message: `Что-то пошло не так, попробуйте снова.`})
     }
 })
 
@@ -139,7 +139,7 @@ router.get('/', auth, async (req, res) => {
         const formats = await Format.find()
         res.json(formats)
     } catch (e) {
-        res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
+        res.status(500).json({message: 'Что-то пошло не так, попробуйте снова.'})
     }
 })
 
