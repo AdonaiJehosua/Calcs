@@ -30,7 +30,9 @@ router.post(
                 return res.status(400).json({message: 'Такая цветность существует.'})
             }
 
-            const chromaticity = new Chromaticity({front, back, name})
+            const isOnePrintSide = Boolean(back === 0)
+
+            const chromaticity = new Chromaticity({front, back, name, isOnePrintSide})
 
             await chromaticity.save()
 

@@ -9,6 +9,7 @@ import {ThemeProvider} from "@emotion/react";
 import {mainColorsTheme} from "./muiThemes/muiThemes";
 import Box from "@mui/material/Box";
 import {ToastContainer} from "react-toastify";
+import { ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
 
 
 function App() {
@@ -17,12 +18,17 @@ function App() {
     const isAuthenticated = !!token
     const routes = useRoutes(isAuthenticated)
 
+    const client = new ApolloClient({
+        uri: 'http://192.168.0.2:5000/graphql',
+        cache: new InMemoryCache(),
+    });
+
     if (!ready) {
         return <Loader/>
     }
 
     return (
-        <>
+        <ApolloProvider client={client}>
             <ToastContainer/>
         <AuthContext.Provider value={{token, userId, logout, login, isAuthenticated}}>
             <Router>
@@ -34,7 +40,7 @@ function App() {
                 </ThemeProvider>
             </Router>
         </AuthContext.Provider>
-        </>
+        </ApolloProvider>
     )
 }
 

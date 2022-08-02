@@ -1,20 +1,21 @@
 import {useFetchEntries} from "../hooks/fetchEntries.hook";
 import {useCallback, useEffect, useState} from "react";
 import {MenuItem, TextField} from "@mui/material";
-
-
-export const SelectComponent = ({
-                                    addItemName,
-                                    addItemValue,
-                                    label,
-                                    nameKey,
-                                    endpoint,
-                                    initialKey,
-                                    touched,
-                                    values,
-                                    errors,
-                                    handleChange,
-                                    handleBlur
+                                                                                                                        /* Компонент, рисующий раскрывающийся список. Значения списка берутся из базы данных. Есть возможность добавить произвольный пункт меню в начало списка. */
+                                                                                                                        /*                                                                                                                                                       */
+export const SelectComponent = ({                                                                                       /* addItemName - название произвольного пункта списка. */
+                                    addItemName,                                                                        /* addItemValue - значение, которое будет присваиваться переменной при выборе произвольно добавленного пункта меню. */
+                                    addItemValue,                                                                       /* label - Лейбл списка. */
+                                    label,                                                                              /* endpoint - эндпоинт, на который пойдет запрос за данными/*/
+                                    nameKey,                                                                            /* nameKey - ключ, по которому из пришедшего из бызы массива, будут отбираться названия пунктов списка.*/
+                                    endpoint,                                                                           /* postedValue - ключ, по которому из пришедшего из бызы массива, будут отбираться значения пунктов списка.*/
+                                    initialKey,                                                                         /* initialKey - ключ объекта формы, значению которого будет присваиваться значение выбранного пункта списка.*/
+                                    touched,                                                                            /* values, errors, touched - объекты Формика. Просто переносятся из компонента формы.*/
+                                    values,                                                                             /* handleChange, handleBlur - функции формика. Просто переносятся в пропсах.*/
+                                    errors,                                                                             /**/
+                                    handleChange,                                                                       /**/
+                                    handleBlur,                                                                         /**/
+                                    postedValue                                                                         /**/
                                 }) => {
 
     const {entries, fetchEntries} = useFetchEntries()
@@ -23,7 +24,7 @@ export const SelectComponent = ({
     const fetchValues = useCallback(async () => {
         await fetchEntries(endpoint)
         setLoaded(true)
-    }, [])
+    }, [endpoint, fetchEntries])
 
     useEffect(() => {
         fetchValues()
@@ -42,7 +43,7 @@ export const SelectComponent = ({
             {addItemName && <MenuItem value={addItemValue}>{addItemName}</MenuItem>}
             {entries.map((el) => {
                 return (
-                    <MenuItem key={el._id} value={el._id}>{el[nameKey]}</MenuItem>
+                    <MenuItem key={el._id} value={el[postedValue]}>{el[nameKey]}</MenuItem>
                 )
             })}
         </TextField>

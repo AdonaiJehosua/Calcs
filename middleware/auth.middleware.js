@@ -18,6 +18,6 @@ module.exports = (req, res, next) => {
         next()
 
     } catch (e) {
-        res.status(401).json({message: 'Нет авторизации'})
+        res.status(401).json({message: 'Лажа с авторизацией'})
     }
 }

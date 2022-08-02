@@ -38,7 +38,7 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
             deactivateEditMode()
         } catch (e) {
         }
-    }, [])
+    }, [updateEntry, entryKey, endpoint, entryId])
 
     return (
         <TableCell align={'center'}>

@@ -22,7 +22,7 @@ router.put('/amountofpaper', async (req, res) => {
             newPaperLongSide,
             newPaperShortSide,
             paperLongSideGrainDirection,
-            chromaticity
+            isOnePrintSide
         } = req.body
 
         const pageSize = await actualSize(pageFormat, isPageFormatManually, newPageLongSide, newPageShortSide)

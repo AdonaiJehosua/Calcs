@@ -24,7 +24,7 @@ export const AmountOfPaper = () => {
         newPaperLongSide: '',
         newPaperShortSide: '',
         paperLongSideGrainDirection: true,
-        chromaticity: '',
+        isOnePrintSide: undefined,
     }
 
     const calcSchema = Yup.object().shape({
@@ -66,7 +66,7 @@ export const AmountOfPaper = () => {
                         .moreThan(0, 'Не может быть меньше ноля')
                         .required('Введите значение короткой стороны бумаги')
                 }),
-        chromaticity: Yup.string()
+        isOnePrintSide: Yup.boolean()
             .required('Выберите цветность'),
     })
 
@@ -140,6 +140,7 @@ export const AmountOfPaper = () => {
                                         values={values}
                                         label={'Формат страниц'}
                                         handleChange={handleChange}
+                                        postedValue={'_id'}
                                         errors={errors}
                                         initialKey={'pageFormat'}
                                         handleBlur={handleBlur}
@@ -185,6 +186,7 @@ export const AmountOfPaper = () => {
                                                      label={'Формат бумаги'}
                                                      handleChange={handleChange}
                                                      errors={errors}
+                                                     postedValue={'_id'}
                                                      initialKey={'paperFormat'}
                                                      handleBlur={handleBlur}
                                                      nameKey={'formatName'}
@@ -197,8 +199,8 @@ export const AmountOfPaper = () => {
                                                 helperText={touched.newPaperLongSide && errors.newPaperLongSide}
                                                 label={'Длинная сторона листа бумаги'}
                                                 type="number"
-                                                name="newPaperFormatHeight"
-                                                value={values.newPaperFormatHeight}
+                                                name="newPaperLongSide"
+                                                value={values.newPaperLongSide}
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
                                             />
@@ -226,8 +228,9 @@ export const AmountOfPaper = () => {
                                                      label={'Цветность'}
                                                      handleChange={handleChange}
                                                      errors={errors}
-                                                     initialKey={'chromaticity'}
+                                                     initialKey={'isOnePrintSide'}
                                                      handleBlur={handleBlur}
+                                                     postedValue={'isOnePrintSide'}
                                                      nameKey={'name'}
                                                      touched={touched}
                                                      endpoint={'chromaticity'}/>

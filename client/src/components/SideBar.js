@@ -34,7 +34,6 @@ export const SideBar = () => {
 
                   justifyContent: 'left',
               }}
-              fullHeight
               position={'static'}>
                 <List
                 sx={{py: 0, bgcolor: "#fdd835"}}

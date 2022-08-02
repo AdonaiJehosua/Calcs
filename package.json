@@ -2,8 +2,12 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "config": "^3.3.7",
+    "cors": "^2.8.5",
     "express": "^4.18.1",
+    "express-graphql": "^0.12.0",
     "express-validator": "^6.14.1",
+    "graphql": "^16.5.0",
+    "graphql-tools": "^8.3.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.3.4",
     "validator": "^13.7.0"
