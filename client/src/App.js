@@ -19,7 +19,7 @@ function App() {
     const routes = useRoutes(isAuthenticated)
 
     const client = new ApolloClient({
-        uri: 'http://192.168.0.2:5000/graphql',
+        uri: 'http://192.168.0.5:5000/graphql',
         cache: new InMemoryCache(),
     });
 

@@ -10,6 +10,7 @@ const {
 const Movie = require('../models/Movie')
 const Director = require('../models/Director')
 const Format = require('../models/Format')
+const {response} = require("express");
 
 const DimensionsType = new GraphQLObjectType({
     name: 'Dimensions',
@@ -23,6 +24,22 @@ const DimensionsInputType = new GraphQLInputObjectType({
     fields: () => ({
         longSide: {type: GraphQLInt},
         shortSide: {type: GraphQLInt}
+    })
+})
+
+const UserType = new GraphQLObjectType({
+    name: 'User',
+    fields: () => ({
+        id: {type: GraphQLID},
+        email: {type: GraphQLString},
+        password: {type: GraphQLString}
+    })
+})
+
+const MessageType = new GraphQLObjectType({
+    name: 'message',
+    fields: () => ({
+        message: {type: GraphQLString}
     })
 })
 
@@ -70,15 +87,28 @@ const DirectorType = new GraphQLObjectType({
 const Mutation = new GraphQLObjectType({
     name: "Mutation",
     fields: {
+        addUser: {
+            type: UserType,
+            args: {
+                email: {type: GraphQLString},
+                password: {type: GraphQLString}
+            },
+            resolve(parent, args) {
+
+            }
+        },
         addFormat: {
-            type: FormatType,
+            type: GraphQLString,
             args: {
                 formatName: {type: GraphQLString},
                 dimensions: {type: DimensionsInputType}
             },
-            resolve(parent, {formatName, dimensions}) {
+            async resolve(parent, {formatName, dimensions}) {
+                if (!formatName) {throw new Error('Enter name')}
+                if (!dimensions.longSide) {throw new Error('Enter longSide')}
+                if (!dimensions.shortSide) {throw new Error('Enter shortSide')}
                 const area = dimensions.longSide * dimensions.shortSide
-                const format = new Format({
+                const format = await new Format({
                     formatName: formatName,
                     dimensions: {
                         longSide: dimensions.longSide,
@@ -86,13 +116,18 @@ const Mutation = new GraphQLObjectType({
                     },
                     area: area
                 })
-                return format.save()
+                await format.save()
+                 return (
+                      'Add'
+                 )
+
             }
         },
         addDirector: {
             type: DirectorType,
             args: {
                 name: {type: GraphQLString},
+
                 age: {type: GraphQLInt}
             },
             resolve(parent, args) {

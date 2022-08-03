@@ -12,6 +12,8 @@ export const Test = () => {
 
     const {loading, error, data} = useQuery(GET_MOVIES)
     console.log(error)
+    console.log(data)
+
 
 
     if (loading) return <p>Loading...</p>
