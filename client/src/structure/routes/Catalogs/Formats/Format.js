@@ -4,20 +4,30 @@ import {useFetchEntries} from "../../../../hooks/fetchEntries.hook";
 import {useCallback, useEffect} from "react";
 import {CatalogsTableCol} from "../../../../components/CatalogsTableCol";
 import {Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
+import {useGraphqlQuery} from "../../../../hooks/graphqlQuery.hook";
+import {Loader} from "../../../../components/Loader";
+import {FETCH_FORMATS} from "../../../../graphQL/queries/formatQueries";
+
 
 export const Formats = () => {
 
-    const {entries, fetchEntries} = useFetchEntries()
+    const {entries, loading, request} = useGraphqlQuery(FETCH_FORMATS)
 
-    const fetchFormats = useCallback(async () => {
-        fetchEntries('format')
-    }, [])
+    const fetchFormats = async () => {
+        await request('formats')
+    }
 
     useEffect(() => {
         fetchFormats()
     }, [fetchFormats])
 
-    if (!entries.length) {
+    if (loading) {
+        return (
+            <Loader/>
+        )
+    }
+
+    if (!loading && !entries.length) {
         return (
             <>
                 <Typography variant={'h4'}>Форматов пока нет</Typography>

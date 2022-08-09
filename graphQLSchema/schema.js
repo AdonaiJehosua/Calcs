@@ -5,7 +5,7 @@ const {
     GraphQLSchema,
     GraphQLInt,
     GraphQLList,
-    GraphQLFloat, GraphQLInputObjectType, GraphQLNonNull
+    GraphQLInputObjectType
 } = require("graphql");
 const Movie = require('../models/Movie')
 const Director = require('../models/Director')
@@ -36,20 +36,22 @@ const UserType = new GraphQLObjectType({
     })
 })
 
-const MessageType = new GraphQLObjectType({
-    name: 'message',
-    fields: () => ({
-        message: {type: GraphQLString}
-    })
-})
-
-
 const FormatType = new GraphQLObjectType({
     name: 'Format',
     fields: () => ({
         id: {type: GraphQLID},
         formatName: {type: GraphQLString},
         dimensions: {type: DimensionsType},
+        area: {type: GraphQLInt}
+    })
+})
+
+const FormatInputType = new GraphQLInputObjectType({
+    name: 'InputFormat',
+    fields: () => ({
+        id: {type: GraphQLID},
+        formatName: {type: GraphQLString},
+        dimensions: {type: DimensionsInputType},
         area: {type: GraphQLInt}
     })
 })
@@ -62,7 +64,7 @@ const MovieType = new GraphQLObjectType({
         genre: {type: GraphQLString},
         director: {
             type: DirectorType,
-            resolve(parent, args) {
+            resolve(parent) {
                 return Director.findById(parent.directorId)
             }
         }
@@ -77,7 +79,7 @@ const DirectorType = new GraphQLObjectType({
         age: {type: GraphQLInt},
         movies: {
             type: new GraphQLList(MovieType),
-            resolve(parent, args) {
+            resolve(parent) {
                 return Movie.find({directorId: parent.id})
             }
         }
@@ -104,9 +106,26 @@ const Mutation = new GraphQLObjectType({
                 dimensions: {type: DimensionsInputType}
             },
             async resolve(parent, {formatName, dimensions}) {
-                if (!formatName) {throw new Error('Enter name')}
-                if (!dimensions.longSide) {throw new Error('Enter longSide')}
-                if (!dimensions.shortSide) {throw new Error('Enter shortSide')}
+                if (!formatName) {
+                    throw new Error('Введите имя.')
+                }
+                if (!dimensions.longSide) {
+                    throw new Error('Введите значение длинной стороны.')
+                }
+                if (!dimensions.shortSide) {
+                    throw new Error('Введите значение короткой стороны.')
+                }
+
+                const examinationName = await Format.findOne({formatName})
+                const examinationDim = await Format.findOne({dimensions})
+
+                if (examinationName) {
+                    throw new Error('Формат с таким названием существует.')
+                }
+                if (examinationDim) {
+                    throw new Error(`Формат с такими значениями существует  - "${examinationDim.formatName}".`)
+                }
+
                 const area = dimensions.longSide * dimensions.shortSide
                 const format = await new Format({
                     formatName: formatName,
@@ -117,10 +136,19 @@ const Mutation = new GraphQLObjectType({
                     area: area
                 })
                 await format.save()
-                 return (
-                      'Add'
-                 )
+                return (
+                    'Формат создан.'
+                )
 
+            }
+        },
+        deleteFormat: {
+            type: FormatType,
+            args: {
+                id: {type: GraphQLID}
+            },
+            resolve(parent, {id}) {
+                return Format.findByIdAndRemove(id)
             }
         },
         addDirector: {
@@ -251,8 +279,24 @@ const Query = new GraphQLObjectType({
     }
 })
 
+const Subscription = new GraphQLObjectType({
+    name: 'Subscription',
+    fields: {
+        formatAdded: {
+            type: FormatType,
+            args: {
+                id: {type: GraphQLID}
+            },
+             resolve(parent, args) {
+                return Format.findById(args.id)
+             }
+        }
+    }
+})
+
 
 module.exports = new GraphQLSchema({
     query: Query,
-    mutation: Mutation
+    mutation: Mutation,
+    subscription: Subscription
 })

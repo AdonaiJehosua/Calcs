@@ -10,6 +10,10 @@ import {mainColorsTheme} from "./muiThemes/muiThemes";
 import Box from "@mui/material/Box";
 import {ToastContainer} from "react-toastify";
 import { ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { createClient } from 'graphql-ws';
+import { split, HttpLink } from '@apollo/client';
+import { getMainDefinition } from '@apollo/client/utilities';
 
 
 function App() {
@@ -18,8 +22,28 @@ function App() {
     const isAuthenticated = !!token
     const routes = useRoutes(isAuthenticated)
 
+    const wsLink = new GraphQLWsLink(createClient({
+        url: 'ws://192.168.0.5:5000/subscriptions',
+    }));
+
+    const httpLink = new HttpLink({
+        uri: 'http://192.168.0.5:5000/graphql'
+    });
+
+    const splitLink = split(
+        ({ query }) => {
+            const definition = getMainDefinition(query);
+            return (
+                definition.kind === 'OperationDefinition' &&
+                definition.operation === 'subscription'
+            );
+        },
+        wsLink,
+        httpLink,
+    );
+
     const client = new ApolloClient({
-        uri: 'http://192.168.0.5:5000/graphql',
+        link: splitLink,
         cache: new InMemoryCache(),
     });
 

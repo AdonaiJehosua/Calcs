@@ -1,7 +1,8 @@
-import {useCallback, useState} from "react";
+import {useState} from "react";
 import {Formik, Form} from "formik";
-import {useCreateEntry} from "../../../../hooks/createEntry.hook";
 import {Box, Button, Card, CardActions, CardContent, Container, Modal, TextField, Typography} from "@mui/material";
+import {useCreateDocumentMutation} from "../../../../hooks/createDocumentMutation.hook";
+import {ADD_FORMAT} from "../../../../graphQL/mutations/formatsMutations";
 
 const style = {
     position: 'absolute',
@@ -14,21 +15,20 @@ const style = {
     p: 1,
 };
 
-export const FormatCreatingCard = ({fetchEntries}) => {
+export const FormatCreatingCard = () => {
 
-    const {createEntry} = useCreateEntry()
+    const {response} = useCreateDocumentMutation(ADD_FORMAT)
 
-    const createHandler = useCallback(async (values) => {
-        try {
-            const reqBody = {formatName: values.formatName, dimensions: {longSide: values.longSide, shortSide: values.shortSide}}
-            await createEntry(reqBody, 'format', 'createformat')
-            await fetchEntries()
-            values.formatName = ''
-            values.longSide = ''
-            values.shortSide = ''
-        } catch (e) {
+    const createHandler = async (values) => {
+        const variables = {
+            formatName: values.formatName,
+            dimensions: {
+                longSide: values.longSide,
+                shortSide: values.shortSide
+            }
         }
-    }, [])
+        await response(variables, values)
+    }
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => {
@@ -80,39 +80,39 @@ export const FormatCreatingCard = ({fetchEntries}) => {
                                     <CardContent>
                                         <Typography variant={'h4'}>Добавить формат</Typography>
                                         <Container>
-                                                <TextField
-                                                    error={touched.formatName && Boolean(errors.formatName)}
-                                                    helperText={touched.formatName && errors.formatName}
-                                                    label={'Название'}
-                                                    id="formatName"
-                                                    type="text"
-                                                    name="formatName"
-                                                    value={values.formatName}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                />
-                                                <TextField
-                                                    error={touched.longSide && Boolean(errors.longSide)}
-                                                    helperText={touched.longSide && errors.longSide}
-                                                    label={'Длинная сторона'}
-                                                    id="longSide"
-                                                    type="number"
-                                                    name="longSide"
-                                                    value={values.longSide}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                />
-                                                <TextField
-                                                    error={touched.shortSide && Boolean(errors.shortSide)}
-                                                    helperText={touched.shortSide && errors.shortSide}
-                                                    label={'Ширина'}
-                                                    id="shortSide"
-                                                    type="number"
-                                                    name="shortSide"
-                                                    value={values.shortSide}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                />
+                                            <TextField
+                                                error={touched.formatName && Boolean(errors.formatName)}
+                                                helperText={touched.formatName && errors.formatName}
+                                                label={'Название'}
+                                                id="formatName"
+                                                type="text"
+                                                name="formatName"
+                                                value={values.formatName}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                            />
+                                            <TextField
+                                                error={touched.longSide && Boolean(errors.longSide)}
+                                                helperText={touched.longSide && errors.longSide}
+                                                label={'Длинная сторона'}
+                                                id="longSide"
+                                                type="number"
+                                                name="longSide"
+                                                value={values.longSide}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                            />
+                                            <TextField
+                                                error={touched.shortSide && Boolean(errors.shortSide)}
+                                                helperText={touched.shortSide && errors.shortSide}
+                                                label={'Ширина'}
+                                                id="shortSide"
+                                                type="number"
+                                                name="shortSide"
+                                                value={values.shortSide}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                            />
                                         </Container>
                                     </CardContent>
                                     <CardActions>
