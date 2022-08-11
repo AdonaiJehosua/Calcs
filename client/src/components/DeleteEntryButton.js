@@ -1,18 +1,21 @@
-import {useCallback, useState} from "react";
-import {useDeleteEntry} from "../hooks/deleteEntry.hook";
+import {useState} from "react";
 import {Button, Card, CardActions, CardContent, Popover, Typography} from "@mui/material";
+import {useToastedMutation} from "../hooks/toastedMutation.hook";
 
 //Кнопка для удаления записи из базы данных. Принимает функцию, которая будет подтягивать с сервера обновленные данные,
 // эндпоинт, на который идет запрос на удаление и обновление данных, id записи и имя записи из бызы
 
-export const DeleteEntryButton = ({fetchEntries, endpoint, entryId, entryName}) => {
+export const DeleteEntryButton = ({query, entryId, entryName}) => {
 
-    const {deleteEntry} = useDeleteEntry()
+    const {makeMutation} = useToastedMutation(query)
 
-    const deleteFunction = useCallback(async () => {
-        await deleteEntry(endpoint, entryId)
-        await fetchEntries()
-    }, [deleteEntry, endpoint, entryId])
+    const deleteFunction = async () => {
+        const variables = {
+            id: entryId
+        }
+        await makeMutation(variables)
+        handleClose()
+    }
 
     const [anchorEl, setAnchorEl] = useState(null);
     const handleClick = (event) => {
@@ -46,8 +49,8 @@ export const DeleteEntryButton = ({fetchEntries, endpoint, entryId, entryName}) 
                     </Typography>
                     </CardContent>
                     <CardActions>
-                    <Button autoFocus={true} variant={'contained'} onClick={() => {
-                        deleteFunction()
+                    <Button autoFocus={true} variant={'contained'} onClick={async () => {
+                        await deleteFunction()
                     }}>Да</Button>
                     <Button variant={'outlined'} onClick={handleClose}>Отмена</Button>
                     </CardActions>
