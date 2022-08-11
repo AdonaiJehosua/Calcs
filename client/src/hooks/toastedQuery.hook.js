@@ -1,20 +1,18 @@
 import {useQuery} from "@apollo/client";
 import {toast} from "react-toastify";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 
 
-export const useGraphqlQuery = (query) => {
+export const useToastedQuery = (query) => {
     const [entries, setEntries] = useState([])
     const {loading, error, data} = useQuery(query)
-    const request = (arrayName) => {
+    const makeQuery = (queryName) => {
         try {
             if (error) {
                 toast.error(error.message)
             }
-            setEntries(data[arrayName])
-        } catch (e) {
-            // toast.error(e.message)
-        }
+            setEntries(data[queryName])
+        } catch (e) {}
     }
-    return {entries, loading, request}
+    return {entries, loading, makeQuery}
 }
