@@ -19,7 +19,7 @@ import { getMainDefinition } from '@apollo/client/utilities';
 function App() {
 
     const {login, logout, token, userId, ready} = useAuth()
-    const isAuthenticated = !!token
+    const isAuthenticated = true
     const routes = useRoutes(isAuthenticated)
 
     const wsLink = new GraphQLWsLink(createClient({
