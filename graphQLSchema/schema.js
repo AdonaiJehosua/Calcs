@@ -10,27 +10,57 @@ const {
 const Format = require('../models/Format')
 const Unit = require('../models/Unit')
 const Chromaticity = require('../models/Chromaticity')
-const {response} = require("express");
-const {ApolloServer, gql} = require('apollo-server')
+const {gql} = require('apollo-server')
+const { makeExecutableSchema } = require('graphql-tools')
 
+//
 const typeDefs = gql`
     type Chromaticity {
+        id: ID
         name: String
-        front: Number
-        back: Number
+        front: Int
+        back: Int
         isOnePrintSide: Boolean
     }
     
+    type Unit {
+        id: ID
+        fullName: String
+        abbreviatedName: String 
+    }
+    
     type Query {
-        chromaticities: [Chromaticity]
+        chromaticities: [Chromaticity],
+        chromaticity(id: ID!): Chromaticity
+        units: [Unit]
+    }
+    
+    type Subscription {
+        chromaticityCreated: Chromaticity
     }
 `
-
+//
 const resolvers = {
     Query: {
-        chromaticities: () => {Chromaticity.find()}
+        chromaticities: async () => await Chromaticity.find(),
+        chromaticity: async (parent, args) => await Chromaticity.findById(args.id),
+        units: async () => await Unit.find()
     }
 }
+
+module.exports.schema = new makeExecutableSchema({typeDefs, resolvers})
+
+// module.exports.server = new ApolloServer({
+//     typeDefs,
+//     resolvers,
+//     csrfPrevention: true,
+//     cache: 'bounded',
+//     plugins: [
+//         ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+//     ]
+// })
+
+
 
 const FormatType = new GraphQLObjectType({
     name: 'Format',
@@ -198,8 +228,8 @@ const Subscription = new GraphQLObjectType({
 })
 
 
-module.exports = new GraphQLSchema({
-    query: Query,
-    mutation: Mutation,
-    subscription: Subscription
-})
+// module.exports.schema = new GraphQLSchema({
+//     query: Query,
+//     mutation: Mutation,
+//     subscription: Subscription
+// })
