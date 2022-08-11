@@ -1,9 +1,10 @@
-import {useCallback, useState} from "react";
+import {useState} from "react";
 import {Formik, Form} from "formik";
-import {useCreateEntry} from "../../../../hooks/createEntry.hook";
 import {Button, Card, CardActions, CardContent, Container, Modal, TextField} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import {useToastedMutation} from "../../../../hooks/toastedMutation.hook";
+import {ADD_UNIT} from "../../../../graphQL/mutations/unitMutation";
 
 const style = {
     position: 'absolute',
@@ -16,20 +17,18 @@ const style = {
     p: 1,
 };
 
-export const UnitCreatingCard = ({fetchEntries}) => {
+export const UnitCreatingCard = () => {
 
-    const {createEntry} = useCreateEntry()
+    const {makeMutation} = useToastedMutation(ADD_UNIT)
 
-    const createHandler = useCallback(async (values) => {
-        try {
-            const reqBody = {fullName: values.fullName, abbreviatedName: values.abbreviatedName}
-            await createEntry(reqBody, 'unit', 'createunit')
-            fetchEntries()
-            values.fullName = ''
-            values.abbreviatedName = ''
-        } catch (e) {
+
+    const createHandler = async (values) => {
+        const variables = {
+            fullName: values.fullName,
+            abbreviatedName: values.abbreviatedName
         }
-    }, [])
+        await makeMutation(variables, values)
+    }
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => {

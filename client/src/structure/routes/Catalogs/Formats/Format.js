@@ -1,20 +1,20 @@
 import {FormatCreatingCard} from "./FormatCreatingCard";
 import {DeleteEntryButton} from "../../../../components/DeleteEntryButton";
-import {useFetchEntries} from "../../../../hooks/fetchEntries.hook";
-import {useCallback, useEffect} from "react";
+import {useEffect} from "react";
 import {CatalogsTableCol} from "../../../../components/CatalogsTableCol";
 import {Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
-import {useGraphqlQuery} from "../../../../hooks/graphqlQuery.hook";
+import {useToastedQuery} from "../../../../hooks/toastedQuery.hook";
 import {Loader} from "../../../../components/Loader";
 import {FETCH_FORMATS} from "../../../../graphQL/queries/formatQueries";
+import {DELETE_FORMAT} from "../../../../graphQL/mutations/formatsMutations";
 
 
 export const Formats = () => {
 
-    const {entries, loading, request} = useGraphqlQuery(FETCH_FORMATS)
+    const {entries, loading, makeQuery} = useToastedQuery(FETCH_FORMATS)
 
     const fetchFormats = async () => {
-        await request('formats')
+        await makeQuery('formats')
     }
 
     useEffect(() => {
@@ -27,7 +27,7 @@ export const Formats = () => {
         )
     }
 
-    if (!loading && !entries.length) {
+    if (!entries.length) {
         return (
             <>
                 <Typography variant={'h4'}>Форматов пока нет</Typography>
@@ -59,25 +59,24 @@ export const Formats = () => {
                                     <CatalogsTableCol value={format.formatName}
                                                       inputType={'text'}
                                                       endpoint={'format'}
-                                                      entryId={format._id}
+                                                      entryId={format.id}
                                                       entryKey={'formatName'}
                                     />
                                     <CatalogsTableCol value={format.dimensions.longSide}
                                                       inputType={'number'}
                                                       endpoint={'format'}
-                                                      entryId={format._id}
+                                                      entryId={format.id}
                                                       entryKey={'longSide'}
                                     />
                                     <CatalogsTableCol value={format.dimensions.shortSide}
                                                       inputType={'number'}
                                                       endpoint={'format'}
-                                                      entryId={format._id}
+                                                      entryId={format.id}
                                                       entryKey={'shortSide'}
                                     />
                                     <TableCell align={'center'}>
-                                        <DeleteEntryButton fetchEntries={fetchFormats}
-                                                           endpoint={'format'}
-                                                           entryId={format._id}
+                                        <DeleteEntryButton query={DELETE_FORMAT}
+                                                           entryId={format.id}
                                                            entryName={format.formatName}/>
                                     </TableCell>
                                 </TableRow>

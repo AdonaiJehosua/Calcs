@@ -1,8 +1,8 @@
 import {useState} from "react";
 import {Formik, Form} from "formik";
 import {Box, Button, Card, CardActions, CardContent, Container, Modal, TextField, Typography} from "@mui/material";
-import {useCreateDocumentMutation} from "../../../../hooks/createDocumentMutation.hook";
 import {ADD_FORMAT} from "../../../../graphQL/mutations/formatsMutations";
+import {useToastedMutation} from "../../../../hooks/toastedMutation.hook";
 
 const style = {
     position: 'absolute',
@@ -17,7 +17,7 @@ const style = {
 
 export const FormatCreatingCard = () => {
 
-    const {response} = useCreateDocumentMutation(ADD_FORMAT)
+    const {makeMutation} = useToastedMutation(ADD_FORMAT)
 
     const createHandler = async (values) => {
         const variables = {
@@ -27,7 +27,7 @@ export const FormatCreatingCard = () => {
                 shortSide: values.shortSide
             }
         }
-        await response(variables, values)
+        await makeMutation(variables, values)
     }
 
     const [open, setOpen] = useState(false);
