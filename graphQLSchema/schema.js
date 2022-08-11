@@ -7,10 +7,40 @@ const {
     GraphQLList,
     GraphQLInputObjectType
 } = require("graphql");
-const Movie = require('../models/Movie')
-const Director = require('../models/Director')
 const Format = require('../models/Format')
+const Unit = require('../models/Unit')
+const Chromaticity = require('../models/Chromaticity')
 const {response} = require("express");
+const {ApolloServer, gql} = require('apollo-server')
+
+const typeDefs = gql`
+    type Chromaticity {
+        name: String
+        front: Number
+        back: Number
+        isOnePrintSide: Boolean
+    }
+    
+    type Query {
+        chromaticities: [Chromaticity]
+    }
+`
+
+const resolvers = {
+    Query: {
+        chromaticities: () => {Chromaticity.find()}
+    }
+}
+
+const FormatType = new GraphQLObjectType({
+    name: 'Format',
+    fields: () => ({
+        id: {type: GraphQLID},
+        formatName: {type: GraphQLString},
+        dimensions: {type: DimensionsType},
+        area: {type: GraphQLInt}
+    })
+})
 
 const DimensionsType = new GraphQLObjectType({
     name: 'Dimensions',
@@ -27,78 +57,18 @@ const DimensionsInputType = new GraphQLInputObjectType({
     })
 })
 
-const UserType = new GraphQLObjectType({
-    name: 'User',
+const UnitType = new GraphQLObjectType({
+    name: 'Unit',
     fields: () => ({
         id: {type: GraphQLID},
-        email: {type: GraphQLString},
-        password: {type: GraphQLString}
-    })
-})
-
-const FormatType = new GraphQLObjectType({
-    name: 'Format',
-    fields: () => ({
-        id: {type: GraphQLID},
-        formatName: {type: GraphQLString},
-        dimensions: {type: DimensionsType},
-        area: {type: GraphQLInt}
-    })
-})
-
-const FormatInputType = new GraphQLInputObjectType({
-    name: 'InputFormat',
-    fields: () => ({
-        id: {type: GraphQLID},
-        formatName: {type: GraphQLString},
-        dimensions: {type: DimensionsInputType},
-        area: {type: GraphQLInt}
-    })
-})
-
-const MovieType = new GraphQLObjectType({
-    name: 'Movie',
-    fields: () => ({
-        id: {type: GraphQLID},
-        name: {type: GraphQLString},
-        genre: {type: GraphQLString},
-        director: {
-            type: DirectorType,
-            resolve(parent) {
-                return Director.findById(parent.directorId)
-            }
-        }
-    })
-})
-
-const DirectorType = new GraphQLObjectType({
-    name: 'Director',
-    fields: () => ({
-        id: {type: GraphQLID},
-        name: {type: GraphQLString},
-        age: {type: GraphQLInt},
-        movies: {
-            type: new GraphQLList(MovieType),
-            resolve(parent) {
-                return Movie.find({directorId: parent.id})
-            }
-        }
+        fullName: {type: GraphQLString},
+        abbreviatedName: {type: GraphQLString},
     })
 })
 
 const Mutation = new GraphQLObjectType({
     name: "Mutation",
     fields: {
-        addUser: {
-            type: UserType,
-            args: {
-                email: {type: GraphQLString},
-                password: {type: GraphQLString}
-            },
-            resolve(parent, args) {
-
-            }
-        },
         addFormat: {
             type: GraphQLString,
             args: {
@@ -106,15 +76,6 @@ const Mutation = new GraphQLObjectType({
                 dimensions: {type: DimensionsInputType}
             },
             async resolve(parent, {formatName, dimensions}) {
-                if (!formatName) {
-                    throw new Error('Введите имя.')
-                }
-                if (!dimensions.longSide) {
-                    throw new Error('Введите значение длинной стороны.')
-                }
-                if (!dimensions.shortSide) {
-                    throw new Error('Введите значение короткой стороны.')
-                }
 
                 const examinationName = await Format.findOne({formatName})
                 const examinationDim = await Format.findOne({dimensions})
@@ -139,96 +100,51 @@ const Mutation = new GraphQLObjectType({
                 return (
                     'Формат создан.'
                 )
-
             }
         },
         deleteFormat: {
-            type: FormatType,
+            type: GraphQLString,
             args: {
                 id: {type: GraphQLID}
             },
-            resolve(parent, {id}) {
-                return Format.findByIdAndRemove(id)
+            async resolve(parent, {id}) {
+                await Format.findByIdAndRemove(id)
+                return 'Формат удален'
             }
         },
-        addDirector: {
-            type: DirectorType,
+        addUnit: {
+            type: GraphQLString,
             args: {
-                name: {type: GraphQLString},
+                fullName: {type: GraphQLString},
+                abbreviatedName: {type: GraphQLString}
+            },
+            async resolve(parent, {fullName, abbreviatedName}) {
+                const examinationFullName = await Unit.findOne({fullName})
+                const examinationAbbName = await Unit.findOne({abbreviatedName})
 
-                age: {type: GraphQLInt}
-            },
-            resolve(parent, args) {
-                const director = new Director({
-                    name: args.name,
-                    age: args.age
+                if (examinationFullName) {
+                    throw new Error('Единица измерения с таким названием существует.')
+                }
+                if (examinationAbbName) {
+                    throw new Error('Единица измерения с таким сокращенным названием существует.')
+                }
+
+                const unit = await new Unit({
+                    fullName: fullName,
+                    abbreviatedName: abbreviatedName
                 })
-                return director.save()
+                await unit.save()
+                return 'Единица измерения создана'
             }
         },
-        addMovie: {
-            type: MovieType,
-            args: {
-                name: {type: GraphQLString},
-                genre: {type: GraphQLString},
-                directorId: {type: GraphQLID}
-            },
-            resolve(parent, args) {
-                const movie = new Movie({
-                    name: args.name,
-                    genre: args.genre,
-                    directorId: args.directorId
-                })
-                return movie.save()
-            }
-        },
-        deleteDirector: {
-            type: DirectorType,
+        deleteUnit: {
+            type: GraphQLString,
             args: {
                 id: {type: GraphQLID}
             },
-            resolve(parent, args) {
-                return Director.findByIdAndRemove(args.id)
-            }
-        },
-        deleteMovie: {
-            type: MovieType,
-            args: {
-                id: {type: GraphQLID}
-            },
-            resolve(parent, args) {
-                return Movie.findByIdAndRemove(args.id)
-            }
-        },
-        updateDirector: {
-            type: DirectorType,
-            args: {
-                id: {type: GraphQLID},
-                name: {type: GraphQLString},
-                age: {type: GraphQLInt}
-            },
-            resolve(parent, args) {
-                return Director.findByIdAndUpdate(
-                    args.id,
-                    {$set: {name: args.name, age: args.age}},
-                    {new: true}
-                )
-            }
-        },
-        updateMovie: {
-            type: MovieType,
-            args: {
-                id: {type: GraphQLID},
-                name: {type: GraphQLString},
-                genre: {type: GraphQLInt},
-                directorId: {type: GraphQLID}
-            },
-            resolve(parent, args) {
-                return Movie.findByIdAndUpdate(
-                    args.id,
-                    {$set: {name: args.name, genre: args.genre, directorId: args.directorId}},
-                    {new: true}
-                )
+            async resolve(parent, {id}) {
+                await Unit.findByIdAndRemove(id)
+                return 'Единица измерения удалена'
             }
         },
     }
@@ -240,40 +156,27 @@ const Query = new GraphQLObjectType({
         format: {
             type: FormatType,
             args: {id: {type: GraphQLID}},
-            resolve(parent, args) {
-                return Format.findById(args.id)
+            resolve(parent, {id}) {
+                return Format.findById(id)
             }
         },
         formats: {
             type: new GraphQLList(FormatType),
-            resolve(parent, args) {
+            resolve() {
                 return Format.find()
             }
         },
-        movie: {
-            type: MovieType,
+        unit: {
+            type: UnitType,
             args: {id: {type: GraphQLID}},
-            resolve(parent, args) {
-                return Movie.findById(args.id)
+            resolve (parent, {id}) {
+                return Unit.findById(id)
             }
         },
-        director: {
-            type: DirectorType,
-            args: {id: {type: GraphQLID}},
-            resolve(parent, args) {
-                return Director.findById(args.id)
-            }
-        },
-        movies: {
-            type: new GraphQLList(MovieType),
-            resolve(parent, args) {
-                return Movie.find()
-            }
-        },
-        directors: {
-            type: new GraphQLList(DirectorType),
-            resolve(parent, args) {
-                return Director.find()
+        units: {
+            type: new GraphQLList(UnitType),
+            resolve () {
+                return Unit.find()
             }
         }
     }
@@ -287,9 +190,9 @@ const Subscription = new GraphQLObjectType({
             args: {
                 id: {type: GraphQLID}
             },
-             resolve(parent, args) {
+            resolve(parent, args) {
                 return Format.findById(args.id)
-             }
+            }
         }
     }
 })

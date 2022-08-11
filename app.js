@@ -4,8 +4,13 @@ const mongoose = require('mongoose')
 const {graphqlHTTP} = require('express-graphql')
 const schema = require('./graphQLSchema/schema')
 const cors = require('cors')
+const {createServer} = require('http')
+const {ApolloServerPluginLandingPageLocalDefault} = require('apollo-server-core');
+const {ApolloServer} = require('apollo-server')
 
 const app = express()
+
+const httpServer = createServer(app)
 
 app.use(cors())
 
