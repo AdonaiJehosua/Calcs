@@ -1,21 +1,30 @@
 import {UnitCreatingCard} from "./UnitCreatingCard";
 import {DeleteEntryButton} from "../../../../components/DeleteEntryButton";
-import {useFetchEntries} from "../../../../hooks/fetchEntries.hook";
-import {useCallback, useEffect} from "react";
+import {useEffect} from "react";
 import {CatalogsTableCol} from "../../../../components/CatalogsTableCol";
 import {Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
+import {useToastedQuery} from "../../../../hooks/toastedQuery.hook";
+import {FETCH_UNITS} from "../../../../graphQL/queries/unitQueries";
+import {Loader} from "../../../../components/Loader";
+import {DELETE_UNIT} from "../../../../graphQL/mutations/unitMutation";
 
 export const Units = () => {
 
-    const {entries, fetchEntries} = useFetchEntries()
+    const {entries, loading, makeQuery} = useToastedQuery(FETCH_UNITS)
 
-    const fetchUnits = useCallback(async () => {
-        fetchEntries('unit')
-    }, [])
+    const fetchUnits = async () => {
+        await makeQuery('units')
+    }
 
     useEffect(() => {
         fetchUnits()
     }, [fetchUnits])
+
+    if (loading) {
+        return (
+            <Loader/>
+        )
+    }
 
     if (!entries.length) {
         return <p className={'center'}>Единиц измерения пока нет
@@ -46,19 +55,18 @@ export const Units = () => {
                             <CatalogsTableCol value={unit.fullName}
                                               inputType={'text'}
                                               endpoint={'unit'}
-                                              entryId={unit._id}
+                                              entryId={unit.id}
                                               entryKey={'fullName'}
                             />
                             <CatalogsTableCol value={unit.abbreviatedName}
                                               inputType={'text'}
                                               endpoint={'unit'}
-                                              entryId={unit._id}
+                                              entryId={unit.id}
                                               entryKey={'abbreviatedName'}
                             />
                             <TableCell align={'center'}>
-                                <DeleteEntryButton fetchEntries={fetchUnits}
-                                                   endpoint={'unit'}
-                                                   entryId={unit._id}
+                                <DeleteEntryButton query={DELETE_UNIT}
+                                                   entryId={unit.id}
                                                    entryName={unit.fullName}/>
                             </TableCell>
                         </TableRow>
