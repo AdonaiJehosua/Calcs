@@ -9,6 +9,7 @@ export const FETCH_FORMATS = gql`
                 longSide
                 shortSide
             }
+            area
         }
     }
 `

@@ -7,7 +7,7 @@ export const ADD_UNIT = gql`
 `
 
 export const DELETE_UNIT = gql`
-    mutation ($id: ID) {
+    mutation ($id: ID!) {
         message: deleteUnit (id: $id)
     }
 `
