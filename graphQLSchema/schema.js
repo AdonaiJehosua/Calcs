@@ -1,20 +1,38 @@
-const {
-    GraphQLObjectType,
-    GraphQLString,
-    GraphQLID,
-    GraphQLSchema,
-    GraphQLInt,
-    GraphQLList,
-    GraphQLInputObjectType
-} = require("graphql");
+const {GraphQLScalarType, Kind, print} = require("graphql");
 const Format = require('../models/Format')
 const Unit = require('../models/Unit')
 const Chromaticity = require('../models/Chromaticity')
 const {gql} = require('apollo-server')
-const { makeExecutableSchema } = require('graphql-tools')
+const {makeExecutableSchema} = require('graphql-tools')
+const {PubSub} = require('graphql-subscriptions')
 
-//
+function identity(value) {
+    return value;
+}
+
+function parseLiteral(typeName, ast) {
+    switch (ast.kind) {
+        case Kind.INT:
+        case Kind.STRING:
+            return ast.value;
+        default:
+            throw new TypeError(`${typeName} cannot represent value: ${print(ast)}`);
+    }
+}
+
+const graphQLIntOrString = new GraphQLScalarType({
+    name: 'IntOrString',
+    description: 'Type for string or int value',
+    serialize: identity,
+    parseValue: identity,
+    parseLiteral: (ast) => parseLiteral('IntOrString', ast)
+})
+
+
+const pubsub = new PubSub()
 const typeDefs = gql`
+    scalar IntOrString
+
     type Chromaticity {
         id: ID
         name: String
@@ -23,6 +41,30 @@ const typeDefs = gql`
         isOnePrintSide: Boolean
     }
     
+    type Dimensions {
+        longSide: Int
+        shortSide: Int
+    }
+    
+    input DimensionsInput {
+        longSide: Int!
+        shortSide: Int!
+    }
+    
+    
+    type Format {
+        id: ID
+        formatName: String
+        dimensions: Dimensions
+        area: Int
+    }
+    
+    enum FormatKeys {
+        formatName
+        longSide
+        shortSide
+    }
+       
     type Unit {
         id: ID
         fullName: String
@@ -30,206 +72,119 @@ const typeDefs = gql`
     }
     
     type Query {
-        chromaticities: [Chromaticity],
+        formats: [Format]
+        format(id: ID): Format
+        chromaticities: [Chromaticity]
         chromaticity(id: ID!): Chromaticity
         units: [Unit]
+        unit(id: ID!): Unit
+    }
+    
+    type Mutation {
+        addFormat(formatName: String!, dimensions: DimensionsInput!): String
+        updateFormat(id: ID!, entryKey: FormatKeys!, updatingValue: IntOrString!): String
+        deleteFormat(id: ID!): String
+        addChromaticity(front: Int!, back: Int!): String
+        deleteChromaticity(id: ID!): String
+        addUnit(fullName: String!, abbreviatedName: String!): String
+        deleteUnit(id: ID!): String
     }
     
     type Subscription {
-        chromaticityCreated: Chromaticity
+        unitAdded: Unit!
     }
 `
+
+
+
 //
 const resolvers = {
     Query: {
+        formats: async () => await Format.find(),
+        format: async (parent, args) => await Format.findById(args.id),
         chromaticities: async () => await Chromaticity.find(),
         chromaticity: async (parent, args) => await Chromaticity.findById(args.id),
-        units: async () => await Unit.find()
+        units: async () => await Unit.find(),
+        unit: async (parent, args) => await Unit.findById(args.id)
+    },
+    Mutation: {
+        addFormat: async (parent, {formatName, dimensions}) => {
+            const examinationName = await Format.findOne({formatName})
+            const examinationDim = await Format.findOne({dimensions})
+            if (examinationName) {
+                throw new Error('Формат с таким названием существует.')
+            }
+            if (examinationDim) {
+                throw new Error(`Формат с такими значениями существует  - "${examinationDim.formatName}".`)
+            }
+            const area = dimensions.longSide * dimensions.shortSide
+            const format = await new Format({
+                formatName: formatName,
+                dimensions: {
+                    longSide: dimensions.longSide,
+                    shortSide: dimensions.shortSide
+                },
+                area: area
+            })
+            await format.save()
+            return 'Формат создан.'
+        },
+        deleteFormat: async (parent, {id}) => {
+            await Format.findByIdAndRemove(id)
+            return 'Формат удален.'
+        },
+        updateFormat: async (parent, {id, entryKey, updatingValue}) => {
+
+        },
+        addUnit: async (parent, {fullName, abbreviatedName}) => {
+            const examinationFullName = await Unit.findOne({fullName})
+            const examinationAbbName = await Unit.findOne({abbreviatedName})
+
+            if (examinationFullName) {
+                throw new Error('Единица измерения с таким названием существует.')
+            }
+            if (examinationAbbName) {
+                throw new Error('Единица измерения с таким сокращенным названием существует.')
+            }
+
+            const unit = await new Unit({
+                fullName: fullName,
+                abbreviatedName: abbreviatedName
+            })
+            await unit.save()
+            const newUnit = await Unit.findOne({fullName: fullName})
+            await pubsub.publish('UNIT_ADDED', {
+                unitAdded: newUnit
+            })
+
+            return 'Единица измерения создана.'
+        },
+        deleteUnit: async (parent, {id}) => {
+            await Unit.findByIdAndRemove(id)
+            return 'Единица измерения удалена'
+        },
+        addChromaticity: async (parent, {front, back}) => {
+            const name = `${front} + ${back}`
+            const examinationChromaticity = await Chromaticity.findOne({name})
+            if (examinationChromaticity) {
+                throw new Error('Такая цветность существует.')
+            }
+            const isOnePrintSide = Boolean(back === 0)
+            const chromaticity = await new Chromaticity({name, front, back, isOnePrintSide})
+            await chromaticity.save()
+            return 'Цветность создана.'
+        },
+        deleteChromaticity: async (parent, {id}) => {
+            await Chromaticity.findByIdAndRemove(id)
+            return 'Цветность удалена.'
+        }
+    },
+    IntOrString: graphQLIntOrString,
+    Subscription: {
+        unitAdded: {
+            subscribe: () => pubsub.asyncIterator('UNIT_ADDED')
+        }
     }
 }
 
 module.exports.schema = new makeExecutableSchema({typeDefs, resolvers})
-
-// module.exports.server = new ApolloServer({
-//     typeDefs,
-//     resolvers,
-//     csrfPrevention: true,
-//     cache: 'bounded',
-//     plugins: [
-//         ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-//     ]
-// })
-
-
-
-const FormatType = new GraphQLObjectType({
-    name: 'Format',
-    fields: () => ({
-        id: {type: GraphQLID},
-        formatName: {type: GraphQLString},
-        dimensions: {type: DimensionsType},
-        area: {type: GraphQLInt}
-    })
-})
-
-const DimensionsType = new GraphQLObjectType({
-    name: 'Dimensions',
-    fields: () => ({
-        longSide: {type: GraphQLInt},
-        shortSide: {type: GraphQLInt}
-    })
-})
-const DimensionsInputType = new GraphQLInputObjectType({
-    name: 'InputDimensions',
-    fields: () => ({
-        longSide: {type: GraphQLInt},
-        shortSide: {type: GraphQLInt}
-    })
-})
-
-const UnitType = new GraphQLObjectType({
-    name: 'Unit',
-    fields: () => ({
-        id: {type: GraphQLID},
-        fullName: {type: GraphQLString},
-        abbreviatedName: {type: GraphQLString},
-    })
-})
-
-const Mutation = new GraphQLObjectType({
-    name: "Mutation",
-    fields: {
-        addFormat: {
-            type: GraphQLString,
-            args: {
-                formatName: {type: GraphQLString},
-                dimensions: {type: DimensionsInputType}
-            },
-            async resolve(parent, {formatName, dimensions}) {
-
-                const examinationName = await Format.findOne({formatName})
-                const examinationDim = await Format.findOne({dimensions})
-
-                if (examinationName) {
-                    throw new Error('Формат с таким названием существует.')
-                }
-                if (examinationDim) {
-                    throw new Error(`Формат с такими значениями существует  - "${examinationDim.formatName}".`)
-                }
-
-                const area = dimensions.longSide * dimensions.shortSide
-                const format = await new Format({
-                    formatName: formatName,
-                    dimensions: {
-                        longSide: dimensions.longSide,
-                        shortSide: dimensions.shortSide
-                    },
-                    area: area
-                })
-                await format.save()
-                return (
-                    'Формат создан.'
-                )
-            }
-        },
-        deleteFormat: {
-            type: GraphQLString,
-            args: {
-                id: {type: GraphQLID}
-            },
-            async resolve(parent, {id}) {
-                await Format.findByIdAndRemove(id)
-                return 'Формат удален'
-            }
-        },
-        addUnit: {
-            type: GraphQLString,
-            args: {
-                fullName: {type: GraphQLString},
-                abbreviatedName: {type: GraphQLString}
-            },
-            async resolve(parent, {fullName, abbreviatedName}) {
-                const examinationFullName = await Unit.findOne({fullName})
-                const examinationAbbName = await Unit.findOne({abbreviatedName})
-
-                if (examinationFullName) {
-                    throw new Error('Единица измерения с таким названием существует.')
-                }
-                if (examinationAbbName) {
-                    throw new Error('Единица измерения с таким сокращенным названием существует.')
-                }
-
-                const unit = await new Unit({
-                    fullName: fullName,
-                    abbreviatedName: abbreviatedName
-                })
-                await unit.save()
-                return 'Единица измерения создана'
-            }
-        },
-        deleteUnit: {
-            type: GraphQLString,
-            args: {
-                id: {type: GraphQLID}
-            },
-            async resolve(parent, {id}) {
-                await Unit.findByIdAndRemove(id)
-                return 'Единица измерения удалена'
-            }
-        },
-    }
-})
-
-const Query = new GraphQLObjectType({
-    name: 'Query',
-    fields: {
-        format: {
-            type: FormatType,
-            args: {id: {type: GraphQLID}},
-            resolve(parent, {id}) {
-                return Format.findById(id)
-            }
-        },
-        formats: {
-            type: new GraphQLList(FormatType),
-            resolve() {
-                return Format.find()
-            }
-        },
-        unit: {
-            type: UnitType,
-            args: {id: {type: GraphQLID}},
-            resolve (parent, {id}) {
-                return Unit.findById(id)
-            }
-        },
-        units: {
-            type: new GraphQLList(UnitType),
-            resolve () {
-                return Unit.find()
-            }
-        }
-    }
-})
-
-const Subscription = new GraphQLObjectType({
-    name: 'Subscription',
-    fields: {
-        formatAdded: {
-            type: FormatType,
-            args: {
-                id: {type: GraphQLID}
-            },
-            resolve(parent, args) {
-                return Format.findById(args.id)
-            }
-        }
-    }
-})
-
-
-// module.exports.schema = new GraphQLSchema({
-//     query: Query,
-//     mutation: Mutation,
-//     subscription: Subscription
-// })
