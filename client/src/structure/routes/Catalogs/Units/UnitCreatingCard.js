@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import {useToastedMutation} from "../../../../hooks/toastedMutation.hook";
 import {ADD_UNIT} from "../../../../graphQL/mutations/unitMutation";
+import {FETCH_UNITS} from "../../../../graphQL/queries/unitQueries";
 
 const style = {
     position: 'absolute',
@@ -19,7 +20,7 @@ const style = {
 
 export const UnitCreatingCard = () => {
 
-    const {makeMutation} = useToastedMutation(ADD_UNIT)
+    const {makeMutation} = useToastedMutation(ADD_UNIT, FETCH_UNITS, 'units')
 
 
     const createHandler = async (values) => {

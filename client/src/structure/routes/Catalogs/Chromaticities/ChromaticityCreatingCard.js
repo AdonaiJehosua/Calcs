@@ -1,9 +1,11 @@
-import {useCallback, useState} from "react";
+import {useState} from "react";
 import {Formik, Form} from "formik";
-import {useCreateEntry} from "../../../../hooks/createEntry.hook";
 import validator from "validator";
 import {Button, Card, CardActions, CardContent, Container, Modal, TextField, Typography} from "@mui/material";
 import Box from "@mui/material/Box";
+import {useToastedMutation} from "../../../../hooks/toastedMutation.hook";
+import {ADD_CHROMATICITY} from "../../../../graphQL/mutations/chromaticitiesMutation";
+import {FETCH_CHROMATICITIES} from "../../../../graphQL/queries/chromaticitiesQueries";
 
 const style = {
     position: 'absolute',
@@ -16,20 +18,17 @@ const style = {
     p: 1,
 };
 
-export const СhromaticityCreatingCard = ({fetchEntries}) => {
+export const ChromaticityCreatingCard = () => {
 
-    const {createEntry} = useCreateEntry()
+    const {makeMutation} = useToastedMutation(ADD_CHROMATICITY, FETCH_CHROMATICITIES, 'chromaticities')
 
-    const createHandler = useCallback(async (values) => {
-        try {
-            const reqBody = {front: values.front, back: values.back}
-            await createEntry(reqBody, 'chromaticity', 'createchromaticity')
-            fetchEntries()
-            values.front = ''
-            values.back = ''
-        } catch (e) {
+    const createHandler = async (values) => {
+        const variables = {
+            front: values.front,
+            back: values.back
         }
-    }, [])
+        await makeMutation(variables, values)
+    }
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => {

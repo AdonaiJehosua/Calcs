@@ -3,6 +3,7 @@ import {Formik, Form} from "formik";
 import {Box, Button, Card, CardActions, CardContent, Container, Modal, TextField, Typography} from "@mui/material";
 import {ADD_FORMAT} from "../../../../graphQL/mutations/formatsMutations";
 import {useToastedMutation} from "../../../../hooks/toastedMutation.hook";
+import {FETCH_FORMATS} from "../../../../graphQL/queries/formatQueries";
 
 const style = {
     position: 'absolute',
@@ -17,7 +18,7 @@ const style = {
 
 export const FormatCreatingCard = () => {
 
-    const {makeMutation} = useToastedMutation(ADD_FORMAT)
+    const {makeMutation} = useToastedMutation(ADD_FORMAT, FETCH_FORMATS, 'formats')
 
     const createHandler = async (values) => {
         const variables = {

@@ -19,7 +19,7 @@ export const Formats = () => {
 
     useEffect(() => {
         fetchFormats()
-    }, [fetchFormats])
+    }, [fetchFormats, entries])
 
     if (loading) {
         return (
@@ -55,7 +55,7 @@ export const Formats = () => {
                     <TableBody>
                         {entries.map((format) => {
                             return (
-                                <TableRow key={format._id}>
+                                <TableRow key={format.id}>
                                     <CatalogsTableCol value={format.formatName}
                                                       inputType={'text'}
                                                       endpoint={'format'}
@@ -75,9 +75,12 @@ export const Formats = () => {
                                                       entryKey={'shortSide'}
                                     />
                                     <TableCell align={'center'}>
-                                        <DeleteEntryButton query={DELETE_FORMAT}
+                                        <DeleteEntryButton gqlMutation={DELETE_FORMAT}
+                                                           gqlQuery={FETCH_FORMATS}
+                                                           queryName={'formats'}
                                                            entryId={format.id}
-                                                           entryName={format.formatName}/>
+                                                           entryName={format.formatName}
+                                        />
                                     </TableCell>
                                 </TableRow>
                             )

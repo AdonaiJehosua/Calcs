@@ -16,9 +16,10 @@ export const Units = () => {
         await makeQuery('units')
     }
 
+
     useEffect(() => {
         fetchUnits()
-    }, [fetchUnits])
+    }, [fetchUnits, entries])
 
     if (loading) {
         return (
@@ -51,7 +52,7 @@ export const Units = () => {
                 <TableBody>
                 {entries.map((unit) => {
                     return (
-                        <TableRow key={unit._id}>
+                        <TableRow key={unit.id}>
                             <CatalogsTableCol value={unit.fullName}
                                               inputType={'text'}
                                               endpoint={'unit'}
@@ -65,7 +66,9 @@ export const Units = () => {
                                               entryKey={'abbreviatedName'}
                             />
                             <TableCell align={'center'}>
-                                <DeleteEntryButton query={DELETE_UNIT}
+                                <DeleteEntryButton gqlMutation={DELETE_UNIT}
+                                                   gqlQuery={FETCH_UNITS}
+                                                   queryName={'units'}
                                                    entryId={unit.id}
                                                    entryName={unit.fullName}/>
                             </TableCell>
