@@ -5,9 +5,9 @@ import {useToastedMutation} from "../hooks/toastedMutation.hook";
 //Кнопка для удаления записи из базы данных. Принимает функцию, которая будет подтягивать с сервера обновленные данные,
 // эндпоинт, на который идет запрос на удаление и обновление данных, id записи и имя записи из бызы
 
-export const DeleteEntryButton = ({query, entryId, entryName}) => {
+export const DeleteEntryButton = ({gqlMutation, gqlQuery, queryName, entryId, entryName}) => {
 
-    const {makeMutation} = useToastedMutation(query)
+    const {makeMutation} = useToastedMutation(gqlMutation, gqlQuery, queryName)
 
     const deleteFunction = async () => {
         const variables = {
