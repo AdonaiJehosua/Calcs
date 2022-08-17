@@ -1,10 +1,11 @@
-const {GraphQLScalarType, Kind, print} = require("graphql");
+const {GraphQLScalarType, Kind, print, GraphQLError} = require("graphql");
 const Format = require('../models/Format')
 const Unit = require('../models/Unit')
 const Chromaticity = require('../models/Chromaticity')
 const {gql} = require('apollo-server')
 const {makeExecutableSchema} = require('graphql-tools')
 const {PubSub} = require('graphql-subscriptions')
+const {isNumeric} = require("validator");
 
 function identity(value) {
     return value;
@@ -20,11 +21,17 @@ function parseLiteral(typeName, ast) {
     }
 }
 
+function parseValue(typeName, value) {
+    if (typeof value === "number" || typeof value === "string") {
+        return value
+    } else throw new GraphQLError(`${typeName} cannot represent value: ${value}`)
+}
+
 const graphQLIntOrString = new GraphQLScalarType({
     name: 'IntOrString',
     description: 'Type for string or int value',
     serialize: identity,
-    parseValue: identity,
+    parseValue: value => parseValue('IntOrString', value),
     parseLiteral: (ast) => parseLiteral('IntOrString', ast)
 })
 
@@ -96,7 +103,6 @@ const typeDefs = gql`
 `
 
 
-
 //
 const resolvers = {
     Query: {
@@ -134,7 +140,45 @@ const resolvers = {
             return 'Формат удален.'
         },
         updateFormat: async (parent, {id, entryKey, updatingValue}) => {
+            switch (entryKey) {
+                case 'formatName':
+                    const examName = await Format.findOne({formatName: updatingValue})
+                    if (examName) {
+                        throw new GraphQLError(`Формат с таким названием существует: ${updatingValue}.`)
+                    }
+                    await Format.findByIdAndUpdate(id, {$set: {formatName: updatingValue}})
+                    return 'Название формата изменено.'
 
+                case 'longSide':
+                    if (!isNumeric(String(updatingValue))) {
+                        throw new GraphQLError('Значение длинной стороны должно быть целым числом')
+                    }
+                    const oldFormatLS = await Format.findById(id)
+                    const newDimensionsLS = {longSide: updatingValue, shortSide: oldFormatLS.dimensions.shortSide}
+                    const examLongSide = await Format.findOne({dimensions: newDimensionsLS})
+                    if (examLongSide) {
+                        throw new GraphQLError(`Формат с такими значениями существует: ${oldFormatLS.formatName}.`)
+                    }
+                    const newAreaLS = newDimensionsLS.longSide * newDimensionsLS.shortSide
+                    await Format.findByIdAndUpdate(id, {$set: {dimensions: newDimensionsLS, area: newAreaLS}})
+                    return 'Значение длинной стороны изменено.'
+
+                case 'shortSide':
+                    if (!isNumeric(String(updatingValue))) {
+                        throw new GraphQLError('Значение короткой стороны должно быть целым числом')
+                    }
+                    const oldFormatSS = await Format.findById(id)
+                    const newDimensionsSS = {longSide: updatingValue, shortSide: oldFormatSS.dimensions.shortSide}
+                    const examShortSide = await Format.findOne({dimensions: newDimensionsSS})
+                    if (examShortSide) {
+                        throw new GraphQLError(`Формат с такими значениями существует: ${oldFormatSS.formatName}.`)
+                    }
+                    const newAreaSS = newDimensionsSS.longSide * newDimensionsSS.shortSide
+                    await Format.findByIdAndUpdate(id, {$set: {dimensions: newDimensionsSS, area: newAreaSS}})
+                    return 'Значение длинной стороны изменено.'
+                default:
+                    throw new GraphQLError('Что-то пошло не так.')
+            }
         },
         addUnit: async (parent, {fullName, abbreviatedName}) => {
             const examinationFullName = await Unit.findOne({fullName})
