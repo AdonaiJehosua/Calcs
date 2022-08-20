@@ -1,11 +1,16 @@
 const {GraphQLScalarType, Kind, print, GraphQLError} = require("graphql");
 const Format = require('../models/Format')
 const Unit = require('../models/Unit')
+const User = require('../models/User')
 const Chromaticity = require('../models/Chromaticity')
 const {gql} = require('apollo-server')
 const {makeExecutableSchema} = require('graphql-tools')
 const {PubSub} = require('graphql-subscriptions')
 const {isNumeric} = require("validator");
+const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken");
+const config = require("config");
+const {AuthenticationError} = require("apollo-server-core");
 
 function identity(value) {
     return value;
@@ -39,6 +44,14 @@ const graphQLIntOrString = new GraphQLScalarType({
 const pubsub = new PubSub()
 const typeDefs = gql`
     scalar IntOrString
+    
+    type User {
+        id: ID
+        userName: String
+        password: String
+        email: String
+        phone: String
+    }
 
     type Chromaticity {
         id: ID
@@ -78,7 +91,14 @@ const typeDefs = gql`
         abbreviatedName: String 
     }
     
+    type UserData {
+        id: ID
+        userName: String
+        token: String
+    }
+    
     type Query {
+        login(userName: String!, password: String!): UserData
         formats: [Format]
         format(id: ID): Format
         chromaticities: [Chromaticity]
@@ -88,6 +108,7 @@ const typeDefs = gql`
     }
     
     type Mutation {
+        addUser(userName: String!, password: String!): String
         addFormat(formatName: String!, dimensions: DimensionsInput!): String
         updateFormat(id: ID!, entryKey: FormatKeys!, updatingValue: IntOrString!): String
         deleteFormat(id: ID!): String
@@ -106,6 +127,23 @@ const typeDefs = gql`
 //
 const resolvers = {
     Query: {
+        login: async (_, {userName, password}) => {
+            const user = await User.findOne({userName})
+            if (!user) {
+                throw new Error('Такого пользователя не существует.')
+            }
+            const isMatch = await bcrypt.compare(password, user.password)
+            if (!isMatch) {
+                throw new Error('Неверный пароль.')
+            }
+            const token = jwt.sign(
+                {userId: user.id},
+                config.get('jwtSecret'),
+                {expiresIn: '1h'}
+            )
+
+            return {id: user.id, userName: user.userName, token}
+        },
         formats: async () => await Format.find(),
         format: async (parent, args) => await Format.findById(args.id),
         chromaticities: async () => await Chromaticity.find(),
@@ -114,7 +152,21 @@ const resolvers = {
         unit: async (parent, args) => await Unit.findById(args.id)
     },
     Mutation: {
-        addFormat: async (parent, {formatName, dimensions}) => {
+        addUser: async (_, {userName, password}) => {
+            const examUserName = await User.findOne({userName})
+            if (examUserName) {
+                throw new GraphQLError('Такой пользователь уже существует.')
+            }
+            const hashedPassword = await bcrypt.hash(password, 12)
+            const user = await new User({userName: userName, password: hashedPassword, email: '', phone: ''})
+            await user.save()
+            return 'Пользователь создан.'
+        },
+        addFormat: async (parent, {formatName, dimensions}, req) => {
+            if (!req.isAuth) {
+                throw new AuthenticationError('Нет авторизации.')
+            }
+
             const examinationName = await Format.findOne({formatName})
             const examinationDim = await Format.findOne({dimensions})
             if (examinationName) {

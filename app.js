@@ -8,8 +8,10 @@ const {ApolloServer} = require('apollo-server-express')
 const {WebSocketServer} = require('ws')
 const {useServer} = require('graphql-ws/lib/use/ws')
 const {schema} = require('./graphQLSchema/schema')
+const auth = require('./middleware/auth.middleware')
 
 const app = express()
+app.use(auth)
 const httpServer = createServer(app)
 const wsServer = new WebSocketServer({
     server: httpServer,
@@ -21,6 +23,9 @@ const server = new ApolloServer({
     schema,
     csrfPrevention: true,
     cache: 'bounded',
+    // context: async ({req}) => ({
+    //     isAuth: await auth(req)
+    // }),
     plugins: [
         ApolloServerPluginDrainHttpServer({ httpServer }),
         {

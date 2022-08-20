@@ -3,6 +3,9 @@ import {useUpdateEntry} from "../hooks/updateEntry.hook";
 import {Formik, Form} from "formik";
 import validator from "validator";
 import {Button, Card, CardActions, CardContent, Popover, TableCell, TextField, Typography} from "@mui/material";
+import {useToastedMutation} from "../hooks/toastedMutation.hook";
+import {UPDATE_FORMAT} from "../graphQL/mutations/formatsMutations";
+import {FETCH_FORMATS} from "../graphQL/queries/formatQueries";
 
 export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}) => {
 
@@ -32,13 +35,16 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
 
     const {entryValue, updateEntry} = useUpdateEntry(value)
 
-    const updateHandler = useCallback(async (values) => {
-        try {
-            await updateEntry({entryKey: entryKey, updatingValue: values.updatingValue}, endpoint, entryId)
-            deactivateEditMode()
-        } catch (e) {
+    const {makeMutation} = useToastedMutation(UPDATE_FORMAT, FETCH_FORMATS, 'formats')
+
+    const updateHandler = async (values) => {
+        const variables = {
+            id: entryId,
+            entryKey: entryKey,
+            updatingValue: values.updatingValue
         }
-    }, [updateEntry, entryKey, endpoint, entryId])
+        await makeMutation(variables, values)
+    }
 
     return (
         <TableCell align={'center'}>

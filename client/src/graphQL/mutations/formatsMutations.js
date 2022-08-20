@@ -11,3 +11,9 @@ export const DELETE_FORMAT = gql`
         message: deleteFormat (id: $id)
     }
 `
+
+export const UPDATE_FORMAT = gql`
+    mutation ($id: ID!, $entryKey: FormatKeys!, $updatingValue: IntOrString!) {
+        message: updateFormat (id: $id, entryKey: $entryKey, updatingValue: $updatingValue)
+    }
+`
