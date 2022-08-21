@@ -1,5 +1,4 @@
-import {useCallback, useState} from "react";
-import {useUpdateEntry} from "../hooks/updateEntry.hook";
+import {useState} from "react";
 import {Formik, Form} from "formik";
 import validator from "validator";
 import {Button, Card, CardActions, CardContent, Popover, TableCell, TextField, Typography} from "@mui/material";
@@ -7,7 +6,7 @@ import {useToastedMutation} from "../hooks/toastedMutation.hook";
 import {UPDATE_FORMAT} from "../graphQL/mutations/formatsMutations";
 import {FETCH_FORMATS} from "../graphQL/queries/formatQueries";
 
-export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}) => {
+export const CatalogsTableCol = ({value, inputType, entryId, entryKey}) => {
 
     const [editMode, setEditMode] = useState(false)
     const activateEditMode = () => {
@@ -33,8 +32,6 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
         selectedText.select()
     }
 
-    const {entryValue, updateEntry} = useUpdateEntry(value)
-
     const {makeMutation} = useToastedMutation(UPDATE_FORMAT, FETCH_FORMATS, 'formats')
 
     const updateHandler = async (values) => {
@@ -44,6 +41,8 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
             updatingValue: values.updatingValue
         }
         await makeMutation(variables, values)
+        await handleClose()
+        await deactivateEditMode()
     }
 
     return (
@@ -51,7 +50,7 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
             <Formik
                 onSubmit={updateHandler}
                 initialValues={{
-                    updatingValue: entryValue
+                    updatingValue: value
                 }}
                 validate={values => {
                     const errors = {};
@@ -71,7 +70,7 @@ export const CatalogsTableCol = ({value, inputType, endpoint, entryId, entryKey}
                       handleSubmit
                   }) => (
                     <Form>
-                        {!editMode && <span onDoubleClick={handleDoubleClick}>{entryValue}</span>}
+                        {!editMode && <span onDoubleClick={handleDoubleClick}>{value}</span>}
                         {editMode &&
                         <div>
                             <TextField
