@@ -23,11 +23,11 @@ function App() {
     const routes = useRoutes(isAuthenticated)
 
     const wsLink = new GraphQLWsLink(createClient({
-        url: 'ws://192.168.0.5:5000/subscriptions',
+        url: 'ws://localhost:5000/subscriptions',
     }));
 
     const httpLink = new HttpLink({
-        uri: 'http://192.168.0.5:5000/graphql'
+        uri: 'http://localhost:5000/graphql'
     });
 
     const splitLink = split(
