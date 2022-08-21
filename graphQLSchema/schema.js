@@ -220,14 +220,14 @@ const resolvers = {
                         throw new GraphQLError('Значение короткой стороны должно быть целым числом')
                     }
                     const oldFormatSS = await Format.findById(id)
-                    const newDimensionsSS = {longSide: updatingValue, shortSide: oldFormatSS.dimensions.shortSide}
+                    const newDimensionsSS = {longSide: oldFormatSS.dimensions.longSide, shortSide: updatingValue}
                     const examShortSide = await Format.findOne({dimensions: newDimensionsSS})
                     if (examShortSide) {
                         throw new GraphQLError(`Формат с такими значениями существует: ${oldFormatSS.formatName}.`)
                     }
                     const newAreaSS = newDimensionsSS.longSide * newDimensionsSS.shortSide
                     await Format.findByIdAndUpdate(id, {$set: {dimensions: newDimensionsSS, area: newAreaSS}})
-                    return 'Значение длинной стороны изменено.'
+                    return 'Значение короткой стороны изменено.'
                 default:
                     throw new GraphQLError('Что-то пошло не так.')
             }
