@@ -14,12 +14,14 @@ import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import { split, HttpLink } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
+import {setContext} from "@apollo/client/link/context";
+
 
 
 function App() {
 
     const {login, logout, token, userId, ready} = useAuth()
-    const isAuthenticated = true
+    const isAuthenticated = !!token
     const routes = useRoutes(isAuthenticated)
 
     const wsLink = new GraphQLWsLink(createClient({
@@ -27,7 +29,16 @@ function App() {
     }));
 
     const httpLink = new HttpLink({
-        uri: 'http://localhost:5000/graphql'
+        uri: 'http://localhost:5000/graphql',
+    });
+
+    const authLink = setContext((_, { headers }) => {
+        return {
+            headers: {
+                ...headers,
+                authorization: token ? `Bearer ${token}` : "",
+            }
+        }
     });
 
     const splitLink = split(
@@ -39,7 +50,7 @@ function App() {
             );
         },
         wsLink,
-        httpLink,
+        authLink.concat(httpLink)
     );
 
     const client = new ApolloClient({
@@ -54,7 +65,7 @@ function App() {
     return (
         <ApolloProvider client={client}>
             <ToastContainer/>
-        <AuthContext.Provider value={{token, userId, logout, login, isAuthenticated}}>
+        <AuthContext.Provider value={{token, userId, login, logout, isAuthenticated}}>
             <Router>
                 <ThemeProvider theme={mainColorsTheme}>
                         {isAuthenticated && <Navbar/>}

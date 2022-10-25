@@ -45,10 +45,17 @@ const pubsub = new PubSub()
 const typeDefs = gql`
     scalar IntOrString
     
+    enum UserRoles {
+        admin
+        manager
+        guest
+    }
+    
     type User {
         id: ID
         userName: String
         password: String
+        roles: UserRoles
         email: String
         phone: String
     }
@@ -84,6 +91,11 @@ const typeDefs = gql`
         longSide
         shortSide
     }
+    
+    enum UnitKeys {
+        fullName
+        abbreviatedName
+    }
        
     type Unit {
         id: ID
@@ -94,11 +106,11 @@ const typeDefs = gql`
     type UserData {
         id: ID
         userName: String
+        roles: 
         token: String
     }
     
     type Query {
-        login(userName: String!, password: String!): UserData
         formats: [Format]
         format(id: ID): Format
         chromaticities: [Chromaticity]
@@ -108,7 +120,8 @@ const typeDefs = gql`
     }
     
     type Mutation {
-        addUser(userName: String!, password: String!): String
+        addUser(userName: String!, password: String!, role: String!): String
+        login(userName: String!, password: String!): UserData
         addFormat(formatName: String!, dimensions: DimensionsInput!): String
         updateFormat(id: ID!, entryKey: FormatKeys!, updatingValue: IntOrString!): String
         deleteFormat(id: ID!): String
@@ -116,6 +129,7 @@ const typeDefs = gql`
         deleteChromaticity(id: ID!): String
         addUnit(fullName: String!, abbreviatedName: String!): String
         deleteUnit(id: ID!): String
+        updateUnit(id: ID!, entryKey: UnitKeys!, updatingValue: String!): String
     }
     
     type Subscription {
@@ -123,27 +137,8 @@ const typeDefs = gql`
     }
 `
 
-
-//
 const resolvers = {
     Query: {
-        login: async (_, {userName, password}) => {
-            const user = await User.findOne({userName})
-            if (!user) {
-                throw new Error('Такого пользователя не существует.')
-            }
-            const isMatch = await bcrypt.compare(password, user.password)
-            if (!isMatch) {
-                throw new Error('Неверный пароль.')
-            }
-            const token = jwt.sign(
-                {userId: user.id},
-                config.get('jwtSecret'),
-                {expiresIn: '1h'}
-            )
-
-            return {id: user.id, userName: user.userName, token}
-        },
         formats: async () => await Format.find(),
         format: async (parent, args) => await Format.findById(args.id),
         chromaticities: async () => await Chromaticity.find(),
@@ -162,8 +157,25 @@ const resolvers = {
             await user.save()
             return 'Пользователь создан.'
         },
-        addFormat: async (parent, {formatName, dimensions}, req) => {
-            if (!req.isAuth) {
+        login: async (parent, {userName, password}) => {
+            const user = await User.findOne({userName})
+            if (!user) {
+                throw new Error('Такого пользователя не существует.')
+            }
+            const isMatch = await bcrypt.compare(password, user.password)
+            if (!isMatch) {
+                throw new Error('Неверный пароль.')
+            }
+            const token = jwt.sign(
+                {userId: user.id},
+                config.get('jwtSecret'),
+                {algorithm: "HS256", subject: user.id, expiresIn: '1h'}
+            )
+            return {id: user.id, userName: user.userName, token}
+        },
+        addFormat: async (parent, {formatName, dimensions}, context) => {
+            console.log(context)
+            if (!context.user) {
                 throw new AuthenticationError('Нет авторизации.')
             }
 
@@ -187,11 +199,15 @@ const resolvers = {
             await format.save()
             return 'Формат создан.'
         },
-        deleteFormat: async (parent, {id}) => {
+        deleteFormat: async (parent, {id}, context) => {
+            if (!context.user) return null
             await Format.findByIdAndRemove(id)
             return 'Формат удален.'
         },
-        updateFormat: async (parent, {id, entryKey, updatingValue}) => {
+        updateFormat: async (parent, {id, entryKey, updatingValue}, req) => {
+            if (!req.isAuth) {
+                throw new AuthenticationError('Нет авторизации.')
+            }
             switch (entryKey) {
                 case 'formatName':
                     const examName = await Format.findOne({formatName: updatingValue})
@@ -258,6 +274,30 @@ const resolvers = {
         deleteUnit: async (parent, {id}) => {
             await Unit.findByIdAndRemove(id)
             return 'Единица измерения удалена'
+        },
+        updateUnit: async (parent, {id, entryKey, updatingValue}, req) => {
+            if (!req.isAuth) {
+                throw new AuthenticationError('Нет авторизации.')
+            }
+            switch (entryKey) {
+                case 'fullName':
+                    const examFullName = await Unit.findOne({fullName: updatingValue})
+                    if (examFullName) {
+                        throw new GraphQLError(`Единица измерения с таким названием существует: ${updatingValue}.`)
+                    }
+                    await Unit.findByIdAndUpdate(id, {$set: {fullName: updatingValue}})
+                    return 'Полное название изменено.'
+                case 'abbreviatedName':
+                    const examAbbName = await Unit.findOne({abbreviatedName: updatingValue})
+                    if (examAbbName) {
+                        throw new GraphQLError(`Единица измерения с таким названием существует: ${updatingValue}.`)
+                    }
+                    await Unit.findByIdAndUpdate(id, {$set: {abbreviatedName: updatingValue}})
+                    return 'Сокращенное название изменено.'
+
+                default:
+                    throw new GraphQLError('Что-то пошло не так.')
+            }
         },
         addChromaticity: async (parent, {front, back}) => {
             const name = `${front} + ${back}`

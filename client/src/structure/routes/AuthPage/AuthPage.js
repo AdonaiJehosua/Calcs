@@ -1,8 +1,12 @@
-import {useContext} from "react";
+import {useContext, useEffect} from "react";
 import {useHttp} from "../../../hooks/http.hook";
 import {AuthContext} from "../../../context/AuthContext";
 import {Button, Card, CardActions, CardContent, TextField, Typography} from "@mui/material";
 import {Formik, Form} from "formik";
+import {useMutation} from "@apollo/client";
+import {AUTH} from "../../../graphQL/mutations/authMutations";
+import {toast} from "react-toastify";
+import {useToastedMutation} from "../../../hooks/toastedMutation.hook";
 
 const style = {
     position: 'absolute',
@@ -15,48 +19,49 @@ const style = {
     p: 1,
 };
 
+
 export const AuthPage = () => {
     const auth = useContext(AuthContext)
-    const {loading, request} = useHttp()
+
+    const {makeMutation, data, loading} = useToastedMutation(AUTH)
+
+    const loginHandler = async (values) => {
+        try {
+            await makeMutation({userName: values.userName, password: values.password})
+            await auth.login(data.login.token, data.login.id)
+        } catch (e) {
+        }
+    }
 
     let submitAction = undefined
 
     const registerHandler = async (values) => {
-        try {
-            const body = {email: values.email, password: values.password}
-            await request('/api/auth/register', 'POST',
-                body)
-        } catch (e) {
-        }
     }
-
-    const loginHandler = async (values) => {
-        try {
-            const body = {email: values.email, password: values.password}
-            const data = await request('/api/auth/login', 'POST',
-                body)
-            auth.login(data.token, data.userId)
-        } catch (e) {
-        }
-    }
+    //     try {
+    //         const body = {email: values.email, password: values.password}
+    //         await request('/api/auth/register', 'POST',
+    //             body)
+    //     } catch (e) {
+    //     }
+    // }
 
     return (
         <Formik
-            onSubmit={(values) => {
+            onSubmit={async (values) => {
                 if (submitAction === 'login') {
-                    loginHandler(values)
+                    await loginHandler(values)
                 }
                 if (submitAction === 'register') {
-                    registerHandler(values)
+                    await registerHandler(values)
                 }
             }}
             initialValues={{
-                email: '', password: ''
+                userName: '', password: ''
             }}
             validate={values => {
                 const errors = {};
-                if (!values.email) {
-                    errors.email = 'Введите email'
+                if (!values.userName) {
+                    errors.userName = 'Введите имя пользователя'
                 }
                 if (!values.password) {
                     errors.password = 'Введите password'
@@ -77,13 +82,13 @@ export const AuthPage = () => {
                             <Typography variant={'h3'}>iCALC</Typography>
                             <Typography variant={'h4'}>Авторизация</Typography>
                             <TextField
-                                error={touched.email && Boolean(errors.email)}
-                                helperText={touched.email && errors.email}
+                                error={touched.userName && Boolean(errors.userName)}
+                                helperText={touched.userName && errors.userName}
                                 label={'Логин'}
-                                id="email"
+                                id="userName"
                                 type="text"
-                                name="email"
-                                value={values.email}
+                                name="userName"
+                                value={values.userName}
                                 onChange={handleChange}
                             />
                             <TextField
@@ -105,6 +110,7 @@ export const AuthPage = () => {
                                     submitAction = 'login'
                                     handleSubmit()
                                 }}
+
                                 onSubmit={loginHandler}
                                 disabled={loading}
                             >

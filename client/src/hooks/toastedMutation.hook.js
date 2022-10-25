@@ -7,7 +7,7 @@ import {useEffect} from "react";
 // Если мутация успешна, сообщение из ответа пуляется во всплывающее сообщение. Если имела место ошибка, она пуляется во всплывающее сообщение об ошибке. Тиакие пироги.
 
 export const useToastedMutation = (gqlMutation, gqlQuery, queryName) => {
-    const [mutation, {data}] = useMutation(gqlMutation, {refetchQueries: [
+    const [mutation, {data, loading, error}] = useMutation(gqlMutation, {refetchQueries: [
             {query: gqlQuery},
             queryName
         ]})
@@ -32,5 +32,5 @@ export const useToastedMutation = (gqlMutation, gqlQuery, queryName) => {
             toast(data.message)
         }
     }, [data])
-    return {makeMutation}
+    return {makeMutation, data, loading, error}
 }
