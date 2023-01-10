@@ -11,6 +11,7 @@ import {AmountOfPaper} from "./routes/Calcs/AmountOfPapper/AmountOfPaper";
 import {Chromaticities} from "./routes/Catalogs/Chromaticities/Chromaticity";
 import {Grid} from "@mui/material";
 import { AllOrders } from "./routes/Orders/All/AllOrders";
+import { ProductionTypes } from "./routes/Catalogs/ProductionTypes/ProductionTypes";
 
 
 export const useRoutes = isAuthenticated => {
@@ -27,6 +28,7 @@ export const useRoutes = isAuthenticated => {
                             <Route path={'amountofpapper'} element={<AmountOfPaper/>}/>
                         </Route>
                         <Route path={'/catalogs'} element={<Catalogs/>}>
+                            <Route path={'productionTypes'} element={<ProductionTypes/>}/>
                             <Route path={'formats'} element={<Formats/>}/>
                             <Route path={'units'} element={<Units/>}/>
                             <Route path={'chromaticity'} element={<Chromaticities/>}/>

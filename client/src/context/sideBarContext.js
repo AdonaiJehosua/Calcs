@@ -44,6 +44,11 @@ export const sideBarContext = createContext({
             rootName: 'catalogs',
             pathName: 'chromaticity',
             visibleName: 'Цветность'
+        },
+        {
+            rootName: 'catalogs',
+            pathName: 'productionTypes',
+            visibleName: 'Виды продукции'
         }
     ],
     calcs: [

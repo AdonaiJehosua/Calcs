@@ -12,6 +12,7 @@ const jwt = require("jsonwebtoken");
 const config = require("config");
 const {AuthenticationError} = require("apollo-server-core");
 const Order = require("../models/Order");
+const ProductionType = require("../models/ProductionType");
 
 function identity(value) {
     return value;
@@ -109,13 +110,15 @@ const typeDefs = gql`
         area: Int
     }
 
-    enum ProductionType {
-        book
-        list
-        card
-        brochure
-        collecting
-        journal
+    type ProductionType {
+        id: ID
+        productionType: String
+        description: String
+    }
+
+    enum ProductionTypesKeys {
+        productionType
+        description
     }
     
     enum FormatKeys {
@@ -149,6 +152,8 @@ const typeDefs = gql`
         chromaticity(id: ID!): Chromaticity
         units: [Unit]
         unit(id: ID!): Unit
+        productionTypes: [ProductionType]
+        productionType(id: ID): ProductionType
     }
     
     type Mutation {
@@ -158,6 +163,9 @@ const typeDefs = gql`
         addFormat(formatName: String!, dimensions: DimensionsInput!): String
         updateFormat(id: ID!, entryKey: FormatKeys!, updatingValue: IntOrString!): String
         deleteFormat(id: ID!): String
+        addProductionType(productionType: String!, description: String!): String
+        updateProductionType(id: ID!, entryKey: ProductionTypesKeys!, updatingValue: String!): String
+        deleteProductionType(id: ID!): String
         addChromaticity(front: Int!, back: Int!): String
         deleteChromaticity(id: ID!): String
         addUnit(fullName: String!, abbreviatedName: String!): String
@@ -177,7 +185,9 @@ const resolvers = {
         chromaticities: async () => await Chromaticity.find(),
         chromaticity: async (parent, args) => await Chromaticity.findById(args.id),
         units: async () => await Unit.find(),
-        unit: async (parent, args) => await Unit.findById(args.id)
+        unit: async (parent, args) => await Unit.findById(args.id),
+        productionTypes: async () => await ProductionType.find(),
+        productionType: async (parent, args) => await ProductionType.findById(args.id)
     },
     Mutation: {
         addUser: async (_, {userName, password, role}) => {
@@ -372,7 +382,52 @@ const resolvers = {
         deleteChromaticity: async (parent, {id}) => {
             await Chromaticity.findByIdAndRemove(id)
             return 'Цветность удалена.'
-        }
+        },
+        addProductionType: async (parent, {productionType, description}, context) => {
+            // if (!context.user) {
+            //     throw new AuthenticationError('Нет авторизации.')
+            // }
+
+            const examinationProductionType = await ProductionType.findOne({productionType})
+            if (examinationProductionType) {
+                throw new Error('Такой тип изделия существует.')
+            }
+            
+            const prodType = await new ProductionType({
+                productionType: productionType,
+                description: description
+            })
+            await prodType.save()
+            return 'Тип изделия создан.'
+        },
+        updateProductionType: async (parent, {id, entryKey, updatingValue}, req) => {
+            if (!req.isAuth) {
+                throw new AuthenticationError('Нет авторизации.')
+            }
+            switch (entryKey) {
+                case 'productionType':
+                    const examProductionType = await ProductionType.findOne({productionType: updatingValue})
+                    if (examProductionType) {
+                        throw new GraphQLError(`Такой тип изделия существует: ${updatingValue}.`)
+                    }
+                    await ProductionType.findByIdAndUpdate(id, {$set: {productionType: updatingValue}})
+                    return 'Название изменено.'
+                case 'description':
+                    const examDescription = await ProductionType.findOne({description: updatingValue})
+                    if (examDescription) {
+                        throw new GraphQLError(`Такое описание типа изделия существует: ${updatingValue}.`)
+                    }
+                    await ProductionType.findByIdAndUpdate(id, {$set: {description: updatingValue}})
+                    return 'Описание изменено.'
+
+                default:
+                    throw new GraphQLError('Что-то пошло не так.')
+            }
+        },
+        deleteProductionType: async (parent, {id}) => {
+            await ProductionType.findByIdAndRemove(id)
+            return 'Тип изделия удалена.'
+        },
     },
     IntOrString: graphQLIntOrString,
     CustomDate: graphQLDate,
