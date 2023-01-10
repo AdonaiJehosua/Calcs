@@ -2,6 +2,7 @@ import {Navigate, Route, Routes} from "react-router-dom";
 import {AuthPage} from "./routes/AuthPage/AuthPage";
 import {Catalogs} from "./routes/Catalogs/Catalogs";
 import {Calcs} from "./routes/Calcs/Calcs"
+import {Orders} from "./routes/Orders/Orders"
 import {Test} from "./routes/Test/Test";
 import {SideBar} from "../components/SideBar";
 import {Formats} from "./routes/Catalogs/Formats/Format";
@@ -9,6 +10,7 @@ import {Units} from "./routes/Catalogs/Units/Units";
 import {AmountOfPaper} from "./routes/Calcs/AmountOfPapper/AmountOfPaper";
 import {Chromaticities} from "./routes/Catalogs/Chromaticities/Chromaticity";
 import {Grid} from "@mui/material";
+import { AllOrders } from "./routes/Orders/All/AllOrders";
 
 
 export const useRoutes = isAuthenticated => {
@@ -18,6 +20,9 @@ export const useRoutes = isAuthenticated => {
                 <SideBar/>
                 <Grid item xs={10} sx={{justifyContent: 'center'}}>
                     <Routes>
+                        <Route path={'/orders'} element={<Orders/>}>
+                            <Route path={'all'} element={<AllOrders/>}/>
+                        </Route>
                         <Route path={'/calcs'} element={<Calcs/>}>
                             <Route path={'amountofpapper'} element={<AmountOfPaper/>}/>
                         </Route>

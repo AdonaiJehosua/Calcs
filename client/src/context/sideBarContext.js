@@ -1,6 +1,34 @@
 import {createContext} from "react";
 
 export const sideBarContext = createContext({
+    orders: [
+        {
+            rootName: 'orders',
+            pathName: 'all',
+            visibleName: 'Все'
+        },
+        {
+            rootName: 'orders',
+            pathName: 'prepress',
+            visibleName: 'Препресс'
+        },
+        {
+            rootName: 'orders',
+            pathName: 'press',
+            visibleName: 'Пресс'
+        },
+        {
+            rootName: 'orders',
+            pathName: 'postpress',
+            visibleName: 'Постпресс'
+        },
+        {
+            rootName: 'orders',
+            pathName: 'complited',
+            visibleName: 'Завершенные'
+        },
+        
+    ],
     catalogs: [
         {
             rootName: 'catalogs',

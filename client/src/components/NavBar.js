@@ -114,6 +114,14 @@ export const Navbar = () => {
                         <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
                             <Button
                                 component={NavLink}
+                                to={'/orders'}
+                                onClick={handleCloseNavMenu}
+                                sx={{my: 2, color: 'white', display: 'block'}}
+                            >
+                                Заказы
+                            </Button>
+                            <Button
+                                component={NavLink}
                                 to={'/calcs'}
                                 onClick={handleCloseNavMenu}
                                 sx={{my: 2, color: 'white', display: 'block'}}

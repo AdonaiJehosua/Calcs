@@ -11,6 +11,7 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken");
 const config = require("config");
 const {AuthenticationError} = require("apollo-server-core");
+const Order = require("../models/Order");
 
 function identity(value) {
     return value;
@@ -40,13 +41,35 @@ const graphQLIntOrString = new GraphQLScalarType({
     parseLiteral: (ast) => parseLiteral('IntOrString', ast)
 })
 
+const graphQLDate = new GraphQLScalarType({
+        name: 'CustomDate',
+        description: 'Date custom scalar type',
+        parseValue(value) {
+            return new Date(value); // value from the client
+        },
+        serialize(value) {
+            return value.getTime(); // value sent to the client
+        },
+        parseLiteral(ast) {
+            if (ast.kind === Kind.INT) {
+            return parseInt(ast.value, 10); // ast value is always in string format
+            }
+            return null;
+        },
+    })
+
+
 
 const pubsub = new PubSub()
 const typeDefs = gql`
     scalar IntOrString
+    scalar CustomDate
     
     enum UserRoles {
         admin
+        prepress
+        press
+        postpress
         manager
         guest
     }
@@ -85,6 +108,15 @@ const typeDefs = gql`
         dimensions: Dimensions
         area: Int
     }
+
+    enum ProductionType {
+        book
+        list
+        card
+        brochure
+        collecting
+        journal
+    }
     
     enum FormatKeys {
         formatName
@@ -106,7 +138,7 @@ const typeDefs = gql`
     type UserData {
         id: ID
         userName: String
-        roles: 
+        roles: UserRoles
         token: String
     }
     
@@ -122,6 +154,7 @@ const typeDefs = gql`
     type Mutation {
         addUser(userName: String!, password: String!, role: String!): String
         login(userName: String!, password: String!): UserData
+        addOrder(number1c: Int!, status: String!, description: String!, productionType: ProductionType!, finishDate: CustomDate!): String
         addFormat(formatName: String!, dimensions: DimensionsInput!): String
         updateFormat(id: ID!, entryKey: FormatKeys!, updatingValue: IntOrString!): String
         deleteFormat(id: ID!): String
@@ -147,13 +180,18 @@ const resolvers = {
         unit: async (parent, args) => await Unit.findById(args.id)
     },
     Mutation: {
-        addUser: async (_, {userName, password}) => {
+        addUser: async (_, {userName, password, role}) => {
             const examUserName = await User.findOne({userName})
             if (examUserName) {
                 throw new GraphQLError('Такой пользователь уже существует.')
             }
             const hashedPassword = await bcrypt.hash(password, 12)
-            const user = await new User({userName: userName, password: hashedPassword, email: '', phone: ''})
+            const user = await new User({userName: userName, 
+                                            password: hashedPassword, 
+                                            roles: role,
+                                            email: null,
+                                            phone: null
+                                            })
             await user.save()
             return 'Пользователь создан.'
         },
@@ -173,8 +211,29 @@ const resolvers = {
             )
             return {id: user.id, userName: user.userName, token}
         },
+        addOrder: async (parent, {number1c, status, description, productionType, finishDate}, context) => {
+            // console.log(context)
+            // if (!context.user) {
+            //     throw new AuthenticationError('Нет авторизации.')
+            // }
+
+            const examNumber1c = await Order.findOne({number1c})
+            if (examNumber1c) {
+                throw new Error('Заказ с таким номером уже в работе.')
+            }
+
+            const order = await new Order({
+                number1c: number1c,
+                status: status,
+                description: description,
+                productionType: productionType,
+                finishDate: finishDate
+            })
+
+            await order.save()
+            return 'Заказ создан.'
+        },
         addFormat: async (parent, {formatName, dimensions}, context) => {
-            console.log(context)
             if (!context.user) {
                 throw new AuthenticationError('Нет авторизации.')
             }
@@ -316,6 +375,7 @@ const resolvers = {
         }
     },
     IntOrString: graphQLIntOrString,
+    CustomDate: graphQLDate,
     Subscription: {
         unitAdded: {
             subscribe: () => pubsub.asyncIterator('UNIT_ADDED')

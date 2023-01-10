@@ -15,6 +15,9 @@ export const SideBar = () => {
     let location = useLocation()
     let menu = []
 
+    if (location.pathname.includes('/orders')) {
+        menu = sideBar.orders
+    }
     if (location.pathname.includes('/catalogs')) {
         menu = sideBar.catalogs
     }
