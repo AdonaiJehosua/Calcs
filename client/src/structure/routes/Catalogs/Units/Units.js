@@ -6,7 +6,7 @@ import {Container, Table, TableBody, TableCell, TableContainer, TableHead, Table
 import {useToastedQuery} from "../../../../hooks/toastedQuery.hook";
 import {FETCH_UNITS} from "../../../../graphQL/queries/unitQueries";
 import {Loader} from "../../../../components/Loader";
-import {DELETE_UNIT} from "../../../../graphQL/mutations/unitMutation";
+import {DELETE_UNIT, UPDATE_UNIT} from "../../../../graphQL/mutations/unitMutation";
 
 export const Units = () => {
 
@@ -15,7 +15,6 @@ export const Units = () => {
     const fetchUnits = async () => {
         await makeQuery('units')
     }
-
 
     useEffect(() => {
         fetchUnits()
@@ -58,12 +57,16 @@ export const Units = () => {
                                               endpoint={'unit'}
                                               entryId={unit.id}
                                               entryKey={'fullName'}
+                                              updateMutation={UPDATE_UNIT}
+                                              fetchQuery={FETCH_UNITS}
                             />
                             <CatalogsTableCol value={unit.abbreviatedName}
                                               inputType={'text'}
                                               endpoint={'unit'}
                                               entryId={unit.id}
                                               entryKey={'abbreviatedName'}
+                                              updateMutation={UPDATE_UNIT}
+                                              fetchQuery={FETCH_UNITS}
                             />
                             <TableCell align={'center'}>
                                 <DeleteEntryButton gqlMutation={DELETE_UNIT}

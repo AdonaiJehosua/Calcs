@@ -3,10 +3,8 @@ import {Formik, Form} from "formik";
 import validator from "validator";
 import {Button, Card, CardActions, CardContent, Popover, TableCell, TextField, Typography} from "@mui/material";
 import {useToastedMutation} from "../hooks/toastedMutation.hook";
-import {UPDATE_FORMAT} from "../graphQL/mutations/formatsMutations";
-import {FETCH_FORMATS} from "../graphQL/queries/formatQueries";
 
-export const CatalogsTableCol = ({value, inputType, entryId, entryKey}) => {
+export const CatalogsTableCol = ({value, inputType, entryId, entryKey, updateMutation, fetchQuery}) => {
 
     const [editMode, setEditMode] = useState(false)
     const activateEditMode = () => {
@@ -32,7 +30,7 @@ export const CatalogsTableCol = ({value, inputType, entryId, entryKey}) => {
         selectedText.select()
     }
 
-    const {makeMutation} = useToastedMutation(UPDATE_FORMAT, FETCH_FORMATS, 'formats')
+    const {makeMutation} = useToastedMutation(updateMutation, fetchQuery)
 
     const updateHandler = async (values) => {
         const variables = {
