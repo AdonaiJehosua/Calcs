@@ -116,6 +116,23 @@ const typeDefs = gql`
         description: String
     }
 
+    type Order {
+        id: ID
+        number1c: Int
+        status: String
+        description: String
+        productionType: ProductionType
+        startDate: CustomDate
+        finishDate: CustomDate
+        creator: UserData
+    }
+
+    input ProductionTypeInput {
+        id: ID
+        productionType: String
+        description: String
+    }
+
     enum ProductionTypesKeys {
         productionType
         description
@@ -147,19 +164,21 @@ const typeDefs = gql`
     
     type Query {
         formats: [Format]
-        format(id: ID): Format
+        format(id: ID!): Format
         chromaticities: [Chromaticity]
         chromaticity(id: ID!): Chromaticity
         units: [Unit]
         unit(id: ID!): Unit
         productionTypes: [ProductionType]
         productionType(id: ID): ProductionType
+        orders(status: String!): [Order]
+        order(id: ID!): Order
     }
     
     type Mutation {
         addUser(userName: String!, password: String!, role: String!): String
         login(userName: String!, password: String!): UserData
-        addOrder(number1c: Int!, status: String!, description: String!, productionType: ProductionType!, finishDate: CustomDate!): String
+        addOrder(number1c: Int!, status: String!, description: String!, productionType: String!, finishDate: CustomDate!): String
         addFormat(formatName: String!, dimensions: DimensionsInput!): String
         updateFormat(id: ID!, entryKey: FormatKeys!, updatingValue: IntOrString!): String
         deleteFormat(id: ID!): String
@@ -187,7 +206,14 @@ const resolvers = {
         units: async () => await Unit.find(),
         unit: async (parent, args) => await Unit.findById(args.id),
         productionTypes: async () => await ProductionType.find(),
-        productionType: async (parent, args) => await ProductionType.findById(args.id)
+        productionType: async (parent, args) => await ProductionType.findById(args.id),
+        orders: async (parent, args) => 
+            await Order.find({status: args.status})
+            // args.status && await Order.find()
+            // await Order.find({status: args.status})
+        // }
+        ,
+        order: async (parent, args) => await Order.findById(args.id),
     },
     Mutation: {
         addUser: async (_, {userName, password, role}) => {
@@ -222,10 +248,10 @@ const resolvers = {
             return {id: user.id, userName: user.userName, token}
         },
         addOrder: async (parent, {number1c, status, description, productionType, finishDate}, context) => {
-            // console.log(context)
             // if (!context.user) {
             //     throw new AuthenticationError('Нет авторизации.')
             // }
+            console.log(context.id)
 
             const examNumber1c = await Order.findOne({number1c})
             if (examNumber1c) {
@@ -237,8 +263,11 @@ const resolvers = {
                 status: status,
                 description: description,
                 productionType: productionType,
-                finishDate: finishDate
+                finishDate: finishDate,
+                creator: context.user.id
             })
+
+            console.log(context.id)
 
             await order.save()
             return 'Заказ создан.'
@@ -265,6 +294,7 @@ const resolvers = {
                 },
                 area: area
             })
+            console.log(context.user.id)
             await format.save()
             return 'Формат создан.'
         },
@@ -274,9 +304,9 @@ const resolvers = {
             return 'Формат удален.'
         },
         updateFormat: async (parent, {id, entryKey, updatingValue}, req) => {
-            if (!req.isAuth) {
-                throw new AuthenticationError('Нет авторизации.')
-            }
+            // if (!req.isAuth) {
+            //     throw new AuthenticationError('Нет авторизации.')
+            // }
             switch (entryKey) {
                 case 'formatName':
                     const examName = await Format.findOne({formatName: updatingValue})
@@ -317,7 +347,11 @@ const resolvers = {
                     throw new GraphQLError('Что-то пошло не так.')
             }
         },
-        addUnit: async (parent, {fullName, abbreviatedName}) => {
+        addUnit: async (parent, {fullName, abbreviatedName}, context) => {
+            if (!context.user) {
+                throw new AuthenticationError('Нет авторизации.')
+            }
+
             const examinationFullName = await Unit.findOne({fullName})
             const examinationAbbName = await Unit.findOne({abbreviatedName})
 
@@ -338,6 +372,7 @@ const resolvers = {
                 unitAdded: newUnit
             })
 
+            console.log(context)
             return 'Единица измерения создана.'
         },
         deleteUnit: async (parent, {id}) => {
@@ -345,9 +380,9 @@ const resolvers = {
             return 'Единица измерения удалена'
         },
         updateUnit: async (parent, {id, entryKey, updatingValue}, req) => {
-            if (!req.isAuth) {
-                throw new AuthenticationError('Нет авторизации.')
-            }
+            // if (!req.isAuth) {
+            //     throw new AuthenticationError('Нет авторизации.')
+            // }
             switch (entryKey) {
                 case 'fullName':
                     const examFullName = await Unit.findOne({fullName: updatingValue})
@@ -401,9 +436,9 @@ const resolvers = {
             return 'Тип изделия создан.'
         },
         updateProductionType: async (parent, {id, entryKey, updatingValue}, req) => {
-            if (!req.isAuth) {
-                throw new AuthenticationError('Нет авторизации.')
-            }
+            // if (!req.isAuth) {
+            //     throw new AuthenticationError('Нет авторизации.')
+            // }
             switch (entryKey) {
                 case 'productionType':
                     const examProductionType = await ProductionType.findOne({productionType: updatingValue})
@@ -426,7 +461,7 @@ const resolvers = {
         },
         deleteProductionType: async (parent, {id}) => {
             await ProductionType.findByIdAndRemove(id)
-            return 'Тип изделия удалена.'
+            return 'Тип изделия удален.'
         },
     },
     IntOrString: graphQLIntOrString,

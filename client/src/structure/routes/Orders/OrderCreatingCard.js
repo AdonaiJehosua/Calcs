@@ -98,17 +98,7 @@ export const OrderCreatingCard = () => {
                                                 onBlur={handleBlur}
                                             />
                                             <SelectComponent/>
-                                            {/* <TextField
-                                                error={touched.productionType && Boolean(errors.productionType)}
-                                                helperText={touched.productionType && errors.productionType}
-                                                label={'Тип изделия'}
-                                                id="productionType"
-                                                type="text"
-                                                name="productionType"
-                                                value={values.productionType}
-                                                onChange={handleChange}
-                                                onBlur={handleBlur}
-                                            /> */}
+                                            
                                             <TextField
                                                 error={touched.shortSide && Boolean(errors.shortSide)}
                                                 helperText={touched.shortSide && errors.shortSide}

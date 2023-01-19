@@ -5,7 +5,7 @@ import {Container, Table, TableBody, TableCell, TableContainer, TableHead, Table
 import {useToastedQuery} from "../../../../hooks/toastedQuery.hook"
 import {Loader} from "../../../../components/Loader"
 import { FETCH_PRODUCTION_TYPES } from "../../../../graphQL/queries/productionTypesQueries"
-import { DELETE_PRODUCTION_TYPE } from "../../../../graphQL/mutations/productionTypeMutation"
+import { DELETE_PRODUCTION_TYPE, UPDATE_PRODUCTION_TYPE } from "../../../../graphQL/mutations/productionTypeMutation"
 import { ProductionTypeCreatingCard } from "./ProductionTypesCreatingCard"
 
 export const ProductionTypes = () => {
@@ -28,7 +28,7 @@ export const ProductionTypes = () => {
     }
 
     if (!entries.length) {
-        return <p className={'center'}>Единиц измерения пока нет
+        return <p className={'center'}>Типов изделий пока нет
             <ProductionTypeCreatingCard fetchEntries={fetchProductionTypes}/>
         </p>
     }
@@ -36,15 +36,15 @@ export const ProductionTypes = () => {
     return (
         <Container>
             <Container>
-                <Typography variant={'h3'}>Единицы измерения</Typography>
+                <Typography variant={'h3'}>Типы изделий</Typography>
                 <ProductionTypeCreatingCard fetchEntries={fetchProductionTypes}/>
             </Container>
             <TableContainer>
                 <Table>
                     <TableHead>
                 <TableRow>
-                    <TableCell align={'center'}>Полное название</TableCell>
-                    <TableCell align={'center'}>Сокращенное название</TableCell>
+                    <TableCell align={'center'}>Название</TableCell>
+                    <TableCell align={'center'}>Описание</TableCell>
                     <TableCell align={'center'}>Редактировать</TableCell>
                 </TableRow>
                     </TableHead>
@@ -58,12 +58,16 @@ export const ProductionTypes = () => {
                                               endpoint={'productionType'}
                                               entryId={prtype.id}
                                               entryKey={'productionType'}
+                                              updateMutation={UPDATE_PRODUCTION_TYPE}
+                                              fetchQuery={FETCH_PRODUCTION_TYPES}
                             />
                             <CatalogsTableCol value={prtype.description}
                                               inputType={'text'}
                                               endpoint={'productionType'}
                                               entryId={prtype.id}
                                               entryKey={'description'}
+                                              updateMutation={UPDATE_PRODUCTION_TYPE}
+                                              fetchQuery={FETCH_PRODUCTION_TYPES}
                             />
                             <TableCell align={'center'}>
                                 <DeleteEntryButton gqlMutation={DELETE_PRODUCTION_TYPE}

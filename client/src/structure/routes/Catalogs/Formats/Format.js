@@ -1,13 +1,12 @@
-import {FormatCreatingCard} from "./FormatCreatingCard";
-import {DeleteEntryButton} from "../../../../components/DeleteEntryButton";
-import {useEffect} from "react";
-import {CatalogsTableCol} from "../../../../components/CatalogsTableCol";
-import {Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
-import {useToastedQuery} from "../../../../hooks/toastedQuery.hook";
-import {Loader} from "../../../../components/Loader";
-import {FETCH_FORMATS} from "../../../../graphQL/queries/formatQueries";
-import {DELETE_FORMAT} from "../../../../graphQL/mutations/formatsMutations";
-
+import {FormatCreatingCard} from "./FormatCreatingCard"
+import {DeleteEntryButton} from "../../../../components/DeleteEntryButton"
+import {useEffect} from "react"
+import {CatalogsTableCol} from "../../../../components/CatalogsTableCol"
+import {Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material"
+import {useToastedQuery} from "../../../../hooks/toastedQuery.hook"
+import {Loader} from "../../../../components/Loader"
+import {FETCH_FORMATS} from "../../../../graphQL/queries/formatQueries"
+import {DELETE_FORMAT, UPDATE_FORMAT} from "../../../../graphQL/mutations/formatsMutations"
 
 export const Formats = () => {
 
@@ -61,18 +60,24 @@ export const Formats = () => {
                                                       endpoint={'format'}
                                                       entryId={format.id}
                                                       entryKey={'formatName'}
+                                                      updateMutation={UPDATE_FORMAT}
+                                                      fetchQuery={FETCH_FORMATS}
                                     />
                                     <CatalogsTableCol value={format.dimensions.longSide}
                                                       inputType={'number'}
                                                       endpoint={'format'}
                                                       entryId={format.id}
                                                       entryKey={'longSide'}
+                                                      updateMutation={UPDATE_FORMAT}
+                                                      fetchQuery={FETCH_FORMATS}
                                     />
                                     <CatalogsTableCol value={format.dimensions.shortSide}
                                                       inputType={'number'}
                                                       endpoint={'format'}
                                                       entryId={format.id}
                                                       entryKey={'shortSide'}
+                                                      updateMutation={UPDATE_FORMAT}
+                                                      fetchQuery={FETCH_FORMATS}
                                     />
                                     <TableCell align={'center'}>
                                         <DeleteEntryButton gqlMutation={DELETE_FORMAT}

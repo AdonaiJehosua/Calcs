@@ -1,11 +1,11 @@
-import {useState} from "react";
-import {Formik, Form} from "formik";
-import {Button, Card, CardActions, CardContent, Container, Modal, TextField} from "@mui/material";
+import { useState } from "react";
+import { Formik, Form } from "formik";
+import { Button, Card, CardActions, CardContent, Container, Modal, TextField } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import {useToastedMutation} from "../../../../hooks/toastedMutation.hook";
-import {ADD_UNIT} from "../../../../graphQL/mutations/unitMutation";
-import {FETCH_UNITS} from "../../../../graphQL/queries/unitQueries";
+import { useToastedMutation } from "../../../../hooks/toastedMutation.hook";
+import { ADD_UNIT } from "../../../../graphQL/mutations/unitMutation";
+import { FETCH_UNITS } from "../../../../graphQL/queries/unitQueries";
 import { ADD_PRODUCTION_TYPE } from "../../../../graphQL/mutations/productionTypeMutation";
 import { FETCH_PRODUCTION_TYPES } from "../../../../graphQL/queries/productionTypesQueries";
 
@@ -22,7 +22,7 @@ const style = {
 
 export const ProductionTypeCreatingCard = () => {
 
-    const {makeMutation} = useToastedMutation(ADD_PRODUCTION_TYPE, FETCH_PRODUCTION_TYPES, 'productionType')
+    const { makeMutation } = useToastedMutation(ADD_PRODUCTION_TYPE, FETCH_PRODUCTION_TYPES, 'productionType')
 
 
     const createHandler = async (values) => {
@@ -46,9 +46,9 @@ export const ProductionTypeCreatingCard = () => {
             <Button variant={'contained'} onClick={handleOpen}>Добавить</Button>
 
             <Modal open={open}
-                   onClose={handleClose}
-                   aria-labelledby="modal-modal-title"
-                   aria-describedby="modal-modal-description"
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
                     <Formik
@@ -68,33 +68,33 @@ export const ProductionTypeCreatingCard = () => {
                         }}
                     >
                         {({
-                              values,
-                              errors,
-                              touched,
-                              handleChange,
-                              handleBlur,
-                              isSubmitting
-                          }) => (
+                            values,
+                            errors,
+                            touched,
+                            handleChange,
+                            handleBlur,
+                            isSubmitting
+                        }) => (
                             <Form>
                                 <Card>
                                     <CardContent>
                                         <Typography variant={'h4'}>Добавить тип изделия</Typography>
                                         <Container>
                                             <TextField
+                                                error={touched.productionType && Boolean(errors.productionType)}
                                                 label={'Название'}
                                                 id="productionType"
                                                 type="text"
-                                                className={`yellow-input ${errors.productionType && touched.productionType && errors.productionType}`}
                                                 name="productionType"
                                                 value={values.productionType}
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
                                             />
                                             <TextField
+                                                error={touched.description && Boolean(errors.description)}
                                                 label={'Описание'}
                                                 id="description"
                                                 type="text"
-                                                className={`yellow-input ${errors.description && touched.description && errors.description}`}
                                                 name="description"
                                                 value={values.description}
                                                 onChange={handleChange}
@@ -106,7 +106,7 @@ export const ProductionTypeCreatingCard = () => {
                                         <Button
                                             variant={'contained'}
                                             type={'submit'}
-                                            style={{marginRight: 10}}
+                                            style={{ marginRight: 10 }}
                                             disabled={isSubmitting}
                                         >
                                             Создать

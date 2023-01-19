@@ -1,15 +1,13 @@
-const {Schema, model} = require('mongoose')
+const {Schema, model, Types} = require('mongoose')
 
 const schema = new Schema( {
     number1c: {type: Number, required: true},
     status: {type: String, required: true},
     description: {type: String, required: true},
-    productionType: {type: String, required: true},
+    productionType: {type: Types.ObjectId, ref: 'ProductionType'},
     startDate: {type: Date, default: Date.now},
     finishDate: {type: Date, required: true},
-    preprintDate: {type: Date},
-    printDate: {type: Date},
-    postprintDate: {type: Date}
+    creator: {type: Types.ObjectId, ref: 'User'}
 })
 
 module.exports = model('Order', schema)
