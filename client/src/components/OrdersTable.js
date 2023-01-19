@@ -196,19 +196,35 @@ OrdersTableToolbar.propTypes = {
     numSelected: PropTypes.number.isRequired,
 }
 
-export function OrdersTable({ status, endpoint }) {
+export function OrdersTable({query, status, endpoint }) {
+
+    const {entries, loading, makeQuery} = useToastedQuery(query)
+
+    const fetchEntries = async () => {
+        await makeQuery('formats')
+    }
+
+    useEffect(() => {
+        fetchEntries()
+    }, [fetchEntries, entries])
+
+    if (loading) {
+        return (
+            <Loader/>
+        )
+    }
 
     // const { data } = useBasicFetch(status, endpoint)
 
-    const data = [
-            {"id": 1, "code1c": "3512", "description": "книжки-хуижки", "startDate": "01.12.2022", "status": "prepress", "planeFinishDate": "29.12.2022", "prepressFinish": "", "pressFinish": "", "postpressFinish": "", "factFinish": ""},
-            {"id": 2, "code1c": "3513", "description": "брошюрки-хуюрки", "startDate": "01.12.2022", "status": "prepress", "planeFinishDate": "29.12.2022", "prepressFinish": "", "pressFinish": "", "postpressFinish": "", "factFinish": ""},
-            {"id": 3, "code1c": "3514", "description": "визитки-хуитки", "startDate": "01.12.2022", "status": "press", "planeFinishDate": "29.12.2022", "prepressFinish": "", "pressFinish": "", "postpressFinish": "", "factFinish": ""},
-            {"id": 4, "code1c": "3515", "description": "бланки-хуянки", "startDate": "01.12.2022", "status": "postpress", "planeFinishDate": "29.12.2022", "prepressFinish": "", "pressFinish": "", "postpressFinish": "", "factFinish": ""},
-            {"id": 5, "code1c": "3516", "description": "журналы-хуялы", "startDate": "01.12.2022", "status": "press", "planeFinishDate": "29.12.2022", "prepressFinish": "", "pressFinish": "", "postpressFinish": "", "factFinish": ""}
-        ]
+    // const data = [
+    //         {"id": 1, "code1c": "3512", "description": "книжки-хуижки", "startDate": "01.12.2022", "status": "prepress", "planeFinishDate": "29.12.2022", "prepressFinish": "", "pressFinish": "", "postpressFinish": "", "factFinish": ""},
+    //         {"id": 2, "code1c": "3513", "description": "брошюрки-хуюрки", "startDate": "01.12.2022", "status": "prepress", "planeFinishDate": "29.12.2022", "prepressFinish": "", "pressFinish": "", "postpressFinish": "", "factFinish": ""},
+    //         {"id": 3, "code1c": "3514", "description": "визитки-хуитки", "startDate": "01.12.2022", "status": "press", "planeFinishDate": "29.12.2022", "prepressFinish": "", "pressFinish": "", "postpressFinish": "", "factFinish": ""},
+    //         {"id": 4, "code1c": "3515", "description": "бланки-хуянки", "startDate": "01.12.2022", "status": "postpress", "planeFinishDate": "29.12.2022", "prepressFinish": "", "pressFinish": "", "postpressFinish": "", "factFinish": ""},
+    //         {"id": 5, "code1c": "3516", "description": "журналы-хуялы", "startDate": "01.12.2022", "status": "press", "planeFinishDate": "29.12.2022", "prepressFinish": "", "pressFinish": "", "postpressFinish": "", "factFinish": ""}
+    //     ]
 
-    const rows = data
+    const rows = entries
 
 
     const [order, setOrder] = React.useState('asc');
