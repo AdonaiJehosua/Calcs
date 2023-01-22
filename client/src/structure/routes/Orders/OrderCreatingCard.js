@@ -9,6 +9,7 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import { SelectComponent } from "../../../components/SelectComponent";
+import { FETCH_PRODUCTION_TYPES_WITH_STATUS } from "../../../graphQL/queries/productionTypesQueries";
 
 const style = {
     position: 'absolute',
@@ -134,8 +135,19 @@ export const OrderCreatingCard = () => {
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
                                             />
-                                            {/* <SelectComponent /> */}
-
+                                            <SelectComponent
+                                                gqlQuery={FETCH_PRODUCTION_TYPES_WITH_STATUS}
+                                                gqlQueryType={'productionTypes'}
+                                                initialKey={'productionType'}
+                                                nameKey={'productionType'}
+                                                label={'Тип изделия'}
+                                                postedValue={'id'}
+                                                values={values}
+                                                handleChange={handleChange}
+                                                errors={errors}
+                                                handleBlur={handleBlur}
+                                                touched={touched}
+                                            />
                                             <TextField
                                                 error={touched.shortSide && Boolean(errors.shortSide)}
                                                 helperText={touched.shortSide && errors.shortSide}

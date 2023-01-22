@@ -137,14 +137,14 @@ export const AmountOfPaper = () => {
                                     <SelectComponent
                                         addItemName={'Ввести вручную'}
                                         addItemValue={'manually'}
-                                        values={values}
                                         label={'Формат страниц'}
-                                        handleChange={handleChange}
                                         postedValue={'_id'}
-                                        errors={errors}
                                         initialKey={'pageFormat'}
-                                        handleBlur={handleBlur}
                                         nameKey={'formatName'}
+                                        values={values}
+                                        handleChange={handleChange}
+                                        errors={errors}
+                                        handleBlur={handleBlur}
                                         touched={touched}
                                         endpoint={'format'}/>
                                     {(values.pageFormat === 'manually') && (
