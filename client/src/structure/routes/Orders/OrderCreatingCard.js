@@ -57,18 +57,28 @@ export const OrderCreatingCard = () => {
                     <Formik
                         onSubmit={createHandler}
                         initialValues={{
-                            number1c: '', productionType: '', shortSide: ''
+                            number1c: '',
+                            status: '',
+                            description: '',
+                            productionType: '',
+                            finishDate: ''
                         }}
                         validate={values => {
                             const errors = {};
                             if (!values.number1c) {
-                                errors.number1c = 'Введите название'
+                                errors.number1c = 'Введите номер из 1С'
+                            }
+                            if (!values.status) {
+                                errors.status = 'Выберите статус'
+                            }
+                            if (!values.description) {
+                                errors.description = 'Введите описание заказа'
                             }
                             if (!values.productionType) {
-                                errors.productionType = 'Введите значение длинной стороны'
+                                errors.productionType = 'Выберите тип изделия'
                             }
-                            if (!values.shortSide) {
-                                errors.shortSide = 'Введите значение короткой стороны'
+                            if (!values.finishDate) {
+                                errors.finishDate = 'Введите дату завершения заказа'
                             }
                             return errors
                         }}
@@ -97,8 +107,35 @@ export const OrderCreatingCard = () => {
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
                                             />
-                                            <SelectComponent/>
-                                            
+                                            <TextField
+                                                select
+                                                error={touched.status && Boolean(errors.status)}
+                                                helperText={touched.status && errors.status}
+                                                id='status'
+                                                name='status'
+                                                value={values.status}
+                                                label="Статус"
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                            >
+                                                <MenuItem value='prepress'>Препресс</MenuItem>
+                                                <MenuItem value='press'>Пресс</MenuItem>
+                                                <MenuItem value='postpress'>Постпресс</MenuItem>
+                                                <MenuItem value='complited'>Завершено</MenuItem>
+                                            </TextField>
+                                            <TextField
+                                                error={touched.description && Boolean(errors.description)}
+                                                helperText={touched.description && errors.description}
+                                                label={'Описание'}
+                                                id="description"
+                                                type="text"
+                                                name="description"
+                                                value={values.description}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                            />
+                                            {/* <SelectComponent /> */}
+
                                             <TextField
                                                 error={touched.shortSide && Boolean(errors.shortSide)}
                                                 helperText={touched.shortSide && errors.shortSide}
