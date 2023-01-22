@@ -1,6 +1,6 @@
-import {useFetchEntries} from "../hooks/fetchEntries.hook";
-import {useCallback, useEffect, useState} from "react";
-import {MenuItem, TextField} from "@mui/material";
+import {useEffect} from "react"
+import {MenuItem, TextField} from "@mui/material"
+import {useToastedQuery} from '../hooks/toastedQuery.hook'
                                                                                                                         /* Компонент, рисующий раскрывающийся список. Значения списка берутся из базы данных. Есть возможность добавить произвольный пункт меню в начало списка. */
                                                                                                                         /*                                                                                                                                                       */
 export const SelectComponent = ({                                                                                       /* addItemName - название произвольного пункта списка. */
@@ -8,7 +8,8 @@ export const SelectComponent = ({                                               
                                     addItemValue,                                                                       /* label - Лейбл списка. */
                                     label,                                                                              /* endpoint - эндпоинт, на который пойдет запрос за данными/*/
                                     nameKey,                                                                            /* nameKey - ключ, по которому из пришедшего из бызы массива, будут отбираться названия пунктов списка.*/
-                                    endpoint,                                                                           /* postedValue - ключ, по которому из пришедшего из бызы массива, будут отбираться значения пунктов списка.*/
+                                    gqlQuery,
+                                    gqlQueryType,                                                                           /* postedValue - ключ, по которому из пришедшего из бызы массива, будут отбираться значения пунктов списка.*/
                                     initialKey,                                                                         /* initialKey - ключ объекта формы, значению которого будет присваиваться значение выбранного пункта списка.*/
                                     touched,                                                                            /* values, errors, touched - объекты Формика. Просто переносятся из компонента формы.*/
                                     values,                                                                             /* handleChange, handleBlur - функции формика. Просто переносятся в пропсах.*/
@@ -18,19 +19,17 @@ export const SelectComponent = ({                                               
                                     postedValue                                                                         /**/
                                 }) => {
 
-    const {entries, fetchEntries} = useFetchEntries()
-    const [loaded, setLoaded] = useState(false)
+    const {entries, loading, makeQuery} = useToastedQuery(gqlQuery)
 
-    const fetchValues = useCallback(async () => {
-        await fetchEntries(endpoint)
-        setLoaded(true)
-    }, [endpoint, fetchEntries])
+    const fetchValues = async () => {
+        await makeQuery(gqlQueryType)
+    }
 
     useEffect(() => {
         fetchValues()
     }, [fetchValues])
 
-    if (loaded) return (
+    if (!loading) return (
         <TextField select fullWidth
                    error={touched[initialKey] && Boolean(errors[initialKey])}
                    helperText={touched[initialKey] && errors[initialKey]}
@@ -43,7 +42,7 @@ export const SelectComponent = ({                                               
             {addItemName && <MenuItem value={addItemValue}>{addItemName}</MenuItem>}
             {entries.map((el) => {
                 return (
-                    <MenuItem key={el._id} value={el[postedValue]}>{el[nameKey]}</MenuItem>
+                    <MenuItem key={el.id} value={el[postedValue]}>{el[nameKey]}</MenuItem>
                 )
             })}
         </TextField>

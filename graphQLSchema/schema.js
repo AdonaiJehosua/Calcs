@@ -143,6 +143,13 @@ const typeDefs = gql`
         longSide
         shortSide
     }
+
+    enum OrderStatus {
+        prepress
+        press
+        postpress
+        complited
+    }
     
     enum UnitKeys {
         fullName
@@ -172,6 +179,7 @@ const typeDefs = gql`
         productionTypes: [ProductionType]
         productionType(id: ID): ProductionType
         orders: [Order]
+        ordersWithStatus(status: OrderStatus!): [Order]
         order(id: ID!): Order
     }
     
@@ -208,6 +216,7 @@ const resolvers = {
         productionTypes: async () => await ProductionType.find(),
         productionType: async (parent, args) => await ProductionType.findById(args.id),
         orders: async () => await Order.find(),
+        ordersWithStatus: async (parent, args) => await Order.find({status: args.status}),
         order: async (parent, args) => await Order.findById(args.id),
     },
     Mutation: {

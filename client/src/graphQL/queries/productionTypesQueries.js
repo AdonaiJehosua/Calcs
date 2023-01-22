@@ -9,3 +9,12 @@ export const FETCH_PRODUCTION_TYPES = gql`
         }
     }
 `
+
+export const FETCH_PRODUCTION_TYPES_WITH_STATUS = gql`
+    query {
+        productionTypes {
+            id
+            productionType
+        }
+    }
+`
