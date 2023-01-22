@@ -171,7 +171,7 @@ const typeDefs = gql`
         unit(id: ID!): Unit
         productionTypes: [ProductionType]
         productionType(id: ID): ProductionType
-        orders(status: String!): [Order]
+        orders: [Order]
         order(id: ID!): Order
     }
     
@@ -207,12 +207,7 @@ const resolvers = {
         unit: async (parent, args) => await Unit.findById(args.id),
         productionTypes: async () => await ProductionType.find(),
         productionType: async (parent, args) => await ProductionType.findById(args.id),
-        orders: async (parent, args) => 
-            await Order.find({status: args.status})
-            // args.status && await Order.find()
-            // await Order.find({status: args.status})
-        // }
-        ,
+        orders: async () => await Order.find(),
         order: async (parent, args) => await Order.findById(args.id),
     },
     Mutation: {
