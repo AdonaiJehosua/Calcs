@@ -307,7 +307,7 @@ export function OrdersTable({query, queryVar }) {
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={(event) => handleClick(event, row.code1c)}
+                                            onClick={(event) => handleClick(event, row.number1c)}
                                             role="checkbox"
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
@@ -329,7 +329,7 @@ export function OrdersTable({query, queryVar }) {
                                                 scope="row"
                                                 padding="none"
                                             >
-                                                {row.code1c}
+                                                {row.number1c}
                                             </TableCell>
                                             <TableCell align="left">{row.status}</TableCell>
                                             <TableCell align="left">{row.description}</TableCell>

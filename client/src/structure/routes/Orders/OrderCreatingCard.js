@@ -10,6 +10,8 @@ import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import { SelectComponent } from "../../../components/SelectComponent";
 import { FETCH_PRODUCTION_TYPES_WITH_STATUS } from "../../../graphQL/queries/productionTypesQueries";
+import { ADD_ORDER } from "../../../graphQL/mutations/orderMutations";
+import { FETCH_ORDERS } from "../../../graphQL/queries/orderQueries";
 
 const style = {
     position: 'absolute',
@@ -24,17 +26,18 @@ const style = {
 
 export const OrderCreatingCard = () => {
 
-    const { makeMutation } = useToastedMutation(ADD_FORMAT, FETCH_FORMATS, 'formats')
+    const { makeMutation } = useToastedMutation(ADD_ORDER, FETCH_ORDERS, 'orders')
 
     const createHandler = async (values) => {
-        // const variables = {
-        //     formatName: values.formatName,
-        //     dimensions: {
-        //         longSide: values.longSide,
-        //         shortSide: values.shortSide
-        //     }
-        // }
-        // await makeMutation(variables, values)
+        const variables = {
+            number1c: values.number1c,
+            status: values.status,
+            description: values.description,
+            productionType: values.productionType,
+            finishDate: values.finishDate,
+        }
+        console.log(variables)
+        await makeMutation(variables, values)
     }
 
     const [open, setOpen] = useState(false);
@@ -58,7 +61,7 @@ export const OrderCreatingCard = () => {
                     <Formik
                         onSubmit={createHandler}
                         initialValues={{
-                            number1c: '',
+                            number1c: null,
                             status: '',
                             description: '',
                             productionType: '',
@@ -149,13 +152,13 @@ export const OrderCreatingCard = () => {
                                                 touched={touched}
                                             />
                                             <TextField
-                                                error={touched.shortSide && Boolean(errors.shortSide)}
-                                                helperText={touched.shortSide && errors.shortSide}
-                                                label={'Ширина'}
-                                                id="shortSide"
-                                                type="number"
-                                                name="shortSide"
-                                                value={values.shortSide}
+                                                error={touched.finishDate && Boolean(errors.finishDate)}
+                                                helperText={touched.finishDate && errors.finishDate}
+                                                label={'Дата завершения'}
+                                                id="finishDate"
+                                                type="date"
+                                                name="finishDate"
+                                                value={values.finishDate}
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
                                             />
