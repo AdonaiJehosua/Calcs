@@ -20,7 +20,7 @@ import {setContext} from "@apollo/client/link/context";
 
 function App() {
 
-    const {login, logout, token, userId, ready} = useAuth()
+    const {login, logout, token, userId, roles, userName} = useAuth()
     const isAuthenticated = !!token
     const routes = useRoutes(isAuthenticated)
 
@@ -58,14 +58,14 @@ function App() {
         cache: new InMemoryCache(),
     });
 
-    if (!ready) {
-        return <Loader/>
-    }
+    // if (!ready) {
+    //     return <Loader/>
+    // }
 
     return (
         <ApolloProvider client={client}>
             <ToastContainer/>
-        <AuthContext.Provider value={{token, userId, login, logout, isAuthenticated}}>
+        <AuthContext.Provider value={{token, userId, login, logout, isAuthenticated, roles, userName}}>
             <Router>
                 <ThemeProvider theme={mainColorsTheme}>
                         {isAuthenticated && <Navbar/>}

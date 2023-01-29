@@ -12,6 +12,9 @@ import {Chromaticities} from "./routes/Catalogs/Chromaticities/Chromaticity";
 import {Grid} from "@mui/material";
 import { AllOrders } from "./routes/Orders/All/AllOrders";
 import { ProductionTypes } from "./routes/Catalogs/ProductionTypes/ProductionTypes";
+import { PrepressOrders } from "./routes/Orders/Prepress/PrepressOrders";
+import { PressOrders } from "./routes/Orders/Press/PressOrders";
+import { PostpressOrders } from "./routes/Orders/Postpress/PostpressOrders";
 
 
 export const useRoutes = isAuthenticated => {
@@ -23,6 +26,9 @@ export const useRoutes = isAuthenticated => {
                     <Routes>
                         <Route path={'/orders'} element={<Orders/>}>
                             <Route path={'all'} element={<AllOrders/>}/>
+                            <Route path={'prepress'} element={<PrepressOrders/>}/>
+                            <Route path={'postpress'} element={<PostpressOrders/>}/>
+                            <Route path={'press'} element={<PressOrders/>}/>
                         </Route>
                         <Route path={'/calcs'} element={<Calcs/>}>
                             <Route path={'amountofpapper'} element={<AmountOfPaper/>}/>

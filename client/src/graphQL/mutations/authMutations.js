@@ -6,5 +6,6 @@ mutation ($userName: String!, $password: String!) {
         id
         userName
         token
+        roles
     }
 }`

@@ -15,3 +15,19 @@ export const FETCH_ORDERS = gql`
         }
     }
 `
+
+export const FETCH_ORDERS_WITH_STATUS = gql`
+    query ($status: OrderStatus!) {
+        ordersWithStatus(status: $status) {
+            id
+            number1c
+            status
+            description
+            productionType {
+                productionType
+            }
+            startDate
+            finishDate
+        }
+    }
+`

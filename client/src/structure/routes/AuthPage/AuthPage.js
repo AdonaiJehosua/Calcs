@@ -1,11 +1,8 @@
 import {useContext, useEffect} from "react";
-import {useHttp} from "../../../hooks/http.hook";
 import {AuthContext} from "../../../context/AuthContext";
 import {Button, Card, CardActions, CardContent, TextField, Typography} from "@mui/material";
 import {Formik, Form} from "formik";
-import {useMutation} from "@apollo/client";
 import {AUTH} from "../../../graphQL/mutations/authMutations";
-import {toast} from "react-toastify";
 import {useToastedMutation} from "../../../hooks/toastedMutation.hook";
 
 const style = {
@@ -28,7 +25,7 @@ export const AuthPage = () => {
     const loginHandler = async (values) => {
         try {
             await makeMutation({userName: values.userName, password: values.password})
-            await auth.login(data.login.token, data.login.id)
+            auth.login(data.login.token, data.login.id, data.login.userName, data.login.roles)
         } catch (e) {
         }
     }

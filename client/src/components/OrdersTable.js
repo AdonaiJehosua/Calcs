@@ -174,7 +174,7 @@ function OrdersTableToolbar(props) {
                     id="tableTitle"
                     component="div"
                 >
-                    Завершенные
+                    {props.tableName}
                 </Typography>
             )}
 
@@ -199,7 +199,7 @@ OrdersTableToolbar.propTypes = {
     numSelected: PropTypes.number.isRequired,
 }
 
-export function OrdersTable({query, queryVar }) {
+export function OrdersTable({tableName, query, queryVar, variables}) {
 
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
@@ -208,7 +208,7 @@ export function OrdersTable({query, queryVar }) {
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-    const {entries, loading, makeQuery} = useToastedQuery(query)
+    const {entries, loading, makeQuery} = useToastedQuery(query, variables)
 
     const fetchEntries = async () => {
         await makeQuery(queryVar)
@@ -282,7 +282,7 @@ export function OrdersTable({query, queryVar }) {
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
-                <OrdersTableToolbar numSelected={selected.length} />
+                <OrdersTableToolbar numSelected={selected.length} tableName={tableName} />
                 <TableContainer>
                     <Table
                         sx={{ minWidth: 750 }}
@@ -333,7 +333,11 @@ export function OrdersTable({query, queryVar }) {
                                             </TableCell>
                                             <TableCell align="left">{row.status}</TableCell>
                                             <TableCell align="left">{row.description}</TableCell>
-                                            <TableCell align="left">{row.planeFinishDate}</TableCell>
+                                            <TableCell align="left">{
+
+                                            row.finishDate
+                                            
+                                            }</TableCell>
                                             <TableCell align="left">
                                                 <MoveButton
                                                     buttonComponent={<ArrowBackIcon/>}

@@ -46,16 +46,17 @@ const graphQLDate = new GraphQLScalarType({
         name: 'CustomDate',
         description: 'Date custom scalar type',
         parseValue(value) {
-            return new Date(value); // value from the client
+            return new Date(value) // value from the client
         },
         serialize(value) {
-            return value.getTime(); // value sent to the client
+            return value // value sent to the client
+            // return value.getTime(); // value sent to the client
         },
         parseLiteral(ast) {
             if (ast.kind === Kind.INT) {
-            return parseInt(ast.value, 10); // ast value is always in string format
+            return parseInt(ast.value, 10) // ast value is always in string format
             }
-            return null;
+            return null
         },
     })
 
@@ -116,6 +117,14 @@ const typeDefs = gql`
         description: String
     }
 
+    type UserData {
+        id: ID
+        userName: String
+        roles: UserRoles
+        token: String
+    }
+    
+
     type Order {
         id: ID
         number1c: Int
@@ -162,13 +171,6 @@ const typeDefs = gql`
         abbreviatedName: String 
     }
     
-    type UserData {
-        id: ID
-        userName: String
-        roles: UserRoles
-        token: String
-    }
-    
     type Query {
         formats: [Format]
         format(id: ID!): Format
@@ -184,7 +186,7 @@ const typeDefs = gql`
     }
     
     type Mutation {
-        addUser(userName: String!, password: String!, role: String!): String
+        addUser(userName: String!, password: String!, roles: UserRoles!): String
         login(userName: String!, password: String!): UserData
         addOrder(number1c: Int!, status: String!, description: String!, productionType: String!, finishDate: CustomDate!): String
         addFormat(formatName: String!, dimensions: DimensionsInput!): String
@@ -220,7 +222,7 @@ const resolvers = {
         order: async (parent, args) => await Order.findById(args.id),
     },
     Mutation: {
-        addUser: async (_, {userName, password, role}) => {
+        addUser: async (_, {userName, password, roles}) => {
             const examUserName = await User.findOne({userName})
             if (examUserName) {
                 throw new GraphQLError('Такой пользователь уже существует.')
@@ -228,7 +230,7 @@ const resolvers = {
             const hashedPassword = await bcrypt.hash(password, 12)
             const user = await new User({userName: userName, 
                                             password: hashedPassword, 
-                                            roles: role,
+                                            roles: roles,
                                             email: null,
                                             phone: null
                                             })
@@ -249,7 +251,7 @@ const resolvers = {
                 config.get('jwtSecret'),
                 {algorithm: "HS256", subject: user.id, expiresIn: '1h'}
             )
-            return {id: user.id, userName: user.userName, token}
+            return {id: user.id, userName: user.userName, token, roles: user.roles}
         },
         addOrder: async (parent, {number1c, status, description, productionType, finishDate}, context) => {
             // if (!context.user) {
