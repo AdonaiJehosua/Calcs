@@ -36,7 +36,6 @@ export const OrderCreatingCard = () => {
             productionType: values.productionType,
             finishDate: values.finishDate,
         }
-        console.log(variables)
         await makeMutation(variables, values)
     }
 

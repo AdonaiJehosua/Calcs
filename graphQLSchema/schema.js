@@ -49,8 +49,8 @@ const graphQLDate = new GraphQLScalarType({
             return new Date(value) // value from the client
         },
         serialize(value) {
-            return value // value sent to the client
-            // return value.getTime(); // value sent to the client
+            // return value // value sent to the client
+            return value.getTime(); // value sent to the client
         },
         parseLiteral(ast) {
             if (ast.kind === Kind.INT) {
@@ -200,6 +200,7 @@ const typeDefs = gql`
         addUnit(fullName: String!, abbreviatedName: String!): String
         deleteUnit(id: ID!): String
         updateUnit(id: ID!, entryKey: UnitKeys!, updatingValue: String!): String
+        updateOrderStatus(id: ID!, status: OrderStatus!): String
     }
     
     type Subscription {
@@ -277,6 +278,13 @@ const resolvers = {
 
             await order.save()
             return 'Заказ создан.'
+        },
+        updateOrderStatus: async (parent, {id, status}, context) => {
+            // if (!context.user) {
+            //     throw new AuthenticationError('Нет авторизации.')
+            // }
+            await Order.findByIdAndUpdate(id, {$set: {status: status}})
+            return 'Статус изменен'
         },
         addFormat: async (parent, {formatName, dimensions}, context) => {
             if (!context.user) {
@@ -377,8 +385,6 @@ const resolvers = {
             await pubsub.publish('UNIT_ADDED', {
                 unitAdded: newUnit
             })
-
-            console.log(context)
             return 'Единица измерения создана.'
         },
         deleteUnit: async (parent, {id}) => {

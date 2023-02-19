@@ -5,3 +5,9 @@ export const ADD_ORDER = gql`
         message: addOrder(number1c: $number1c, status: $status, description: $description, productionType: $productionType, finishDate: $finishDate)
     }
 `
+
+export const UPDATE_ORDER_STATUS = gql`
+    mutation ($updateOrderStatusId: ID!, $status: OrderStatus!) {
+        message: updateOrderStatus(id: $updateOrderStatusId, status: $status)
+}
+`

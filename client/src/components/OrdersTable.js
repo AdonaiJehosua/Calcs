@@ -27,6 +27,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import {useToastedQuery} from '../hooks/toastedQuery.hook'
 import { useEffect } from 'react'
 import {Loader} from './Loader'
+import CheckIcon from '@mui/icons-material/Check'
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -210,8 +211,8 @@ export function OrdersTable({tableName, query, queryVar, variables}) {
 
     const {entries, loading, makeQuery} = useToastedQuery(query, variables)
 
-    const fetchEntries = async () => {
-        await makeQuery(queryVar)
+    const fetchEntries = () => {
+        makeQuery(queryVar)
     }
 
     useEffect(() => {
@@ -223,6 +224,15 @@ export function OrdersTable({tableName, query, queryVar, variables}) {
             <Loader/>
         )
     }
+
+    const finish = (time) => {
+        const date = new Date(time)
+        const day = date.getDate()
+        const month = date.getMonth()
+        return `${day}.${month + 1}`
+    }
+
+    finish()
 
     const rows = entries
 
@@ -335,7 +345,7 @@ export function OrdersTable({tableName, query, queryVar, variables}) {
                                             <TableCell align="left">{row.description}</TableCell>
                                             <TableCell align="left">{
 
-                                            row.finishDate
+                                            finish(row.finishDate)
                                             
                                             }</TableCell>
                                             <TableCell align="left">
@@ -347,6 +357,9 @@ export function OrdersTable({tableName, query, queryVar, variables}) {
                                                     popupText='Точно вертать в зад?'
                                                     bgColor='red'
                                                     fontColor='white'
+                                                    moveDirection={'back'}
+                                                    updateOrderStatusId={row.id}
+                                                    status={row.status}
                                                 />
                                                 <MoveButton
                                                     buttonComponent={<ArrowForwardIcon/>}
@@ -356,6 +369,21 @@ export function OrdersTable({tableName, query, queryVar, variables}) {
                                                     popupText='Точно вертать в перед?'
                                                     bgColor='green'
                                                     fontColor='white'
+                                                    moveDirection={'forward'}
+                                                    updateOrderStatusId={row.id}
+                                                    status={row.status}
+                                                />
+                                                <MoveButton
+                                                    buttonComponent={<CheckIcon/>}
+                                                    buttonColor={'success'}
+                                                    buttonFunction={() => {alert("Finish")}}
+                                                    popupTitle='Внимание'
+                                                    popupText='Точно закончить?'
+                                                    bgColor='green'
+                                                    fontColor='white'
+                                                    moveDirection={'complited'}
+                                                    updateOrderStatusId={row.id}
+                                                    status={'complited'}
                                                 />
                                             </TableCell>
                                         </TableRow>
