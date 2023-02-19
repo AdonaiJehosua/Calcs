@@ -1,7 +1,6 @@
 import './App.css';
 import {BrowserRouter as Router} from "react-router-dom";
 import {Navbar} from "./components/NavBar";
-import {Loader} from "./components/Loader";
 import {useRoutes} from "./structure/routes";
 import {useAuth} from "./hooks/auth.hook";
 import {AuthContext} from "./context/AuthContext"
