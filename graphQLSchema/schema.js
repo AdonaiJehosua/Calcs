@@ -1,16 +1,16 @@
-const {GraphQLScalarType, Kind, print, GraphQLError} = require("graphql");
+const { GraphQLScalarType, Kind, print, GraphQLError } = require("graphql");
 const Format = require('../models/Format')
 const Unit = require('../models/Unit')
 const User = require('../models/User')
 const Chromaticity = require('../models/Chromaticity')
-const {gql} = require('apollo-server')
-const {makeExecutableSchema} = require('graphql-tools')
-const {PubSub} = require('graphql-subscriptions')
-const {isNumeric} = require("validator");
+const { gql } = require('apollo-server')
+const { makeExecutableSchema } = require('graphql-tools')
+const { PubSub } = require('graphql-subscriptions')
+const { isNumeric } = require("validator");
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken");
 const config = require("config");
-const {AuthenticationError} = require("apollo-server-core");
+const { AuthenticationError } = require("apollo-server-core");
 const Order = require("../models/Order");
 const ProductionType = require("../models/ProductionType");
 
@@ -43,22 +43,22 @@ const graphQLIntOrString = new GraphQLScalarType({
 })
 
 const graphQLDate = new GraphQLScalarType({
-        name: 'CustomDate',
-        description: 'Date custom scalar type',
-        parseValue(value) {
-            return new Date(value) // value from the client
-        },
-        serialize(value) {
-            // return value // value sent to the client
-            return value.getTime(); // value sent to the client
-        },
-        parseLiteral(ast) {
-            if (ast.kind === Kind.INT) {
+    name: 'CustomDate',
+    description: 'Date custom scalar type',
+    parseValue(value) {
+        return new Date(value) // value from the client
+    },
+    serialize(value) {
+        // return value // value sent to the client
+        return value.getTime(); // value sent to the client
+    },
+    parseLiteral(ast) {
+        if (ast.kind === Kind.INT) {
             return parseInt(ast.value, 10) // ast value is always in string format
-            }
-            return null
-        },
-    })
+        }
+        return null
+    },
+})
 
 
 
@@ -76,14 +76,6 @@ const typeDefs = gql`
         guest
     }
     
-    type User {
-        id: ID
-        userName: String
-        password: String
-        roles: UserRoles
-        email: String
-        phone: String
-    }
 
     type Chromaticity {
         id: ID
@@ -111,11 +103,6 @@ const typeDefs = gql`
         area: Int
     }
 
-    type ProductionType {
-        id: ID
-        productionType: String
-        description: String
-    }
 
     type UserData {
         id: ID
@@ -124,7 +111,22 @@ const typeDefs = gql`
         token: String
     }
     
+    type ProductionType {
+        id: ID
+        productionType: String
+        description: String
+    }
 
+    type User {
+        id: ID
+        userName: String
+        password: String
+        roles: UserRoles
+        email: String
+        phone: String
+        orders: [Order]
+    }
+    
     type Order {
         id: ID
         number1c: Int
@@ -133,7 +135,7 @@ const typeDefs = gql`
         productionType: ProductionType
         startDate: CustomDate
         finishDate: CustomDate
-        creator: UserData
+        creator: User
     }
 
     input ProductionTypeInput {
@@ -208,6 +210,7 @@ const typeDefs = gql`
     }
 `
 
+
 const resolvers = {
     Query: {
         formats: async () => await Format.find(),
@@ -218,28 +221,29 @@ const resolvers = {
         unit: async (parent, args) => await Unit.findById(args.id),
         productionTypes: async () => await ProductionType.find(),
         productionType: async (parent, args) => await ProductionType.findById(args.id),
-        orders: async () => await Order.find(),
-        ordersWithStatus: async (parent, args) => await Order.find({status: args.status}),
-        order: async (parent, args) => await Order.findById(args.id),
+        orders: async () => await Order.find().populate('creator').populate('productionType'),
+        ordersWithStatus: async (parent, args) => await Order.find({ status: args.status }).populate('creator').populate('productionType'),
+        order: async (parent, args) => await Order.findById(args.id).populate('creator').populate('productionType'),
     },
     Mutation: {
-        addUser: async (_, {userName, password, roles}) => {
-            const examUserName = await User.findOne({userName})
+        addUser: async (_, { userName, password, roles }) => {
+            const examUserName = await User.findOne({ userName })
             if (examUserName) {
                 throw new GraphQLError('Такой пользователь уже существует.')
             }
             const hashedPassword = await bcrypt.hash(password, 12)
-            const user = await new User({userName: userName, 
-                                            password: hashedPassword, 
-                                            roles: roles,
-                                            email: null,
-                                            phone: null
-                                            })
+            const user = await new User({
+                userName: userName,
+                password: hashedPassword,
+                roles: roles,
+                email: null,
+                phone: null
+            })
             await user.save()
             return 'Пользователь создан.'
         },
-        login: async (parent, {userName, password}) => {
-            const user = await User.findOne({userName})
+        login: async (parent, { userName, password }) => {
+            const user = await User.findOne({ userName })
             if (!user) {
                 throw new Error('Такого пользователя не существует.')
             }
@@ -248,19 +252,19 @@ const resolvers = {
                 throw new Error('Неверный пароль.')
             }
             const token = jwt.sign(
-                {userId: user.id},
+                { userId: user.id },
                 config.get('jwtSecret'),
-                {algorithm: "HS256", subject: user.id, expiresIn: '1h'}
+                { algorithm: "HS256", subject: user.id, expiresIn: '1h' }
             )
-            return {id: user.id, userName: user.userName, token, roles: user.roles}
+            return { id: user.id, userName: user.userName, token, roles: user.roles }
         },
-        addOrder: async (parent, {number1c, status, description, productionType, finishDate}, context) => {
-            // if (!context.user) {
-            //     throw new AuthenticationError('Нет авторизации.')
-            // }
-            console.log(context.id)
+        addOrder: async (parent, { number1c, status, description, productionType, finishDate }, context) => {
+            if (!context.user) {
+                throw new AuthenticationError('Нет авторизации.')
+            }
+            console.log(context.user.id)
 
-            const examNumber1c = await Order.findOne({number1c})
+            const examNumber1c = await Order.findOne({ number1c })
             if (examNumber1c) {
                 throw new Error('Заказ с таким номером уже в работе.')
             }
@@ -271,28 +275,26 @@ const resolvers = {
                 description: description,
                 productionType: productionType,
                 finishDate: finishDate,
-                creator: context.user.id
+                creator: context.user._id
             })
-
-            console.log(context.id)
 
             await order.save()
             return 'Заказ создан.'
         },
-        updateOrderStatus: async (parent, {id, status}, context) => {
-            // if (!context.user) {
-            //     throw new AuthenticationError('Нет авторизации.')
-            // }
-            await Order.findByIdAndUpdate(id, {$set: {status: status}})
+        updateOrderStatus: async (parent, { id, status }, context) => {
+            if (!context.user) {
+                throw new AuthenticationError('Нет авторизации.')
+            }
+            await Order.findByIdAndUpdate(id, { $set: { status: status } })
             return 'Статус изменен'
         },
-        addFormat: async (parent, {formatName, dimensions}, context) => {
+        addFormat: async (parent, { formatName, dimensions }, context) => {
             if (!context.user) {
                 throw new AuthenticationError('Нет авторизации.')
             }
 
-            const examinationName = await Format.findOne({formatName})
-            const examinationDim = await Format.findOne({dimensions})
+            const examinationName = await Format.findOne({ formatName })
+            const examinationDim = await Format.findOne({ dimensions })
             if (examinationName) {
                 throw new Error('Формат с таким названием существует.')
             }
@@ -312,22 +314,22 @@ const resolvers = {
             await format.save()
             return 'Формат создан.'
         },
-        deleteFormat: async (parent, {id}, context) => {
+        deleteFormat: async (parent, { id }, context) => {
             if (!context.user) return null
             await Format.findByIdAndRemove(id)
             return 'Формат удален.'
         },
-        updateFormat: async (parent, {id, entryKey, updatingValue}, req) => {
+        updateFormat: async (parent, { id, entryKey, updatingValue }, req) => {
             // if (!req.isAuth) {
             //     throw new AuthenticationError('Нет авторизации.')
             // }
             switch (entryKey) {
                 case 'formatName':
-                    const examName = await Format.findOne({formatName: updatingValue})
+                    const examName = await Format.findOne({ formatName: updatingValue })
                     if (examName) {
                         throw new GraphQLError(`Формат с таким названием существует: ${updatingValue}.`)
                     }
-                    await Format.findByIdAndUpdate(id, {$set: {formatName: updatingValue}})
+                    await Format.findByIdAndUpdate(id, { $set: { formatName: updatingValue } })
                     return 'Название формата изменено.'
 
                 case 'longSide':
@@ -335,13 +337,13 @@ const resolvers = {
                         throw new GraphQLError('Значение длинной стороны должно быть целым числом')
                     }
                     const oldFormatLS = await Format.findById(id)
-                    const newDimensionsLS = {longSide: updatingValue, shortSide: oldFormatLS.dimensions.shortSide}
-                    const examLongSide = await Format.findOne({dimensions: newDimensionsLS})
+                    const newDimensionsLS = { longSide: updatingValue, shortSide: oldFormatLS.dimensions.shortSide }
+                    const examLongSide = await Format.findOne({ dimensions: newDimensionsLS })
                     if (examLongSide) {
                         throw new GraphQLError(`Формат с такими значениями существует: ${oldFormatLS.formatName}.`)
                     }
                     const newAreaLS = newDimensionsLS.longSide * newDimensionsLS.shortSide
-                    await Format.findByIdAndUpdate(id, {$set: {dimensions: newDimensionsLS, area: newAreaLS}})
+                    await Format.findByIdAndUpdate(id, { $set: { dimensions: newDimensionsLS, area: newAreaLS } })
                     return 'Значение длинной стороны изменено.'
 
                 case 'shortSide':
@@ -349,25 +351,25 @@ const resolvers = {
                         throw new GraphQLError('Значение короткой стороны должно быть целым числом')
                     }
                     const oldFormatSS = await Format.findById(id)
-                    const newDimensionsSS = {longSide: oldFormatSS.dimensions.longSide, shortSide: updatingValue}
-                    const examShortSide = await Format.findOne({dimensions: newDimensionsSS})
+                    const newDimensionsSS = { longSide: oldFormatSS.dimensions.longSide, shortSide: updatingValue }
+                    const examShortSide = await Format.findOne({ dimensions: newDimensionsSS })
                     if (examShortSide) {
                         throw new GraphQLError(`Формат с такими значениями существует: ${oldFormatSS.formatName}.`)
                     }
                     const newAreaSS = newDimensionsSS.longSide * newDimensionsSS.shortSide
-                    await Format.findByIdAndUpdate(id, {$set: {dimensions: newDimensionsSS, area: newAreaSS}})
+                    await Format.findByIdAndUpdate(id, { $set: { dimensions: newDimensionsSS, area: newAreaSS } })
                     return 'Значение короткой стороны изменено.'
                 default:
                     throw new GraphQLError('Что-то пошло не так.')
             }
         },
-        addUnit: async (parent, {fullName, abbreviatedName}, context) => {
+        addUnit: async (parent, { fullName, abbreviatedName }, context) => {
             if (!context.user) {
                 throw new AuthenticationError('Нет авторизации.')
             }
 
-            const examinationFullName = await Unit.findOne({fullName})
-            const examinationAbbName = await Unit.findOne({abbreviatedName})
+            const examinationFullName = await Unit.findOne({ fullName })
+            const examinationAbbName = await Unit.findOne({ abbreviatedName })
 
             if (examinationFullName) {
                 throw new Error('Единица измерения с таким названием существует.')
@@ -381,65 +383,65 @@ const resolvers = {
                 abbreviatedName: abbreviatedName
             })
             await unit.save()
-            const newUnit = await Unit.findOne({fullName: fullName})
+            const newUnit = await Unit.findOne({ fullName: fullName })
             await pubsub.publish('UNIT_ADDED', {
                 unitAdded: newUnit
             })
             return 'Единица измерения создана.'
         },
-        deleteUnit: async (parent, {id}) => {
+        deleteUnit: async (parent, { id }) => {
             await Unit.findByIdAndRemove(id)
             return 'Единица измерения удалена'
         },
-        updateUnit: async (parent, {id, entryKey, updatingValue}, req) => {
+        updateUnit: async (parent, { id, entryKey, updatingValue }, req) => {
             // if (!req.isAuth) {
             //     throw new AuthenticationError('Нет авторизации.')
             // }
             switch (entryKey) {
                 case 'fullName':
-                    const examFullName = await Unit.findOne({fullName: updatingValue})
+                    const examFullName = await Unit.findOne({ fullName: updatingValue })
                     if (examFullName) {
                         throw new GraphQLError(`Единица измерения с таким названием существует: ${updatingValue}.`)
                     }
-                    await Unit.findByIdAndUpdate(id, {$set: {fullName: updatingValue}})
+                    await Unit.findByIdAndUpdate(id, { $set: { fullName: updatingValue } })
                     return 'Полное название изменено.'
                 case 'abbreviatedName':
-                    const examAbbName = await Unit.findOne({abbreviatedName: updatingValue})
+                    const examAbbName = await Unit.findOne({ abbreviatedName: updatingValue })
                     if (examAbbName) {
                         throw new GraphQLError(`Единица измерения с таким названием существует: ${updatingValue}.`)
                     }
-                    await Unit.findByIdAndUpdate(id, {$set: {abbreviatedName: updatingValue}})
+                    await Unit.findByIdAndUpdate(id, { $set: { abbreviatedName: updatingValue } })
                     return 'Сокращенное название изменено.'
 
                 default:
                     throw new GraphQLError('Что-то пошло не так.')
             }
         },
-        addChromaticity: async (parent, {front, back}) => {
+        addChromaticity: async (parent, { front, back }) => {
             const name = `${front} + ${back}`
-            const examinationChromaticity = await Chromaticity.findOne({name})
+            const examinationChromaticity = await Chromaticity.findOne({ name })
             if (examinationChromaticity) {
                 throw new Error('Такая цветность существует.')
             }
             const isOnePrintSide = Boolean(back === 0)
-            const chromaticity = await new Chromaticity({name, front, back, isOnePrintSide})
+            const chromaticity = await new Chromaticity({ name, front, back, isOnePrintSide })
             await chromaticity.save()
             return 'Цветность создана.'
         },
-        deleteChromaticity: async (parent, {id}) => {
+        deleteChromaticity: async (parent, { id }) => {
             await Chromaticity.findByIdAndRemove(id)
             return 'Цветность удалена.'
         },
-        addProductionType: async (parent, {productionType, description}, context) => {
+        addProductionType: async (parent, { productionType, description }, context) => {
             // if (!context.user) {
             //     throw new AuthenticationError('Нет авторизации.')
             // }
 
-            const examinationProductionType = await ProductionType.findOne({productionType})
+            const examinationProductionType = await ProductionType.findOne({ productionType })
             if (examinationProductionType) {
                 throw new Error('Такой тип изделия существует.')
             }
-            
+
             const prodType = await new ProductionType({
                 productionType: productionType,
                 description: description
@@ -447,31 +449,31 @@ const resolvers = {
             await prodType.save()
             return 'Тип изделия создан.'
         },
-        updateProductionType: async (parent, {id, entryKey, updatingValue}, req) => {
+        updateProductionType: async (parent, { id, entryKey, updatingValue }, req) => {
             // if (!req.isAuth) {
             //     throw new AuthenticationError('Нет авторизации.')
             // }
             switch (entryKey) {
                 case 'productionType':
-                    const examProductionType = await ProductionType.findOne({productionType: updatingValue})
+                    const examProductionType = await ProductionType.findOne({ productionType: updatingValue })
                     if (examProductionType) {
                         throw new GraphQLError(`Такой тип изделия существует: ${updatingValue}.`)
                     }
-                    await ProductionType.findByIdAndUpdate(id, {$set: {productionType: updatingValue}})
+                    await ProductionType.findByIdAndUpdate(id, { $set: { productionType: updatingValue } })
                     return 'Название изменено.'
                 case 'description':
-                    const examDescription = await ProductionType.findOne({description: updatingValue})
+                    const examDescription = await ProductionType.findOne({ description: updatingValue })
                     if (examDescription) {
                         throw new GraphQLError(`Такое описание типа изделия существует: ${updatingValue}.`)
                     }
-                    await ProductionType.findByIdAndUpdate(id, {$set: {description: updatingValue}})
+                    await ProductionType.findByIdAndUpdate(id, { $set: { description: updatingValue } })
                     return 'Описание изменено.'
 
                 default:
                     throw new GraphQLError('Что-то пошло не так.')
             }
         },
-        deleteProductionType: async (parent, {id}) => {
+        deleteProductionType: async (parent, { id }) => {
             await ProductionType.findByIdAndRemove(id)
             return 'Тип изделия удален.'
         },
@@ -485,4 +487,4 @@ const resolvers = {
     }
 }
 
-module.exports.schema = new makeExecutableSchema({typeDefs, resolvers})
+module.exports.schema = new makeExecutableSchema({ typeDefs, resolvers })

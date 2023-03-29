@@ -1,4 +1,4 @@
-const {Schema, model} = require('mongoose')
+const {Schema, model, Types} = require('mongoose')
 
 const  schema = new Schema({
     userName: {type: String, required: true, unique: true},
@@ -6,6 +6,7 @@ const  schema = new Schema({
     roles: {type: String, required: true},
     email: {type: String, default: ""},
     phone: {type: String, default: ""},
+    orders: [{type: Types.ObjectId, ref: 'Order'}]
 })
 
 module.exports = model('User', schema)
