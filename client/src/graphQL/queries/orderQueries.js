@@ -12,6 +12,10 @@ export const FETCH_ORDERS = gql`
                 productionType
                 }
             startDate
+            creator {
+                id
+                userName
+            }
         }
     }
 `
