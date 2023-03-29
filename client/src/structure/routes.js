@@ -15,6 +15,7 @@ import { ProductionTypes } from "./routes/Catalogs/ProductionTypes/ProductionTyp
 import { PrepressOrders } from "./routes/Orders/Prepress/PrepressOrders";
 import { PressOrders } from "./routes/Orders/Press/PressOrders";
 import { PostpressOrders } from "./routes/Orders/Postpress/PostpressOrders";
+import { ComplitedOrders } from "./routes/Orders/Complited/ComplitedOrders";
 
 
 export const useRoutes = isAuthenticated => {
@@ -29,6 +30,7 @@ export const useRoutes = isAuthenticated => {
                             <Route path={'prepress'} element={<PrepressOrders/>}/>
                             <Route path={'postpress'} element={<PostpressOrders/>}/>
                             <Route path={'press'} element={<PressOrders/>}/>
+                            <Route path={'complited'} element={<ComplitedOrders/>}/>
                         </Route>
                         <Route path={'/calcs'} element={<Calcs/>}>
                             <Route path={'amountofpapper'} element={<AmountOfPaper/>}/>
