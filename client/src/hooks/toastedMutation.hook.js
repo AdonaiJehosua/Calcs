@@ -11,6 +11,8 @@ export const useToastedMutation = (gqlMutation, gqlQuery, queryName) => {
             {query: gqlQuery},
             queryName
         ]})
+
+
     const makeMutation = async (variables, values, resetValues) => {
         try {
             await mutation({variables: variables})
@@ -29,8 +31,9 @@ export const useToastedMutation = (gqlMutation, gqlQuery, queryName) => {
     }
     useEffect(() => {
         if (data && data.message) {
-            toast(data.message)
+            toast(data.message, {position: "bottom-left"} )
         }
     }, [data])
+
     return {makeMutation, data, loading, error}
 }

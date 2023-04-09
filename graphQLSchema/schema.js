@@ -206,7 +206,8 @@ const typeDefs = gql`
     }
     
     type Subscription {
-        unitAdded: Unit!
+        unitAdded: Unit
+        orderAdded: Order
     }
 `
 
@@ -364,9 +365,9 @@ const resolvers = {
             }
         },
         addUnit: async (parent, { fullName, abbreviatedName }, context) => {
-            if (!context.user) {
-                throw new AuthenticationError('Нет авторизации.')
-            }
+            // if (!context.user) {
+            //     throw new AuthenticationError('Нет авторизации.')
+            // }
 
             const examinationFullName = await Unit.findOne({ fullName })
             const examinationAbbName = await Unit.findOne({ abbreviatedName })
@@ -483,6 +484,9 @@ const resolvers = {
     Subscription: {
         unitAdded: {
             subscribe: () => pubsub.asyncIterator('UNIT_ADDED')
+        },
+        orderAdded: {
+            subscribe: () => pubsub.asyncIterator('ORDER_ADDED')
         }
     }
 }

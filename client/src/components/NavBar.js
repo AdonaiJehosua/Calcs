@@ -1,10 +1,13 @@
 import {NavLink, useNavigate} from "react-router-dom";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {AuthContext} from "../context/AuthContext";
 import AppBar from '@mui/material/AppBar';
 import {Box, Toolbar, IconButton, Typography, Menu, Button, Tooltip, MenuItem} from '@mui/material';
 import AdbIcon from '@mui/icons-material/Adb';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useSubscription } from "@apollo/client";
+import { UNIT_SUBSCRIPTION } from "../graphQL/subscriptions/unitSubscriptions";
+import { toast } from "react-toastify";
 
 
 export const Navbar = () => {
@@ -26,7 +29,16 @@ export const Navbar = () => {
 
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
-    };
+    }
+
+    const {data: subData, loading: subLoading} = useSubscription(UNIT_SUBSCRIPTION)
+
+
+    useEffect(() => {
+        if (!subLoading && subData) {
+            toast(`New unit! ${subData.id}`)
+        }
+    }, [subData, subLoading])
 
     return (
             <AppBar position='static' sx={{px: 2}}>

@@ -1,6 +1,6 @@
 import {UnitCreatingCard} from "./UnitCreatingCard";
 import {DeleteEntryButton} from "../../../../components/DeleteEntryButton";
-import {useEffect} from "react";
+import {useCallback, useEffect} from "react";
 import {CatalogsTableCol} from "../../../../components/CatalogsTableCol";
 import {Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
 import {useToastedQuery} from "../../../../hooks/toastedQuery.hook";
@@ -11,10 +11,11 @@ import {DELETE_UNIT, UPDATE_UNIT} from "../../../../graphQL/mutations/unitMutati
 export const Units = () => {
 
     const {entries, loading, makeQuery} = useToastedQuery(FETCH_UNITS)
+    
 
-    const fetchUnits = async () => {
-        await makeQuery('units')
-    }
+    const fetchUnits = useCallback(() => {
+        makeQuery('units')
+    })
 
     useEffect(() => {
         fetchUnits()
