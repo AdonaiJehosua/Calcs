@@ -2,12 +2,7 @@ import { useState } from "react";
 import { Formik, Form } from "formik";
 import { Box, Button, Card, CardActions, CardContent, Container, Modal, TextField, Typography } from "@mui/material";
 import { useToastedMutation } from "../../../hooks/toastedMutation.hook"
-import { ADD_FORMAT } from "../../../graphQL/mutations/formatsMutations"
-import { FETCH_FORMATS } from "../../../graphQL/queries/formatQueries"
-import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
-import FormControl from '@mui/material/FormControl'
-import Select from '@mui/material/Select'
 import { SelectComponent } from "../../../components/SelectComponent";
 import { FETCH_PRODUCTION_TYPES_WITH_STATUS } from "../../../graphQL/queries/productionTypesQueries";
 import { ADD_ORDER } from "../../../graphQL/mutations/orderMutations";

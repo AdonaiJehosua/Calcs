@@ -7,15 +7,14 @@ import { AuthContext } from "./context/AuthContext"
 import { ThemeProvider } from "@emotion/react";
 import { mainColorsTheme } from "./muiThemes/muiThemes";
 import Box from "@mui/material/Box";
-import { toast, ToastContainer } from "react-toastify";
-import { ApolloClient, InMemoryCache, ApolloProvider, useSubscription } from '@apollo/client';
+import { ToastContainer } from "react-toastify";
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import { split, HttpLink } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { setContext } from "@apollo/client/link/context";
-import { useEffect } from 'react';
-import { UNIT_SUBSCRIPTION } from './graphQL/subscriptions/unitSubscriptions';
+
 
 
 function App() {
@@ -25,11 +24,11 @@ function App() {
     const routes = useRoutes(isAuthenticated)
 
     const wsLink = new GraphQLWsLink(createClient({
-        url: 'ws://localhost:5000/graphql',
+        url: 'ws://192.168.0.8:5000/graphql',
     }));
 
     const httpLink = new HttpLink({
-        uri: 'http://localhost:5000/graphql',
+        uri: 'http://192.168.0.8:5000/graphql',
     });
 
     const authLink = setContext((_, { headers }) => {
@@ -66,6 +65,7 @@ function App() {
 
     return (
         <ApolloProvider client={client}>
+            
             <AuthContext.Provider value={{ token, userId, login, logout, isAuthenticated, roles, userName }}>
                 <Router>
                     <ToastContainer />

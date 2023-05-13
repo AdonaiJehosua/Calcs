@@ -63,6 +63,7 @@ const graphQLDate = new GraphQLScalarType({
 
 
 const pubsub = new PubSub()
+
 const typeDefs = gql`
     scalar IntOrString
     scalar CustomDate
@@ -208,6 +209,7 @@ const typeDefs = gql`
     type Subscription {
         unitAdded: Unit
         orderAdded: Order
+        orderUpdate: Order
     }
 `
 
@@ -260,10 +262,9 @@ const resolvers = {
             return { id: user.id, userName: user.userName, token, roles: user.roles }
         },
         addOrder: async (parent, { number1c, status, description, productionType, finishDate }, context) => {
-            if (!context.user) {
-                throw new AuthenticationError('Нет авторизации.')
-            }
-            console.log(context.user.id)
+            // if (!context.user) {
+            //     throw new AuthenticationError('Нет авторизации.')
+            // }
 
             const examNumber1c = await Order.findOne({ number1c })
             if (examNumber1c) {
@@ -280,13 +281,21 @@ const resolvers = {
             })
 
             await order.save()
+            
+            await pubsub.publish('ORDER_ADDED', {
+                orderAdded: await Order.findOne({number1c}).populate('creator').populate('productionType')
+            })
             return 'Заказ создан.'
         },
         updateOrderStatus: async (parent, { id, status }, context) => {
-            if (!context.user) {
-                throw new AuthenticationError('Нет авторизации.')
-            }
+            // if (!context.user) {
+            //     throw new AuthenticationError('Нет авторизации.')
+            // }
             await Order.findByIdAndUpdate(id, { $set: { status: status } })
+            const orderWithNewStatus =  await Order.findById(id).populate('creator').populate('productionType')
+            await pubsub.publish('ORDER_UPDATE', {
+                orderUpdate: orderWithNewStatus
+            })
             return 'Статус изменен'
         },
         addFormat: async (parent, { formatName, dimensions }, context) => {
@@ -487,6 +496,9 @@ const resolvers = {
         },
         orderAdded: {
             subscribe: () => pubsub.asyncIterator('ORDER_ADDED')
+        },
+        orderUpdate: {
+            subscribe: () => pubsub.asyncIterator('ORDER_UPDATE')
         }
     }
 }
