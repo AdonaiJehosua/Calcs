@@ -24,11 +24,11 @@ function App() {
     const routes = useRoutes(isAuthenticated)
 
     const wsLink = new GraphQLWsLink(createClient({
-        url: 'ws://192.168.0.8:5000/graphql',
+        url: 'ws://localhost:5000/graphql',
     }));
 
     const httpLink = new HttpLink({
-        uri: 'http://192.168.0.8:5000/graphql',
+        uri: 'http://localhost:5000/graphql',
     });
 
     const authLink = setContext((_, { headers }) => {
